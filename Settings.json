@@ -1,0 +1,13 @@
+{
+  "mode" : "ROV",
+  "motorSender" : {
+    "mode" : "SPI",
+    "path" : "/dev/spidev0.0",
+    "freq" : "6M"
+  },
+  "sensors" : {
+    "mode" : "I2C",
+    "path" : "/dev/i2c-1"
+  },
+  "camera" : "USB_H264"
+}

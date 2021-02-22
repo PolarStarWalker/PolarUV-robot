@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+
+message SensorMessage{
+  enum FILTER {
+    NOTHING = 0;
+    MOVING_AVERAGE = 1;
+    CIRCLE_MOVING_AVERAGE = 2;
+  };
+
+  enum SENSOR_TYPE{
+    MAGNETOMETER = 1;
+    DEPT = 2;
+    SPACE_ORIENTATION = 3;
+  };
+
+  required FILTER filter = 1;
+  required string name = 2;
+
+};

@@ -1,0 +1,39 @@
+[requires]
+    protobuf/3.21.1
+
+    boost/1.79.0
+
+    zstd/1.5.2
+    zlib/1.2.12
+
+    gstreamer/1.19.2
+    gst-plugins-base/1.19.1
+    gst-plugins-good/1.19.1
+    gst-plugins-bad/1.19.1
+    glib/2.72.0
+    freetype/2.11.0
+    libalsa/1.1.9
+    expat/2.4.8
+
+#  ffmpeg/4.4
+#  opencv/4.5.5
+
+   eigen/3.4.0
+   tensorflow-lite/2.6.0
+
+
+[options]
+    boost:shared = False
+    boost:asio_no_deprecated = True
+    boost:system_no_deprecated = True
+    boost:filesystem_no_deprecated = True
+
+    gstreamer:shared=False
+    gst-plugins-base:shared=False
+    gst-plugins-good:shared=False
+    gst-plugins-bad:shared=False
+    glib:shared = False
+    opencv:shared = False
+
+[generators]
+    cmake
