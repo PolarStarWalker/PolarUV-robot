@@ -12,6 +12,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcxproj", "{F5EB1A9A-289F-459E-8308-8E1851F04A3E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sensors", "Sensors\Sensors.vcxproj", "{DA19D96E-89DB-4D9C-BC12-3557D993F33B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6420D5D6-1537-4F15-B5A4-AE3BFF140FFE} = {6420D5D6-1537-4F15-B5A4-AE3BFF140FFE}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Services", "Services\Services.vcxproj", "{6420D5D6-1537-4F15-B5A4-AE3BFF140FFE}"
 EndProject

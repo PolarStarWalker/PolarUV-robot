@@ -112,6 +112,10 @@
   <ItemGroup>
     <ClInclude Include="DataStruct.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\x64\Debug\rov.properties" />
+    <None Include="bin\x64\Release\rov.properties" />
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

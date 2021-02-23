@@ -3,11 +3,12 @@
 #include <iostream>
 #include <thread>
 
+//my projects headers
 #include <Sensors.hpp>
 #include <Server.hpp>
 #include <Services.hpp>
 
-
+//local project includes
 #include "DataStruct.hpp"
 
 using namespace std;
