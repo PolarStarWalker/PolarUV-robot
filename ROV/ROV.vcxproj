@@ -43,6 +43,7 @@
     <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
     <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
     <LinuxProjectType>{D51BCBC9-82E9-4017-911E-C93873C4EA2B}</LinuxProjectType>
+    <ProjectName>ROV</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
@@ -79,16 +80,20 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Services\include;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Services\include;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <IncludePath>$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Services\include;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <IncludePath>$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Services\include;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -100,6 +105,12 @@
     <ProjectReference Include="..\Server\Server.vcxproj">
       <Project>{f5eb1a9a-289f-459e-8308-8e1851f04a3e}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Services\Services.vcxproj">
+      <Project>{6420d5d6-1537-4f15-b5a4-ae3bff140ffe}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DataStruct.hpp" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,12 +2,13 @@
 
 #include <iostream>
 
+
+#include <Socket.hpp>
+
+#include <IntMatrixClass.hpp>
+#include <FloatMatrixClass.hpp>
+
 #include "DataStruct.hpp"
-#include "Socket.hpp"
-
-#include "IntMatrixClass.hpp"
-#include "FloatMatrixClass.hpp"
-
 
 using namespace std;
 
@@ -16,19 +17,23 @@ int main(void) {
     CommandsStruct* commandsStruct = new CommandsStruct;
     MotorsStruct* motorsStruct = new MotorsStruct;
 
-
-    char motorsMessage[MotorsStructLenMessage] = {};
+    char* motorsMessage = new char[MotorsStructLenMessage];
 
 
     Socket socket;
     socket.MakeServerSocket(1999);
     
 
-
     for (;;) 
     {
         while (socket.GetSocketConnectionStatus()) {
-            cout << "Hello World\n";
+            
+            int error = socket.RecvDataLen((char*)commandsStruct, CommandsStructLen);
+
+            if (error++) break;
+
+
+
         }
 
         socket.Listen();
@@ -36,6 +41,7 @@ int main(void) {
 
     delete commandsStruct;
     delete motorsStruct;
+    delete[] motorsMessage;
 
     return 0;
 }

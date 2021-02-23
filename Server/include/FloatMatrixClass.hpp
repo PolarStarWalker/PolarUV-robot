@@ -1,14 +1,21 @@
 #pragma once
-#include <stdint.h>
-#include <stddef.h>
+#include "BaseMatrixClass.hpp"
 
 
-class FloatMatrixClass
+class FloatMatrixClass : virtual public BaseMatrixClass
 {
-	double* _matrix;
+private:
+	double** _matrix;
 
-	size_t* _row = 0;
-	size_t* _column = 0;
+public:
+	FloatMatrixClass(size_t row, size_t column);
+	~FloatMatrixClass();
+
+	FloatMatrixClass& operator= (double* right);
+
+	double* operator[](size_t value);
+
+	FloatMatrixClass& operator*(BaseMatrixClass& right);
 
 };
 
