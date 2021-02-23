@@ -99,6 +99,7 @@
     <ClInclude Include="include\FloatMatrixClass.hpp" />
     <ClInclude Include="include\IntMatrixClass.hpp" />
     <ClInclude Include="include\Socket.hpp" />
+    <ClInclude Include="Server.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FloatMatrixClass.cpp" />

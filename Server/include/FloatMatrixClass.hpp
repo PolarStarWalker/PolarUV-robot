@@ -2,7 +2,7 @@
 #include "BaseMatrixClass.hpp"
 #include "IntMatrixClass.hpp"
 
-class FloatMatrixClass : public BaseMatrixClass
+class FloatMatrixClass : public virtual BaseMatrixClass
 {
 private:
 	double** _matrix;

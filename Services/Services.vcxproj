@@ -95,10 +95,11 @@
     <IncludePath>$(SolutionDir)Services\include</IncludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="include\ServicesCore.hpp" />
+    <ClInclude Include="include\ConfigurationFileClass.hpp" />
+    <ClInclude Include="Services.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ServicesCore.cpp" />
+    <ClCompile Include="src\ConfigurationFileClass.cpp" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,11 +1,12 @@
 #pragma once
 
 #include <iostream>
+#include <thread>
 
-#include <Socket.hpp>
+#include <Sensors.hpp>
+#include <Server.hpp>
+#include <Services.hpp>
 
-#include <IntMatrixClass.hpp>
-#include <FloatMatrixClass.hpp>
 
 #include "DataStruct.hpp"
 
