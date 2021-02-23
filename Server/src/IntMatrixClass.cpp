@@ -1,12 +1,14 @@
 #include "IntMatrixClass.hpp"
-
+#include <iostream>
 
 IntMatrixClass::IntMatrixClass(size_t row, size_t column)
 {
 	_row = row;
 	_column = column;
 
-	_matrix = new int64_t[_row, _column];
+	_matrix = new int64_t*[_row];
+
+	for (size_t i = 0; i < _row; i++) { _matrix[i] = new int64_t[_column] {}; }
 }
 
 IntMatrixClass::~IntMatrixClass()
@@ -17,39 +19,63 @@ IntMatrixClass::~IntMatrixClass()
 
 int64_t* IntMatrixClass::operator[](size_t value) 
 {
-	return (int64_t*) _matrix;
+	return  _matrix[value];
 }
 
 
-IntMatrixClass& IntMatrixClass::operator*(BaseMatrixClass& right) {
+IntMatrixClass& IntMatrixClass::operator*(IntMatrixClass& right) {
 
-	if (this->GetColumns() != right.GetRows()) 
+	if (!this->IfThisMultiplyebleOn(right)) 
 	{ 
 		IntMatrixClass newIntintMatrixClass(0, 0); 
 		return newIntintMatrixClass; 
 	}
 
-	IntMatrixClass newIntMatrixClass(this->GetRows(), right.GetColumns());
+	IntMatrixClass newIntMatrix(this->GetRows(), right.GetColumns());
 
-	for (size_t i = 0; i < this->GetRows();i++) {
-		for (size_t j = 0; j < right.GetColumns(); j++) {
-			
-			int64_t value = 0;
-
-			for (size_t k = 0; k < this->GetColumns(); k++) {
-				value+=	this->_matrix[i][k] * right[k][j]
-			
+	for (size_t m = 0; m < this->GetRows();m++) {
+		for (size_t k = 0; k < right.GetColumns(); k++) {
+			for (size_t n = 0; n < this->GetColumns(); n++) {
+				newIntMatrix[m][k] += this->_matrix[m][n] * right[n][k];
 			}
-		
 		}
-	
 	}
-
-
+	return newIntMatrix;
 }
 
-IntMatrixClass& IntMatrixClass::operator=(int64_t* right)
+/*
+IntMatrixClass& IntMatrixClass::operator*(FloatMatrixClass& right)
 {
-	// TODO: вставьте здесь оператор return
+	if (!this->IfThisMultiplyebleOn(right))
+	{
+		IntMatrixClass newIntintMatrixClass(0, 0);
+		return newIntintMatrixClass;
+	}
+
+	IntMatrixClass newIntMatrix(this->GetRows(), right.GetColumns());
+
+	for (size_t m = 0; m < this->GetRows(); m++) {
+		for (size_t k = 0; k < right.GetColumns(); k++) {
+			for (size_t n = 0; n < this->GetColumns(); n++) {
+				newIntMatrix[m][k] += this->_matrix[m][n] * right[n][k];
+			}
+		}
+	}
+	return newIntMatrix;
+}
+*/
+
+IntMatrixClass& IntMatrixClass::operator=(int64_t* matrix[])
+{
+
+	for (size_t m = 0; m <  this->_row; m++) 
+	{
+		for (size_t n = 0; n < this->_column; n++) 
+		{
+			this->_matrix[m][n] = matrix[m][n]; 
+		}
+	}
+
+	return *this;
 }
 

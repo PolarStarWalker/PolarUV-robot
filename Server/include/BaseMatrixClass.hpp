@@ -9,15 +9,16 @@ protected:
 	size_t _row = 0;
 	size_t _column = 0;
 
-
 public:
+
+	inline bool IfThisMultiplyebleOn(BaseMatrixClass& matrix) 
+	{
+		return this->GetColumns() != matrix.GetRows();
+	}
 
 	size_t GetRows() { return _row; }
 	size_t GetColumns() { return _column; }
 
-	virtual ~BaseMatrixClass() = 0;
 
-	virtual BaseMatrixClass& operator(void* right) = 0;
 
-	virtual BaseMatrixClass& operator*(BaseMatrixClass& right) = 0;
 };

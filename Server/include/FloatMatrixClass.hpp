@@ -1,8 +1,8 @@
 #pragma once
 #include "BaseMatrixClass.hpp"
+#include "IntMatrixClass.hpp"
 
-
-class FloatMatrixClass : virtual public BaseMatrixClass
+class FloatMatrixClass : public BaseMatrixClass
 {
 private:
 	double** _matrix;
@@ -11,11 +11,11 @@ public:
 	FloatMatrixClass(size_t row, size_t column);
 	~FloatMatrixClass();
 
-	FloatMatrixClass& operator= (double* right);
-
 	double* operator[](size_t value);
+	
+	///FloatMatrixClass& operator*(FloatMatrixClass& right);
+	///FloatMatrixClass& operator*(IntMatrixClass& right);
 
-	FloatMatrixClass& operator*(BaseMatrixClass& right);
-
+	FloatMatrixClass& operator= (double** right);
 };
 
