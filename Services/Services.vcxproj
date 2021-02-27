@@ -95,13 +95,15 @@
     <IncludePath>$(SolutionDir)Services\include;$(SolutionDir)Sensors</IncludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="include\ConfigurationFileService.hpp" />
-    <ClInclude Include="include\SensorsService.hpp" />
+    <ClInclude Include="SettingsFileService\SettingsFileService.hpp" />
+    <ClInclude Include="SensorsHandlerService\SensorsHandlerService.hpp" />
+    <ClInclude Include="StreetingService\SteeringService.hpp" />
     <ClInclude Include="Services.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ConfigurationFileService.cpp" />
-    <ClCompile Include="src\SensrsService.cpp" />
+    <ClCompile Include="SettingsFileService\SettingsFileService.cpp" />
+    <ClCompile Include="SensorsHandlerService\SensorsHandlerService.cpp" />
+    <ClCompile Include="StreetingService\SteeringService.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Matrix\Matrix.vcxproj">

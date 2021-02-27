@@ -1,13 +1,14 @@
-#include "ConfigurationFileService.hpp"
+#include "SettingsFileService.hpp"
 
 
-ConfigurationFileService::ConfigurationFileService(std::string string)
+SettingsFileService::SettingsFileService(std::string string)
 {
 	this->_settingsFile = new std::fstream(string, std::ios_base::in);
 }
 
-ConfigurationFileService::~ConfigurationFileService()
+SettingsFileService::~SettingsFileService()
 {
 	if (this->_settingsFile->is_open()) { this->_settingsFile->close(); }
 	delete _settingsFile;
 }
+

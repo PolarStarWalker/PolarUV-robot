@@ -80,19 +80,19 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Services\include;$(SolutionDir)Matrix;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Matrix;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Services\include;$(SolutionDir)Matrix;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Matrix;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Services\include;$(SolutionDir)Matrix;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Matrix;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Services\include;$(SolutionDir)Matrix;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Matrix;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemGroup>
