@@ -42,7 +42,7 @@ IntMatrixClass& operator*(IntMatrixClass& left, IntMatrixClass& right) {
 	return newIntMatrix;
 }
 
-/*
+
 IntMatrixClass& operator*=(IntMatrixClass& left, FloatMatrixClass& right)
 {
 	if (!left.IfThisMultiplyebleOn(right))
@@ -62,7 +62,7 @@ IntMatrixClass& operator*=(IntMatrixClass& left, FloatMatrixClass& right)
 	}
 	return newIntMatrix;
 }
-*/
+
 
 IntMatrixClass& IntMatrixClass::operator=(int64_t* matrix[])
 {

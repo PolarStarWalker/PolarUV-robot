@@ -14,10 +14,11 @@ public:
 	int64_t* operator[](size_t value);
 
 	friend IntMatrixClass& operator*(IntMatrixClass& left, IntMatrixClass& right);
+	friend IntMatrixClass& operator*(IntMatrixClass& left, FloatMatrixClass& right);
 
 	IntMatrixClass& operator=(int64_t* matrix[]);
 
 };
 
 IntMatrixClass& operator*(IntMatrixClass& left, IntMatrixClass& right);
-
+IntMatrixClass& operator*(IntMatrixClass& left, FloatMatrixClass& right);
