@@ -8,7 +8,7 @@ struct MS5837Data : IData{
 
 class MS5837Registers {
 protected:
-	uint8_t _id = 0;
+	uint8_t _address = 0;
 
 public:
 

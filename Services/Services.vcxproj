@@ -83,16 +83,16 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Services\include</IncludePath>
+    <IncludePath>$(SolutionDir)Services\include;$(SolutionDir)Sensors</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Services\include</IncludePath>
+    <IncludePath>$(SolutionDir)Services\include;$(SolutionDir)Sensors</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <IncludePath>$(SolutionDir)Services\include</IncludePath>
+    <IncludePath>$(SolutionDir)Services\include;$(SolutionDir)Sensors</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <IncludePath>$(SolutionDir)Services\include</IncludePath>
+    <IncludePath>$(SolutionDir)Services\include;$(SolutionDir)Sensors</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="include\ConfigurationFileService.hpp" />
@@ -101,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ConfigurationFileService.cpp" />
+    <ClCompile Include="src\SensrsService.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Matrix\Matrix.vcxproj">

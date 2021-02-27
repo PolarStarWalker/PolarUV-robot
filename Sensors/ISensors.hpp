@@ -2,10 +2,12 @@
 #include <mutex>
 
 
-class ISensor {
+class ISensors {
 protected:
 
-	std::mutex _sensorMutex ;
+	bool _onlineStatus = false;
+
+	std::mutex _dataMutex ;
 
 public:
 
