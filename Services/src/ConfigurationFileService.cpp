@@ -8,6 +8,6 @@ ConfigurationFileService::ConfigurationFileService(std::string string)
 
 ConfigurationFileService::~ConfigurationFileService()
 {
-	this->_settingsFile->close();
+	if (this->_settingsFile->is_open()) { this->_settingsFile->close(); }
 	delete _settingsFile;
 }

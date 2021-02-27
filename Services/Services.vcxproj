@@ -100,7 +100,7 @@
     <ClInclude Include="Services.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ConfigurationFileClass.cpp" />
+    <ClCompile Include="src\ConfigurationFileService.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Matrix\Matrix.vcxproj">

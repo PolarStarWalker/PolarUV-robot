@@ -95,8 +95,14 @@
     <IncludePath>$(SolutionDir)Sensors\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
+    <ClInclude Include="include\IData.hpp" />
     <ClInclude Include="include\ISensor.hpp" />
+    <ClInclude Include="include\MS5837.hpp" />
+    <ClInclude Include="include\MS5837Data.hpp" />
     <ClInclude Include="Sensors.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\MS5837.cpp" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
