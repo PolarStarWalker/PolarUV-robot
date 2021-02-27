@@ -5,7 +5,7 @@
 class IntMatrixClass : public virtual BaseMatrixClass
 {
 private:
-	int64_t** _matrix;
+	int64_t* _matrix;
 	
 public:
 	IntMatrixClass(size_t row, size_t column);
@@ -13,11 +13,11 @@ public:
 
 	int64_t* operator[](size_t value);
 
-	IntMatrixClass& operator*(IntMatrixClass& right);
-
-	//IntMatrixClass& operator*(FloatMatrixClass& right);
+	friend IntMatrixClass& operator*(IntMatrixClass& left, IntMatrixClass& right);
 
 	IntMatrixClass& operator=(int64_t* matrix[]);
 
 };
+
+IntMatrixClass& operator*(IntMatrixClass& left, IntMatrixClass& right);
 

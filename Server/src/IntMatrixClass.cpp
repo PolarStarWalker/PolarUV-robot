@@ -6,9 +6,8 @@ IntMatrixClass::IntMatrixClass(size_t row, size_t column)
 	_row = row;
 	_column = column;
 
-	_matrix = new int64_t*[_row];
+	_matrix = new int64_t[_row * _column];
 
-	for (size_t i = 0; i < _row; i++) { _matrix[i] = new int64_t[_column] {}; }
 }
 
 IntMatrixClass::~IntMatrixClass()
@@ -19,24 +18,24 @@ IntMatrixClass::~IntMatrixClass()
 
 int64_t* IntMatrixClass::operator[](size_t value) 
 {
-	return  _matrix[value];
+	return  &_matrix[value * _column];
 }
 
 
-IntMatrixClass& IntMatrixClass::operator*(IntMatrixClass& right) {
+IntMatrixClass& operator*(IntMatrixClass& left, IntMatrixClass& right) {
 
-	if (!this->IfThisMultiplyebleOn(right)) 
+	if (!left.IfThisMultiplyebleOn(right)) 
 	{ 
 		IntMatrixClass newIntintMatrixClass(0, 0); 
 		return newIntintMatrixClass; 
 	}
 
-	IntMatrixClass newIntMatrix(this->GetRows(), right.GetColumns());
+	IntMatrixClass newIntMatrix(left.GetRows(), right.GetColumns());
 
-	for (size_t m = 0; m < this->GetRows();m++) {
-		for (size_t k = 0; k < right.GetColumns(); k++) {
-			for (size_t n = 0; n < this->GetColumns(); n++) {
-				newIntMatrix[m][k] += this->_matrix[m][n] * right[n][k];
+	for (size_t m = 0; m < left.GetRows();m++) {
+		for (size_t k = 0; k < left.GetColumns(); k++) {
+			for (size_t n = 0; n < left.GetColumns(); n++) {
+				newIntMatrix[m][k] += left[m][n] * right[n][k];
 			}
 		}
 	}
@@ -44,20 +43,20 @@ IntMatrixClass& IntMatrixClass::operator*(IntMatrixClass& right) {
 }
 
 /*
-IntMatrixClass& IntMatrixClass::operator*(FloatMatrixClass& right)
+IntMatrixClass& operator*=(IntMatrixClass& left, FloatMatrixClass& right)
 {
-	if (!this->IfThisMultiplyebleOn(right))
+	if (!left.IfThisMultiplyebleOn(right))
 	{
 		IntMatrixClass newIntintMatrixClass(0, 0);
 		return newIntintMatrixClass;
 	}
 
-	IntMatrixClass newIntMatrix(this->GetRows(), right.GetColumns());
+	IntMatrixClass newIntMatrix(left.GetRows(), right.GetColumns());
 
-	for (size_t m = 0; m < this->GetRows(); m++) {
+	for (size_t m = 0; m < left.GetRows(); m++) {
 		for (size_t k = 0; k < right.GetColumns(); k++) {
-			for (size_t n = 0; n < this->GetColumns(); n++) {
-				newIntMatrix[m][k] += this->_matrix[m][n] * right[n][k];
+			for (size_t n = 0; n < left.GetColumns(); n++) {
+				newIntMatrix[m][k] += left[m][n] * right[n][k];
 			}
 		}
 	}
@@ -68,11 +67,11 @@ IntMatrixClass& IntMatrixClass::operator*(FloatMatrixClass& right)
 IntMatrixClass& IntMatrixClass::operator=(int64_t* matrix[])
 {
 
-	for (size_t m = 0; m <  this->_row; m++) 
+	for (size_t row = 0; row <  this->_row; row++) 
 	{
-		for (size_t n = 0; n < this->_column; n++) 
+		for (size_t column = 0; column < this->_column; column++) 
 		{
-			this->_matrix[m][n] = matrix[m][n]; 
+			this->operator[](row)[column] = matrix[row][column]; 
 		}
 	}
 

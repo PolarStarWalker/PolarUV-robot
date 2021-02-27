@@ -14,7 +14,7 @@
 using namespace std;
 
 int main(void) {
-
+    ///program setting
     CommandsStruct* commandsStruct = new CommandsStruct;
     MotorsStruct* motorsStruct = new MotorsStruct;
 
@@ -23,19 +23,14 @@ int main(void) {
     Socket socket;
     socket.MakeServerSocket(1999);
     
-    /// тесты
+    /// test
     IntMatrixClass coefficientMatrix(8, 6);
-
-
 
     int64_t** matrix = new int64_t * [8];
 
     for (size_t i = 0; i < 8; i++) { matrix[i] = new int64_t[6]{}; }
 
-
-
     coefficientMatrix = matrix;
-
 
     for (size_t m = 0; m < 8; m++)
     {
@@ -47,7 +42,7 @@ int main(void) {
     }
 
 
-    //основная программа
+    /// main program
     for (;;) 
     {
         while (socket.GetSocketConnectionStatus()) {
