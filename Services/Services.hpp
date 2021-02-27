@@ -1,2 +1,3 @@
 #pragma once
-#include "ConfigurationFileClass.hpp"
+#include "ConfigurationFileService.hpp"
+#include "SensorsService.hpp"

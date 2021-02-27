@@ -7,6 +7,7 @@
 #include <Sensors.hpp>
 #include <Server.hpp>
 #include <Services.hpp>
+#include <Matrix.hpp>
 
 //local project includes
 #include "DataStruct.hpp"
@@ -27,10 +28,10 @@ int main(void) {
     IntMatrixClass coefficientMatrix(8, 6);
 
     int64_t** matrix = new int64_t * [8];
-
     for (size_t i = 0; i < 8; i++) { matrix[i] = new int64_t[6]{}; }
 
     coefficientMatrix = matrix;
+
 
     for (size_t m = 0; m < 8; m++)
     {

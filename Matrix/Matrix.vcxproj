@@ -35,9 +35,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{f5eb1a9a-289f-459e-8308-8e1851f04a3e}</ProjectGuid>
+    <ProjectGuid>{65336e73-d249-41de-8168-22f0d386a362}</ProjectGuid>
     <Keyword>Linux</Keyword>
-    <RootNamespace>Server</RootNamespace>
+    <RootNamespace>Matrix</RootNamespace>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <ApplicationType>Linux</ApplicationType>
     <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
@@ -83,44 +83,28 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Server\include</IncludePath>
+    <IncludePath>$(SolutionDir)Matrix\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Server\include</IncludePath>
+    <IncludePath>$(SolutionDir)Matrix\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <IncludePath>$(SolutionDir)Server\include</IncludePath>
+    <IncludePath>$(SolutionDir)Matrix\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <IncludePath>$(SolutionDir)Server\include</IncludePath>
+    <IncludePath>$(SolutionDir)Matrix\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="include\Socket.hpp" />
-    <ClInclude Include="Server.hpp" />
+    <ClInclude Include="include\BaseMatrixClass.hpp" />
+    <ClInclude Include="include\FloatMatrixClass.hpp" />
+    <ClInclude Include="include\IntMatrixClass.hpp" />
+    <ClInclude Include="Matrix.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Socket.cpp" />
+    <ClCompile Include="src\FloatMatrixClass.cpp" />
+    <ClCompile Include="src\IntMatrixClass.cpp" />
   </ItemGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <CppLanguageStandard>c++17</CppLanguageStandard>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <CppLanguageStandard>c++17</CppLanguageStandard>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <ClCompile>
-      <CppLanguageStandard>c++17</CppLanguageStandard>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <ClCompile>
-      <CppLanguageStandard>c++17</CppLanguageStandard>
-    </ClCompile>
-  </ItemDefinitionGroup>
+  <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

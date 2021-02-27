@@ -1,2 +1,2 @@
 #pragma once
-#include"SensorsCore.hpp"
+#include"ISensor.hpp"

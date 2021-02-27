@@ -95,11 +95,20 @@
     <IncludePath>$(SolutionDir)Services\include</IncludePath>
   </PropertyGroup>
   <ItemGroup>
-    <ClInclude Include="include\ConfigurationFileClass.hpp" />
+    <ClInclude Include="include\ConfigurationFileService.hpp" />
+    <ClInclude Include="include\SensorsService.hpp" />
     <ClInclude Include="Services.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ConfigurationFileClass.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Matrix\Matrix.vcxproj">
+      <Project>{65336e73-d249-41de-8168-22f0d386a362}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Server\Server.vcxproj">
+      <Project>{f5eb1a9a-289f-459e-8308-8e1851f04a3e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
