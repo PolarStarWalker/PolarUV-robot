@@ -8,6 +8,7 @@ private:
 
 public:
 	FloatMatrixClass(size_t row, size_t column);
+	FloatMatrixClass(size_t row);
 	~FloatMatrixClass();
 
 	double* operator[](size_t value);
@@ -15,7 +16,8 @@ public:
 	FloatMatrixClass& operator*(FloatMatrixClass& right);
 
 	FloatMatrixClass& operator= (double** right);
-
+	FloatMatrixClass& operator= (double* right);
+	FloatMatrixClass& operator= (float* right);
 };
 
 

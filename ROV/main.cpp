@@ -11,8 +11,8 @@
 
 //local project includes
 #include "DataStruct.hpp"
+#include "./include/Functions.hpp"
 
-using namespace std;
 
 int main(void) {
     ///program setting
@@ -26,10 +26,13 @@ int main(void) {
     
     /// test
     IntMatrixClass coefficientMatrix(8, 6);
+    FloatMatrixClass vectorsMatrix(6);
 
     int64_t** matrix = new int64_t * [8];
     for (size_t i = 0; i < 8; i++) { matrix[i] = new int64_t[6]{}; }
 
+
+    vectorsMatrix = commandsStruct->VectorArray;
     coefficientMatrix = matrix;
 
 
@@ -37,9 +40,9 @@ int main(void) {
     {
         for (size_t n = 0; n < 6; n++)
         {
-            cout<< matrix[m][n]<< " ";
+            std::cout<< matrix[m][n]<< " ";
         }
-        cout << "\n";
+        std::cout << "\n";
     }
 
 

@@ -19,7 +19,7 @@ int Socket::MakeServerSocket(uint16_t port) {
 }
 ///function that listen in blocking mode
 int Socket::Listen() {
-    cout << "Server is listening\n";
+    std::cout << "Server is listening\n";
     if (listen(this->_serverSocketDescriptor, SOMAXCONN) == -1) {
         return(-1);
     }

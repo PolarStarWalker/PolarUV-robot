@@ -9,6 +9,15 @@ FloatMatrixClass::FloatMatrixClass(size_t row, size_t column)
 
 }
 
+FloatMatrixClass::FloatMatrixClass(size_t row)
+{
+	_row = row;
+	_column = 1;
+
+	_matrix = new double[_row]{};
+
+}
+
 FloatMatrixClass::~FloatMatrixClass() {
 	delete[] _matrix;
 }
@@ -45,6 +54,24 @@ FloatMatrixClass& FloatMatrixClass::operator=(double** right)
 			
 			this->operator[](i)[j] = right[i][j];
 		}
+	}
+
+	return *this;
+}
+
+FloatMatrixClass& FloatMatrixClass::operator=(double* right)
+{
+	for (size_t i = 0; i <= this->_column * this->_row; i++) {
+		this->_matrix[i] = right[i];
+	}
+
+	return *this;
+}
+
+FloatMatrixClass& FloatMatrixClass::operator=(float* right)
+{
+	for (size_t i = 0; i <= this->_column * this->_row; i++) {
+		this->_matrix[i] = right[i];
 	}
 
 	return *this;

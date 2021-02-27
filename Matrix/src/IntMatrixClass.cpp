@@ -10,6 +10,16 @@ IntMatrixClass::IntMatrixClass(size_t row, size_t column)
 
 }
 
+IntMatrixClass::IntMatrixClass(size_t row)
+{
+	_row = row;
+	_column = 1;
+
+	_matrix = new int64_t[_row];
+
+}
+
+
 IntMatrixClass::~IntMatrixClass()
 {
 	delete[] _matrix;

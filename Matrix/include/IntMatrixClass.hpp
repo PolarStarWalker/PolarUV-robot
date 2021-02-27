@@ -9,6 +9,7 @@ private:
 	
 public:
 	IntMatrixClass(size_t row, size_t column);
+	IntMatrixClass(size_t row);
 	~IntMatrixClass();
 
 	int64_t* operator[](size_t value);

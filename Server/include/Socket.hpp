@@ -12,9 +12,6 @@
 #define EXTERNAL_SERVER_IP "192.168.0.50" //Server ip for other computers
 #define INTERNAL_SERVER_IP "0.0.0.0" //Server ip for server
 
-
-using namespace std;
-
 enum SocketRole {
 	UnInicialized = 0,
 	Client = 1,

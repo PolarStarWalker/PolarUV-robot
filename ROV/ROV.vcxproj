@@ -97,6 +97,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\Functions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Services\Services.vcxproj">
@@ -105,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStruct.hpp" />
+    <ClInclude Include="Include\Functions.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\x64\Debug\rov.properties" />
