@@ -32,7 +32,7 @@ int64_t* IntMatrixClass::operator[](size_t value)
 }
 
 
-IntMatrixClass& operator*(IntMatrixClass& left, IntMatrixClass& right) {
+IntMatrixClass operator*(IntMatrixClass& left, IntMatrixClass& right) {
 
 	if (!left.IfThisMultiplyebleOn(right)) 
 	{ 
@@ -53,7 +53,7 @@ IntMatrixClass& operator*(IntMatrixClass& left, IntMatrixClass& right) {
 }
 
 
-IntMatrixClass& operator*=(IntMatrixClass& left, FloatMatrixClass& right)
+IntMatrixClass operator*=(IntMatrixClass& left, FloatMatrixClass& right)
 {
 	if (!left.IfThisMultiplyebleOn(right))
 	{

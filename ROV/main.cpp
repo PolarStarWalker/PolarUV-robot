@@ -32,6 +32,9 @@ int main(void) {
     for (size_t i = 0; i < 8; i++) { matrix[i] = new int64_t[6]{}; }
 
 
+    SettingsFileService file;
+    file.GetSettings();
+
     vectorsMatrix = commandsStruct->VectorArray;
     coefficientMatrix = matrix;
 

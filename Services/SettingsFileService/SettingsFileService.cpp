@@ -3,7 +3,7 @@
 
 SettingsFileService::~SettingsFileService()
 {
-	delete _settingsStruct;
+
 }
 
 FileText SettingsFileService::ReadFile()
@@ -27,12 +27,14 @@ FileText SettingsFileService::ReadFile()
 
 SettingsStruct* SettingsFileService::CreateSettingsStruct(FileText fileText) {
 	SettingsStruct* settingsStruct = new SettingsStruct;
-
+	for (ssize_t i = 0; i < fileText.FileLength; i++) {
+		std::cout << fileText.FileText[i];
+	}
 
 	delete[] fileText.FileText;
 	return settingsStruct;
 }
 
-SettingsStruct* SettingsFileService::UpdateData() {
+SettingsStruct* SettingsFileService::GetSettings() {
 	return CreateSettingsStruct(ReadFile());
 }

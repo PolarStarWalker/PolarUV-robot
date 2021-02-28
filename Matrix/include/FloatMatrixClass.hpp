@@ -13,7 +13,7 @@ public:
 
 	double* operator[](size_t value);
 	
-	FloatMatrixClass& operator*(FloatMatrixClass& right);
+	FloatMatrixClass operator*(FloatMatrixClass& right);
 
 	FloatMatrixClass& operator= (double** right);
 	FloatMatrixClass& operator= (double* right);

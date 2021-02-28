@@ -25,7 +25,7 @@ FloatMatrixClass::~FloatMatrixClass() {
 double* FloatMatrixClass::operator[](size_t value) { return  &_matrix[value * _column]; }
 
 
-FloatMatrixClass& FloatMatrixClass::operator*(FloatMatrixClass& right)
+FloatMatrixClass FloatMatrixClass::operator*(FloatMatrixClass& right)
 {
 	if (!this->IfThisMultiplyebleOn(right))
 	{

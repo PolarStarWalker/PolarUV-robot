@@ -1,18 +1,25 @@
 #pragma once
 #include <fstream>
+#include <iostream>
 
+class SettingsStruct {
+public:
 
-struct SettingsStruct {
-	ssize_t thrustersNumber = -1;
-	ssize_t maxMotorSpeed = -1;
-	ssize_t motorsPrtocol = -1;
-	int64_t* coefficientArray[6];
+	ssize_t ThrustersNumber = -1;
+	ssize_t MaxMotorSpeed = -1;
+	ssize_t MotorsPrtocol = -1;
+	int64_t* CoefficientArray = nullptr;
+
+	~SettingsStruct() {	delete[] CoefficientArray; }
 };
 
 
-struct FileText {
+class FileText {
+public:
 	int64_t FileLength;
 	char* FileText = nullptr;
+
+	~FileText() { delete this->FileText; }
 };
 
 class SettingsFileService
@@ -32,7 +39,7 @@ public:
 	~SettingsFileService();
 
 	///read file & update SettingsStruct;
-	SettingsStruct* UpdateData();
+	SettingsStruct* GetSettings();
 
 };
 
