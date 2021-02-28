@@ -1,6 +1,5 @@
 #pragma once
 #include <fstream>
-#include <mutex>
 
 
 struct SettingsStruct {
@@ -11,26 +10,29 @@ struct SettingsStruct {
 };
 
 
+struct FileText {
+	int64_t FileLength;
+	char* FileText = nullptr;
+};
+
 class SettingsFileService
 {
 private:
-	std::fstream _file;
-	std::string _fileName;
-	std::mutex _settingStructMutex;
-
-	int64_t _fileLength;
-	char* _fileText = nullptr;
-	SettingsStruct* _settingsStruct = nullptr;
+	const std::string _fileName = "server.properties";
 
 
-	bool ReadFile();
+	///Read data from file into text array
+	FileText ReadFile();
+	///Create SettingsStruct from text array
+	SettingsStruct* CreateSettingsStruct(FileText fileText);
 
 public:
 
-	SettingsFileService();
-	
 
 	~SettingsFileService();
+
+	///read file & update SettingsStruct;
+	SettingsStruct* UpdateData();
 
 };
 

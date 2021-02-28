@@ -52,8 +52,8 @@ int Socket::MakeConnection(uint16_t port) {
 }
 
 
-int Socket::RecvDataLen(char *msg, size_t len){
-    int Rezult = 0;
+ssize_t Socket::RecvDataLen(char *msg, size_t len){
+    ssize_t Rezult = 0;
     if (this->_socketRole == Server) {
         Rezult = this->recvall(this->_clientSocketDescriptor, msg, len, 0);
     }
@@ -66,8 +66,8 @@ int Socket::RecvDataLen(char *msg, size_t len){
     return(Rezult);
 }
 
-int Socket::SendDataLen(char *msg, size_t len){
-    int Rezalt = 0;
+ssize_t Socket::SendDataLen(char *msg, size_t len){
+    ssize_t Rezalt = 0;
     if (this->_socketRole == Server) {
         Rezalt = this->sendall(this->_clientSocketDescriptor, msg, len, 0);
     }
@@ -80,9 +80,9 @@ int Socket::SendDataLen(char *msg, size_t len){
     return(Rezalt);
 }
 
-int Socket::recvall(int socketDescriptor, char* buf, size_t len, int flags) {
-    size_t total = 0;
-    int n;
+ssize_t Socket::recvall(int socketDescriptor, char* buf, size_t len, int flags) {
+    ssize_t total = 0;
+    ssize_t n;
     while (total < len) {
         n = recv(socketDescriptor, buf + total, len - total, flags);
         if (n == -1) { break; }
@@ -97,9 +97,9 @@ int Socket::recvall(int socketDescriptor, char* buf, size_t len, int flags) {
     }
 }
 
-int Socket::sendall(int socketDescriptor, char* buf, size_t len, int flags) {
-    size_t total = 0;
-    int n;
+ssize_t Socket::sendall(int socketDescriptor, char* buf, size_t len, int flags) {
+    ssize_t total = 0;
+    ssize_t n;
     while (total < len) {
         n = send(socketDescriptor, buf + total, len - total, flags);
         if (n == -1) { break; }

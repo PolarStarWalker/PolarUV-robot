@@ -30,8 +30,8 @@ public:
 	int MakeConnection(uint16_t port);
 
 	//Functions for data transfer 
-	int RecvDataLen(char* msg, size_t len);
-	int SendDataLen(char* msg, size_t len);
+	ssize_t RecvDataLen(char* msg, size_t len);
+	ssize_t SendDataLen(char* msg, size_t len);
 
 	//Return descriptor for closing Socket
 	int& ReturnDescriptor();
@@ -62,8 +62,8 @@ protected:
 	socklen_t _serverAddressLength = sizeof(this->_serverAddress);
 	socklen_t _clientAdressLength = sizeof(this->_clientAddress);
 
-	//Simple functions, for transfer data
-	int recvall(int s, char* buf, size_t len, int flags);
-	int sendall(int s, char* buf, size_t len, int flags);
+	//Simple function, for transfer data
+	ssize_t recvall(int s, char* buf, size_t len, int flags);
+	ssize_t sendall(int s, char* buf, size_t len, int flags);
 };
 
