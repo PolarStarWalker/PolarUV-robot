@@ -1,5 +1,5 @@
 #pragma once
-#include "../ISensors.hpp"
+#include "../../Sensors.hpp"
 #include "MS5837Data.hpp"
 
 class MS5837 : ISensors, MS5837Registers {

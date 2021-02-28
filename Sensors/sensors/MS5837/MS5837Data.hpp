@@ -1,5 +1,5 @@
 #pragma once
-#include "IData.hpp"
+#include "../../Sensors.hpp"
 
 struct MS5837Data : IData{
 	double depth = 0.0f;

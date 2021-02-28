@@ -3,7 +3,7 @@
 #include <thread>
 #include <mutex>
 
-#include <ISensors.hpp>
+#include <Sensors.hpp>
 
 
 
