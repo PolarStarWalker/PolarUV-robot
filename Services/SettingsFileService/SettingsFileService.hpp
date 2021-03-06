@@ -19,13 +19,13 @@ public:
 	int64_t FileLength;
 	char* FileText = nullptr;
 
-	~FileText() { delete this->FileText; }
+	~FileText() { delete[] this->FileText; }
 };
 
 class SettingsFileService
 {
 private:
-	const std::string _fileName = "server.properties";
+	const std::string _fileName = "rov.properties";
 
 
 	///Read data from file into text array

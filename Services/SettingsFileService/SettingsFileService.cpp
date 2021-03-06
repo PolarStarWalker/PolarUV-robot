@@ -31,7 +31,6 @@ SettingsStruct* SettingsFileService::CreateSettingsStruct(FileText fileText) {
 		std::cout << fileText.FileText[i];
 	}
 
-	delete[] fileText.FileText;
 	return settingsStruct;
 }
 

@@ -4,14 +4,13 @@
 #include <thread>
 
 //my projects headers
-#include <Sensors/MS5837/MS5837.hpp>
+#include <sensors/MS5837/MS5837.hpp>
 #include <Server.hpp>
 #include <Services.hpp>
 #include <Matrix.hpp>
 
 //local project includes
 #include "DataStruct.hpp"
-#include "./include/Functions.hpp"
 
 
 int main(void) {

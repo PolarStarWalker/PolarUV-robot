@@ -1,4 +1,3 @@
-#pragma once
 #include "SensorsHandlerService.hpp"
 
 void SensorsHandlerService::AddSensor(ISensors* newSensor)
