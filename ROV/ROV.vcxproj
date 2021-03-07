@@ -95,6 +95,9 @@
     <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Matrix;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Matrix;$(SolutionDir)Matrix\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Functions.cpp" />
@@ -109,6 +112,8 @@
     <ClInclude Include="Include\Functions.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bin\ARM64\Debug\rov.properties" />
+    <None Include="bin\ARM64\Release\rov.properties" />
     <None Include="bin\x64\Debug\rov.properties" />
     <None Include="bin\x64\Release\rov.properties" />
   </ItemGroup>

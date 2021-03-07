@@ -1,3 +1,3 @@
 #pragma once
-#include "./include/IntMatrixclass.hpp"
+#include "./include/IntMatrixClass.hpp"
 

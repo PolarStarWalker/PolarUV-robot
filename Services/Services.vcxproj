@@ -76,6 +76,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
@@ -89,10 +90,13 @@
     <IncludePath>$(SolutionDir)Services\include;$(SolutionDir)Sensors</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <IncludePath>$(SolutionDir)Services\include;$(SolutionDir)Sensors</IncludePath>
+    <IncludePath>$(SolutionDir)Services;$(SolutionDir)Sensors</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <IncludePath>$(SolutionDir)Services\include;$(SolutionDir)Sensors</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <IncludePath>$(SolutionDir)Services;$(SolutionDir)Sensors</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="SettingsFileService\SettingsFileService.hpp" />
