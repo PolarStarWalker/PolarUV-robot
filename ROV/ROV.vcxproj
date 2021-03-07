@@ -97,6 +97,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Matrix;$(SolutionDir)Matrix\include;$(IncludePath)</IncludePath>
+    <LibraryPath>
+    </LibraryPath>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -148,6 +150,11 @@
     <ClCompile>
       <CppLanguageStandard>c++17</CppLanguageStandard>
     </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <Link>
+      <LibraryDependencies>$(RemoteRootDir)/Services/bin/Arm64/Debug/Services;%(LibraryDependencies)</LibraryDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

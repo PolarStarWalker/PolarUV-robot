@@ -1,10 +1,20 @@
 #include "SettingsFileService.hpp"
 
-
-SettingsFileService::~SettingsFileService()
+SettingsStruct& SettingsStruct::operator=(SettingsStruct* right)
 {
+	this->ThrustersNumber = right->ThrustersNumber;
+	this->MaxMotorSpeed = right->MaxMotorSpeed;
+	this->MotorsPrtocol = right->MotorsPrtocol;
 
+	delete[] CoefficientArray;
+	this->CoefficientArray = new int64_t[this->ThrustersNumber * 6];
+	for (size_t i = 0; i < right->ThrustersNumber; i++) {
+		this->CoefficientArray[i] = right->CoefficientArray[i];
+	}
+
+	return *this;
 }
+
 
 FileText SettingsFileService::ReadFile()
 {
@@ -25,14 +35,16 @@ FileText SettingsFileService::ReadFile()
 }
 
 
-SettingsStruct* SettingsFileService::CreateSettingsStruct(FileText fileText) {
-	SettingsStruct* settingsStruct = new SettingsStruct;
+SettingsStruct SettingsFileService::CreateSettingsStruct(FileText fileText) {
+	SettingsStruct settingsStruct;
 
 	std::cout << fileText.FileText;
 
 	return settingsStruct;
 }
 
-SettingsStruct* SettingsFileService::GetSettings() {
-	return CreateSettingsStruct(ReadFile());
+void SettingsFileService::GetSettings(SettingsStruct* externalSettingsStruct) {
+	*externalSettingsStruct = CreateSettingsStruct(ReadFile());
 }
+
+

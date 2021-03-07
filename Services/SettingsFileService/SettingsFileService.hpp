@@ -11,6 +11,8 @@ public:
 	int64_t* CoefficientArray = nullptr;
 
 	~SettingsStruct() {	delete[] CoefficientArray; }
+
+	SettingsStruct& operator=(SettingsStruct* right);
 };
 
 
@@ -27,19 +29,15 @@ class SettingsFileService
 private:
 	const std::string _fileName = "rov.properties";
 
-
 	///Read data from file into text array
 	FileText ReadFile();
 	///Create SettingsStruct from text array
-	SettingsStruct* CreateSettingsStruct(FileText fileText);
+	SettingsStruct CreateSettingsStruct(FileText fileText);
 
 public:
 
-
-	~SettingsFileService();
-
 	///read file & update SettingsStruct;
-	SettingsStruct* GetSettings();
+	void GetSettings(SettingsStruct* externalSettingsStruct);
 
 };
 

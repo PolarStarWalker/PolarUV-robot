@@ -18,6 +18,8 @@ int main(void) {
 
     char* motorsMessage = new char[MotorsStructLenMessage];
 
+    SettingsStruct settingsStruct;
+
     Socket socket;
     socket.MakeServerSocket(1999);
     
@@ -30,7 +32,7 @@ int main(void) {
 
 
     SettingsFileService file;
-    file.GetSettings();
+    file.GetSettings(&settingsStruct);
 
     vectorsMatrix = commandsStruct->VectorArray;
     coefficientMatrix = matrix;
