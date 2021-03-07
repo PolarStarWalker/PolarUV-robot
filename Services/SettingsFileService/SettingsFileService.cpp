@@ -8,7 +8,7 @@ SettingsStruct& SettingsStruct::operator=(SettingsStruct* right)
 
 	delete[] CoefficientArray;
 	this->CoefficientArray = new int64_t[this->ThrustersNumber * 6];
-	for (size_t i = 0; i < right->ThrustersNumber; i++) {
+	for (ssize_t i = 0; i < right->ThrustersNumber; i++) {
 		this->CoefficientArray[i] = right->CoefficientArray[i];
 	}
 

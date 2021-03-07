@@ -82,6 +82,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Matrix;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Matrix;$(IncludePath)</IncludePath>
@@ -99,15 +100,11 @@
     <IncludePath>$(SolutionDir)Sensors;$(SolutionDir)Server;$(SolutionDir)Services;$(SolutionDir)Sensors\include;$(SolutionDir)Server\include;$(SolutionDir)Matrix;$(SolutionDir)Matrix\include;$(IncludePath)</IncludePath>
     <LibraryPath>
     </LibraryPath>
+    <AdditionalSourcesToCopyMapping>$(SolutionDir)Services\bin\$(Platform)\$(Configuration)\libServices.a:=$(RemoteRootDir)/$(ProjectName)/libServices.a;$(AdditionalSourcesToCopyMapping)</AdditionalSourcesToCopyMapping>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Functions.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Services\Services.vcxproj">
-      <Project>{6420d5d6-1537-4f15-b5a4-ae3bff140ffe}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStruct.hpp" />
@@ -118,6 +115,11 @@
     <None Include="bin\ARM64\Release\rov.properties" />
     <None Include="bin\x64\Debug\rov.properties" />
     <None Include="bin\x64\Release\rov.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Services\Services.vcxproj">
+      <Project>{6420d5d6-1537-4f15-b5a4-ae3bff140ffe}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -153,8 +155,15 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <Link>
-      <LibraryDependencies>$(RemoteRootDir)/Services/bin/Arm64/Debug/Services;%(LibraryDependencies)</LibraryDependencies>
+      <LibraryDependencies>
+      </LibraryDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <VerboseOutput>false</VerboseOutput>
     </Link>
+    <ClCompile>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
+    </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
