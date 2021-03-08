@@ -1,5 +1,4 @@
-#include "IntMatrixClass.hpp"
-#include <iostream>
+#include "../include/IntMatrixClass.hpp"
 
 IntMatrixClass::IntMatrixClass(size_t row, size_t column)
 {

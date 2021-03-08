@@ -1,4 +1,4 @@
-#include "FloatMatrixClass.hpp"
+#include "../include/FloatMatrixClass.hpp"
 
 FloatMatrixClass::FloatMatrixClass(size_t row, size_t column)
 {
