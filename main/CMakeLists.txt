@@ -3,6 +3,8 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+file(COPY settings.json DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 add_subdirectory ("Matrix")
 add_subdirectory ("Socket")
 # Добавьте источник в исполняемый файл этого проекта.
