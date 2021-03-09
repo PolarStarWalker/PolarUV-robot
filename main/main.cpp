@@ -1,8 +1,8 @@
 ﻿#include "main.h"
-#include "Matrix/Matrix.hpp"
 
 int main()
 {
+	Socket socket;
 
 	IntMatrixClass coeffitientMatrix(8, 6);
 
