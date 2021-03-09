@@ -1,4 +1,4 @@
-﻿#include "main.h"
+﻿#include "main.hpp"
 
 int main()
 {
@@ -6,6 +6,7 @@ int main()
 
 	IntMatrixClass coeffitientMatrix(8, 6);
 
+	MS5837 depth();
 
 	std::cout << "Hello CMake." << std::endl;
 
