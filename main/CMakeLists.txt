@@ -5,20 +5,21 @@ cmake_minimum_required (VERSION 3.16)
 
 file(COPY settings.json DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
+add_executable (ROV "main.cpp" "main.hpp" "DataStruct.hpp")
+
 add_subdirectory ("Matrix")
 add_subdirectory ("Sensors")
-#add_subdirectory ("Services")
+add_subdirectory ("Services")
 add_subdirectory ("Socket")
-# Добавьте источник в исполняемый файл этого проекта.
-add_executable (ROV "main.cpp" "main.hpp")
 
 target_precompile_headers(ROV REUSE_FROM Matrix)
 target_precompile_headers(ROV REUSE_FROM Sensors)
 target_precompile_headers(ROV REUSE_FROM Socket)
-
+target_precompile_headers(ROV REUSE_FROM Services)
 
 target_link_libraries(ROV Matrix)
 target_link_libraries(ROV Sensors)
+target_link_libraries(ROV Services)
 target_link_libraries(ROV Socket)
 
 # TODO: Добавьте тесты и целевые объекты, если это необходимо.
