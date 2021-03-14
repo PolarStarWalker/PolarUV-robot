@@ -33,11 +33,6 @@ const char SettingsText[] = "{ \
 \n}\
 \n";
 
-SettingsFileService::SettingsFileService(char* fileName)
-{
-	this->_fileName = fileName;
-}
-
 SettingsStruct& SettingsStruct::operator=(SettingsStruct* right)
 {
 	this->ThrustersNumber = right->ThrustersNumber;
@@ -53,37 +48,83 @@ SettingsStruct& SettingsStruct::operator=(SettingsStruct* right)
 	return *this;
 }
 
-
-FileText SettingsFileService::ReadFile()
+SettingsFileService::SettingsFileService(char* fileName)
 {
-	FileText fileText;
+	this->_fileName = fileName;
+}
+
+bool SettingsFile::SintaxisIsRight() {
+	
+	//flag '{}', flag'"'
+	int8_t flagOne[4] = {};
+	int8_t flagTwo[4] = {};
+
+	for (ssize_t i = 0; i < this->TextLength; i++) {
+
+		if (this->Text[i] == '{' && (int32_t)*flagOne == 0) flagOne[0] += 1;
+		else if (this->Text[i] == '{' && (int32_t)*flagOne != 0) {
+			flagOne[0] = -1;
+			break;
+		}
+
+		if (this->Text[i] == '}' && flagOne[0] == 1) flagOne[0] -= 1;
+		else if(this->Text[i] == '{' && (int32_t)*flagOne != 1) {
+			flagOne[0] = -1;
+			break;
+		}
+
+
+		if (this->Text[i] == '"' && flagOne[0] == 1 && flagOne[1] == 0) flagOne[1] += 1;
+		else if (this->Text[i] == '"' && flagOne[0] == 1 && flagOne[1] == 0) {
+			flagOne[1] -= 1;
+			flagOne[2] = 1;
+		}
+		else if (this->Text[i] == '"' && flagOne[0] == 0) {
+			flagOne[1] = -1;
+			break;
+		}
+
+
+
+	}
+
+	if (this->TextLength>0 && (int32_t)*flagOne == 0 && (int32_t)*flagTwo == 0) return true;
+	else return false;
+}
+
+SettingsFile SettingsFileService::ReadFile()
+{
+	SettingsFile settingsFile;
 
 	std::fstream file(_fileName, std::ios_base::in);
 
 	file.seekg(0, file.end);
-	fileText.FileLength = file.tellg();
+	settingsFile.TextLength = file.tellg();
 	file.seekg(0, file.beg);
 
-	fileText.FileText = new char[fileText.FileLength];
-	file.read(fileText.FileText, fileText.FileLength);
+	if (settingsFile.TextLength == -1) { settingsFile.TextLength == 0; }
+
+	settingsFile.Text = new char[settingsFile.TextLength];
+	file.read(settingsFile.Text, settingsFile.TextLength);
 
 	file.close();
 
-	return fileText;
+	std::cout<< settingsFile.SintaxisIsRight()<<std::endl;
+
+	return settingsFile;
 }
 
 
-SettingsStruct SettingsFileService::CreateSettingsStruct(FileText fileText) {
+SettingsStruct SettingsFileService::CreateSettingsStruct(const SettingsFile* settingsFileStruct) {
 	SettingsStruct settingsStruct;
-
-	std::cout << SettingsText;
 
 	return settingsStruct;
 }
 
 
 void SettingsFileService::GetSettings(SettingsStruct* externalSettingsStruct) {
-	*externalSettingsStruct = CreateSettingsStruct(ReadFile());
+	SettingsFile settingsFile = ReadFile();
+	*externalSettingsStruct = CreateSettingsStruct(&settingsFile);
 }
 
 

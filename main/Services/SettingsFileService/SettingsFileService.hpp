@@ -15,12 +15,13 @@ public:
 	SettingsStruct& operator=(SettingsStruct* right);
 };
 
-class FileText {
+class SettingsFile {
 public:
-	int64_t FileLength;
-	char* FileText = nullptr;
+	int64_t TextLength;
+	char* Text = nullptr;
 
-	~FileText() { delete[] this->FileText; }
+	bool SintaxisIsRight();
+	~SettingsFile() { delete[] this->Text; }
 };
 
 class SettingsFileService
@@ -29,9 +30,12 @@ private:
 	const char* _fileName;
 
 	///Read data from file into text array
-	FileText ReadFile();
+	SettingsFile ReadFile();
 	///Create SettingsStruct from text array
-	SettingsStruct CreateSettingsStruct(FileText fileText);
+	SettingsStruct CreateSettingsStruct(const SettingsFile* settingsFile);
+
+	//char* CreateSettingsFile(SettingsFile* settingsFile);
+
 
 public:
 
