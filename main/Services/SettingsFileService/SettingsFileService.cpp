@@ -1,4 +1,38 @@
 #include "SettingsFileService.hpp"
+#include <string>
+
+const char SettingsText[] = "{ \
+\n\"turnOn\": false,\ 
+\n\ 
+\n\"//01\": \"The number of thrusters, that drone have\",\
+\n\"thrustersNumber\" : 8,\
+\n\
+\n\"//02\" : \"coefficientArray is a matrix where rows is thrustersNumber\",\
+\n\"//03\" : \"Columns is a move vectors F:x,F:y,F:z,M:z,M:y,M:z\",\
+\n\"coeffitientArray\" : [\
+\n	[0, 0, 0, 0, 0, 0],\
+\n	[0, 0, 0, 0, 0, 0],\
+\n	[0, 0, 0, 0, 0, 0],\
+\n	[0, 0, 0, 0, 0, 0],\
+\n	[0, 0, 0, 0, 0, 0],\
+\n	[0, 0, 0, 0, 0, 0],\
+\n	[0, 0, 0, 0, 0, 0],\
+\n	[0, 0, 0, 0, 0, 0]\
+\n],\
+\n\
+\n\"//04\": \"The maximum speed of each motor (in rpm)\",\
+\n\"//05\" : \"If vector is higher max motor speed, that all vectors casting to this speed\",\
+\n\"maxMotorSpeed\" : 4000,\
+\n\
+\n\"//06\" : \"Data transfer protocol between ESC and microcontroller\",\
+\n\"//08\" : \"1 - DShot150  - don't work\",\
+\n\"//09\" : \"2 - DShot300  - should work\",\
+\n\"//10\" : \"4 - DShot600  - should work\",\
+\n\"//11\" : \"8 - DShot1200 - work\",\
+\n\"motorsPrtocol\" : 8\
+\n}\
+\n";
+
 SettingsFileService::SettingsFileService(char* fileName)
 {
 	this->_fileName = fileName;
@@ -42,7 +76,7 @@ FileText SettingsFileService::ReadFile()
 SettingsStruct SettingsFileService::CreateSettingsStruct(FileText fileText) {
 	SettingsStruct settingsStruct;
 
-	std::cout << fileText.FileText;
+	std::cout << SettingsText;
 
 	return settingsStruct;
 }

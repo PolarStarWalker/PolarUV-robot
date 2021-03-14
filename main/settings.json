@@ -22,7 +22,6 @@
   "maxMotorSpeed": 4000,
 
   "//06": "Data transfer protocol between ESC and microcontroller",
-  "//07": "0 - Analog    - don't work",
   "//08": "1 - DShot150  - don't work",
   "//09": "2 - DShot300  - should work",
   "//10": "4 - DShot600  - should work",
