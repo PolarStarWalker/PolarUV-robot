@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.16)
 
-file(COPY settings.json DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY settings DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable (ROV "main.cpp" "main.hpp" "DataStruct.hpp")
 
