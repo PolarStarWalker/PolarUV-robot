@@ -1,37 +1,35 @@
 #include "SettingsFileService.hpp"
 #include <string>
 
-const char SettingsText[] = "{ \
-\n\"turnOn\": false,\ 
-\n\ 
-\n\"//01\": \"The number of thrusters, that drone have\",\
-\n\"thrustersNumber\" : 8,\
+const char SettingsText[] = "#TurnOn Robot \
+\nTurnOn = false\
 \n\
-\n\"//02\" : \"coefficientArray is a matrix where rows is thrustersNumber\",\
-\n\"//03\" : \"Columns is a move vectors F:x,F:y,F:z,M:z,M:y,M:z\",\
-\n\"coeffitientArray\" : [\
-\n	[0, 0, 0, 0, 0, 0],\
-\n	[0, 0, 0, 0, 0, 0],\
-\n	[0, 0, 0, 0, 0, 0],\
-\n	[0, 0, 0, 0, 0, 0],\
-\n	[0, 0, 0, 0, 0, 0],\
-\n	[0, 0, 0, 0, 0, 0],\
-\n	[0, 0, 0, 0, 0, 0],\
-\n	[0, 0, 0, 0, 0, 0]\
-\n],\
+\n#The number of thrusters, that drone have\
+\nThrustersNumber = 8\
 \n\
-\n\"//04\": \"The maximum speed of each motor (in rpm)\",\
-\n\"//05\" : \"If vector is higher max motor speed, that all vectors casting to this speed\",\
-\n\"maxMotorSpeed\" : 4000,\
+\n#coefficientArray is a matrix where rows is thrustersNumber\
+\n#Columns is a move vectors F : x, F : y, F : z, M : z, M : y, M : z\
+\nCoeffitientArray = [\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0]\
+\n]\
 \n\
-\n\"//06\" : \"Data transfer protocol between ESC and microcontroller\",\
-\n\"//08\" : \"1 - DShot150  - don't work\",\
-\n\"//09\" : \"2 - DShot300  - should work\",\
-\n\"//10\" : \"4 - DShot600  - should work\",\
-\n\"//11\" : \"8 - DShot1200 - work\",\
-\n\"motorsPrtocol\" : 8\
-\n}\
-\n";
+\n#The maximum speed of each motor(in rpm)\
+\n#If vector is higher max motor speed, that all vectors casting to this speed\
+\nMaxMotorSpeed = 4000\
+\n\
+\n#Data transfer protocol between ESC and microcontroller\
+\n#0 - DShot150 - don't work\
+\n#2 - DShot300 - should work\
+\n#2 - DShot600 - should work\
+\n#3 - DShot1200 - work\
+\nMotorsPrtocol = 8";
 
 SettingsStruct& SettingsStruct::operator=(SettingsStruct* right)
 {
@@ -55,40 +53,20 @@ SettingsFileService::SettingsFileService(char* fileName)
 
 bool SettingsFile::SintaxisIsRight() {
 	
-	//flag '{}', flag'"'
-	int8_t flagOne[4] = {};
-	int8_t flagTwo[4] = {};
+	//flag[0] '{}' 
+	//flag[1] '"'
+	//Flag[2] '"'
+	//Flag[3] :
+	//Flag[4] ,
+
+	int8_t flag[8] = {};
 
 	for (ssize_t i = 0; i < this->TextLength; i++) {
-
-		if (this->Text[i] == '{' && (int32_t)*flagOne == 0) flagOne[0] += 1;
-		else if (this->Text[i] == '{' && (int32_t)*flagOne != 0) {
-			flagOne[0] = -1;
-			break;
-		}
-
-		if (this->Text[i] == '}' && flagOne[0] == 1) flagOne[0] -= 1;
-		else if(this->Text[i] == '{' && (int32_t)*flagOne != 1) {
-			flagOne[0] = -1;
-			break;
-		}
-
-
-		if (this->Text[i] == '"' && flagOne[0] == 1 && flagOne[1] == 0) flagOne[1] += 1;
-		else if (this->Text[i] == '"' && flagOne[0] == 1 && flagOne[1] == 0) {
-			flagOne[1] -= 1;
-			flagOne[2] = 1;
-		}
-		else if (this->Text[i] == '"' && flagOne[0] == 0) {
-			flagOne[1] = -1;
-			break;
-		}
-
 
 
 	}
 
-	if (this->TextLength>0 && (int32_t)*flagOne == 0 && (int32_t)*flagTwo == 0) return true;
+	if (this->TextLength > 0 && (int32_t)flag[0] == 0 && (int32_t)flag[4] == 0) return true;
 	else return false;
 }
 
