@@ -16,11 +16,11 @@ int main(void) {
     IntMatrixClass coefficientMatrix(8, 6);
     FloatMatrixClass vectorsMatrix(6);
 
-    int64_t** matrix = new int64_t * [8];
+    int64_t** matrix = new int64_t * [8]{};
     for (size_t i = 0; i < 8; i++) { matrix[i] = new int64_t[6]{}; }
 
 
-    SettingsFileService file("settings.json");
+    SettingsFileService file("settings");
     file.GetSettings(&settingsStruct);
 
     vectorsMatrix = commandsStruct->VectorArray;
