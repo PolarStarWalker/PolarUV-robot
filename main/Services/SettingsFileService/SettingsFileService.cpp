@@ -1,7 +1,8 @@
 #include "SettingsFileService.hpp"
 #include <string>
+#include <cstring>
 
-const char SettingsText[] = "#TurnOn Robot \
+constexpr char SettingsText[] = "#TurnOn Robot \
 \nTurnOn = false\
 \n\
 \n#The number of thrusters, that drone have\
@@ -31,11 +32,13 @@ const char SettingsText[] = "#TurnOn Robot \
 \n#3 - DShot1200 - work\
 \nMotorsPrtocol = 8";
 
+constexpr ssize_t  SettingsTextLength = sizeof(SettingsText);
+
 SettingsStruct& SettingsStruct::operator=(SettingsStruct* right)
 {
 	this->ThrustersNumber = right->ThrustersNumber;
 	this->MaxMotorSpeed = right->MaxMotorSpeed;
-	this->MotorsPrtocol = right->MotorsPrtocol;
+	this->MotorsProtocol = right->MotorsProtocol;
 
 	delete[] CoefficientArray;
 	this->CoefficientArray = new int64_t[this->ThrustersNumber * 6];
@@ -46,63 +49,54 @@ SettingsStruct& SettingsStruct::operator=(SettingsStruct* right)
 	return *this;
 }
 
-SettingsFileService::SettingsFileService(char* fileName)
+SettingsStruct::~SettingsStruct() {
+    delete[] this->CoefficientArray;
+}
+
+SettingsFileService::SettingsFileService(const char* fileName)
 {
 	this->_fileName = fileName;
 }
 
-bool SettingsFile::SintaxisIsRight() {
-	
-	//flag[0] '{}' 
-	//flag[1] '"'
-	//Flag[2] '"'
-	//Flag[3] :
-	//Flag[4] ,
-
-	int8_t flag[8] = {};
-
-	for (ssize_t i = 0; i < this->TextLength; i++) {
-
-
-	}
-
-	if (this->TextLength > 0 && (int32_t)flag[0] == 0 && (int32_t)flag[4] == 0) return true;
-	else return false;
-}
-
-SettingsFile SettingsFileService::ReadFile()
+void SettingsFile::ReadFile(const char* fileName)
 {
-	SettingsFile settingsFile;
+    std::fstream file(fileName, std::ios_base::in | std::ios_base::out);
 
-	std::fstream file(_fileName, std::ios_base::in);
+    SettingsFile settingsFile;
 
 	file.seekg(0, file.end);
 	settingsFile.TextLength = file.tellg();
 	file.seekg(0, file.beg);
 
-	if (settingsFile.TextLength == -1) { settingsFile.TextLength == 0; }
+	if(settingsFile.TextLength == -1){
+        settingsFile.TextLength = SettingsTextLength;
+        settingsFile.Text = new char[settingsFile.TextLength];
+        std::memcpy(settingsFile.Text, SettingsText, SettingsTextLength);
 
-	settingsFile.Text = new char[settingsFile.TextLength];
-	file.read(settingsFile.Text, settingsFile.TextLength);
+        file.write(SettingsText,SettingsTextLength);
+	}else{
+        settingsFile.Text = new char[settingsFile.TextLength];
+        file.read(settingsFile.Text, settingsFile.TextLength);
+    }
 
 	file.close();
-
-	std::cout<< settingsFile.SintaxisIsRight()<<std::endl;
-
-	return settingsFile;
 }
 
-
-SettingsStruct SettingsFileService::CreateSettingsStruct(const SettingsFile* settingsFileStruct) {
-	SettingsStruct settingsStruct;
-
-	return settingsStruct;
-}
 
 
 void SettingsFileService::GetSettings(SettingsStruct* externalSettingsStruct) {
-	SettingsFile settingsFile = ReadFile();
-	*externalSettingsStruct = CreateSettingsStruct(&settingsFile);
+	SettingsFile settingsFile;
+	settingsFile.ReadFile(_fileName);
+
+	if (!settingsFile.SyntaxIsRight()){ externalSettingsStruct->IsTurnOn=false;	}
+	else{
+
+        int8_t flag[8] = {};
+
+        for(ssize_t i = 0; i < settingsFile.TextLength; i++){
+
+        }
+	}
 }
 
 

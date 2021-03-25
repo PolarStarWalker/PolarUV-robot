@@ -1,26 +1,35 @@
 #pragma once
 #include <fstream>
-#include <iostream>
 
-class SettingsStruct {
-public:
+enum SettingsStructEnumType{
+    IsTurnOn = 0,
+    ThrusterNumber = 1,
+    CoefficientArray = 2,
+    MaxMotorSpeed = 3,
+    MotorsProtocol = 4,
+};
+
+
+struct SettingsStruct {
 
 	ssize_t ThrustersNumber = -1;
 	ssize_t MaxMotorSpeed = -1;
-	ssize_t MotorsPrtocol = -1;
+	ssize_t MotorsProtocol = -1;
 	int64_t* CoefficientArray = nullptr;
+    bool IsTurnOn = false;
 
-	~SettingsStruct() {	delete[] CoefficientArray; }
+	~SettingsStruct();
 
 	SettingsStruct& operator=(SettingsStruct* right);
 };
 
-class SettingsFile {
-public:
-	int64_t TextLength;
+struct SettingsFile {
+	ssize_t TextLength = 0;
 	char* Text = nullptr;
 
-	bool SintaxisIsRight();
+    ///Read data from file into text array
+    static void ReadFile(const char* fileName);
+
 	~SettingsFile() { delete[] this->Text; }
 };
 
@@ -29,17 +38,9 @@ class SettingsFileService
 private:
 	const char* _fileName;
 
-	///Read data from file into text array
-	SettingsFile ReadFile();
-	///Create SettingsStruct from text array
-	SettingsStruct CreateSettingsStruct(const SettingsFile* settingsFile);
-
-	//char* CreateSettingsFile(SettingsFile* settingsFile);
-
-
 public:
 
-	SettingsFileService(char* fileName);
+	explicit SettingsFileService(const char* fileName);
 
 	///read file & update SettingsStruct;
 	void GetSettings(SettingsStruct* externalSettingsStruct);
