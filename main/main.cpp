@@ -8,6 +8,10 @@ int main(void) {
     char* motorsMessage = new char[MotorsStructLenMessage];
 
     SettingsStruct settingsStruct;
+    SettingsFileService settingsFileService("settings");
+    settingsFileService.GetSettings(&settingsStruct);
+    settingsStruct.IsTurnOn = true;
+
 
     Socket socket;
     socket.MakeServerSocket(1999);
@@ -20,8 +24,8 @@ int main(void) {
     for (size_t i = 0; i < 8; i++) { matrix[i] = new int64_t[6]{}; }
 
 
-    SettingsFileService file("settings");
-    file.GetSettings(&settingsStruct);
+
+
 
     vectorsMatrix = commandsStruct->VectorArray;
     coefficientMatrix = matrix;
@@ -38,7 +42,7 @@ int main(void) {
 
 
     /// main program
-    for (;;)
+    while (0)
     {
         while (socket.GetSocketConnectionStatus()) {
 

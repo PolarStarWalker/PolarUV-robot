@@ -1,6 +1,38 @@
 #pragma once
 #include <fstream>
 
+constexpr char DefaultSettingsText[] = "#TurnOn Robot \
+\nTurnOn = false\
+\n\
+\n#The number of thrusters, that drone have\
+\nThrustersNumber = 8\
+\n\
+\n#coefficientArray is a matrix where rows is thrustersNumber\
+\n#Columns is a move vectors F : x, F : y, F : z, M : z, M : y, M : z\
+\nCoeffitientArray = [\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0],\
+\n		[0, 0, 0, 0, 0, 0]\
+\n]\
+\n\
+\n#The maximum speed of each motor(in rpm)\
+\n#If vector is higher max motor speed, that all vectors casting to this speed\
+\nMaxMotorSpeed = 4000\
+\n\
+\n#Data transfer protocol between ESC and microcontroller\
+\n#0 - DShot150 - don't work\
+\n#2 - DShot300 - should work\
+\n#2 - DShot600 - should work\
+\n#3 - DShot1200 - work\
+\nMotorsProtocol = 8";
+
+constexpr ssize_t DefaultSettingsTextLength = sizeof(DefaultSettingsText);
+
 enum SettingsStructEnumType{
     IsTurnOn = 0,
     ThrusterNumber = 1,
@@ -28,7 +60,7 @@ struct SettingsFile {
 	char* Text = nullptr;
 
     ///Read data from file into text array
-    static void ReadFile(const char* fileName);
+    void ReadFile(const char* fileName);
 
 	~SettingsFile() { delete[] this->Text; }
 };

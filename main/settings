@@ -6,7 +6,7 @@ ThrustersNumber = 8
 
 #coefficientArray is a matrix where rows is thrustersNumber
 #Columns is a move vectors F:x,F:y,F:z,M:z,M:y,M:z
-CoeffitientArray = [
+CoefficientArray = [
     [ 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ],
@@ -26,6 +26,4 @@ MaxMotorSpeed = 4000
 #2 - DShot300  - should work
 #2 - DShot600  - should work
 #3 - DShot1200 - work
-MotorsPrtocol = 8
-
-ô
+MotorsProtocol = 8
