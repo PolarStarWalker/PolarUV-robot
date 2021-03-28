@@ -1,6 +1,6 @@
 ﻿#include "main.hpp"
 
-int main(void) {
+int main() {
     ///program setting
     CommandsStruct* commandsStruct = new CommandsStruct;
     MotorsStruct* motorsStruct = new MotorsStruct;
@@ -12,7 +12,6 @@ int main(void) {
     settingsFileService.GetSettings(&settingsStruct);
     settingsStruct.IsTurnOn = true;
 
-
     Socket socket;
     socket.MakeServerSocket(1999);
 
@@ -23,14 +22,10 @@ int main(void) {
     int64_t** matrix = new int64_t * [8]{};
     for (size_t i = 0; i < 8; i++) { matrix[i] = new int64_t[6]{}; }
 
-
-
-
-
     vectorsMatrix = commandsStruct->VectorArray;
     coefficientMatrix = matrix;
 
-
+/*
     for (size_t m = 0; m < 8; m++)
     {
         for (size_t n = 0; n < 6; n++)
@@ -39,7 +34,7 @@ int main(void) {
         }
         std::cout << "\n";
     }
-
+*/
 
     /// main program
     while (0)

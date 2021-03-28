@@ -1,15 +1,13 @@
 #pragma once
 #include <fstream>
+#include <string>
 
 constexpr char DefaultSettingsText[] = "#TurnOn Robot \
 \nTurnOn = false\
 \n\
-\n#The number of thrusters, that drone have\
-\nThrustersNumber = 8\
-\n\
-\n#coefficientArray is a matrix where rows is thrustersNumber\
+\n#CoefficientArray is a matrix where rows is thrusters that drone have\
 \n#Columns is a move vectors F : x, F : y, F : z, M : z, M : y, M : z\
-\nCoeffitientArray = [\
+\nCoefficientArray = [\
 \n		[0, 0, 0, 0, 0, 0],\
 \n		[0, 0, 0, 0, 0, 0],\
 \n		[0, 0, 0, 0, 0, 0],\
@@ -33,9 +31,23 @@ constexpr char DefaultSettingsText[] = "#TurnOn Robot \
 
 constexpr ssize_t DefaultSettingsTextLength = sizeof(DefaultSettingsText);
 
+constexpr char TurnOnString[] = "TurnOn";
+constexpr size_t TurnOnStringLength = sizeof(TurnOnString)-1;
+
+constexpr char ThrustersNumberString[] = "ThrustersNumber";
+constexpr size_t ThrustersNumberStringLength = sizeof(ThrustersNumberString)-1;
+
+constexpr char CoefficientArrayString[] = "CoefficientArray";
+constexpr size_t CoefficientArrayStringLength = sizeof(CoefficientArrayString)-1;
+
+constexpr char MaxMotorSpeedString[] = "MaxMotorSpeed";
+constexpr size_t MaxMotorSpeedStringLength = sizeof(MaxMotorSpeedString)-1;
+
+constexpr char MotorsProtocolString[] = "MotorsProtocol";
+constexpr size_t MotorsProtocolStringLength = sizeof(MotorsProtocolString)-1;
+
 enum SettingsStructEnumType{
-    IsTurnOn = 0,
-    ThrusterNumber = 1,
+    IsTurnOn = 1,
     CoefficientArray = 2,
     MaxMotorSpeed = 3,
     MotorsProtocol = 4,
