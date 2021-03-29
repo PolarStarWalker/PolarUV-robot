@@ -34,9 +34,6 @@ constexpr ssize_t DefaultSettingsTextLength = sizeof(DefaultSettingsText);
 constexpr char TurnOnString[] = "TurnOn";
 constexpr size_t TurnOnStringLength = sizeof(TurnOnString)-1;
 
-constexpr char ThrustersNumberString[] = "ThrustersNumber";
-constexpr size_t ThrustersNumberStringLength = sizeof(ThrustersNumberString)-1;
-
 constexpr char CoefficientArrayString[] = "CoefficientArray";
 constexpr size_t CoefficientArrayStringLength = sizeof(CoefficientArrayString)-1;
 
@@ -82,6 +79,8 @@ class SettingsFileService
 private:
 	const char* _fileName;
 
+
+
 public:
 
 	explicit SettingsFileService(const char* fileName);
@@ -90,4 +89,5 @@ public:
 	void GetSettings(SettingsStruct* externalSettingsStruct);
 
 };
+
 

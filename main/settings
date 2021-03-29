@@ -24,4 +24,3 @@ MaxMotorSpeed = 4000
 #2 - DShot600  - should work
 #3 - DShot1200 - work
 MotorsProtocol = 8
-

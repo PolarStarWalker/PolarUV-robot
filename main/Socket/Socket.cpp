@@ -53,31 +53,31 @@ int Socket::MakeConnection(uint16_t port) {
 
 
 ssize_t Socket::RecvDataLen(char *msg, size_t len){
-    ssize_t Rezult = 0;
+    ssize_t result = 0;
     if (this->_socketRole == Server) {
-        Rezult = this->recvall(this->_clientSocketDescriptor, msg, len, 0);
+        result = this->recvall(this->_clientSocketDescriptor, msg, len, 0);
     }
     else if (this->_socketRole == Client) {
-        Rezult = this->recvall(this->_serverSocketDescriptor, msg, len, 0);
+        result = this->recvall(this->_serverSocketDescriptor, msg, len, 0);
     }
     else {
         return(-1);
     }
-    return(Rezult);
+    return(result);
 }
 
 ssize_t Socket::SendDataLen(char *msg, size_t len){
-    ssize_t Rezalt = 0;
+    ssize_t result = 0;
     if (this->_socketRole == Server) {
-        Rezalt = this->sendall(this->_clientSocketDescriptor, msg, len, 0);
+        result = this->sendall(this->_clientSocketDescriptor, msg, len, 0);
     }
     else if (this->_socketRole == Client) {
-        Rezalt = this->sendall(this->_serverSocketDescriptor, msg, len, 0);
+        result = this->sendall(this->_serverSocketDescriptor, msg, len, 0);
     }
     else {
         return(-1);
     }
-    return(Rezalt);
+    return(result);
 }
 
 ssize_t Socket::recvall(int socketDescriptor, char* buf, size_t len, int flags) {

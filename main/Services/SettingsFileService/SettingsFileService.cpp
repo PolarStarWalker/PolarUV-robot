@@ -2,6 +2,7 @@
 #include <string>
 #include <cstring>
 #include <iostream>
+#include <list>
 
 SettingsStruct &SettingsStruct::operator=(SettingsStruct *right) {
     this->ThrustersNumber = right->ThrustersNumber;
@@ -26,134 +27,167 @@ SettingsFileService::SettingsFileService(const char *fileName) {
 }
 
 void SettingsFile::ReadFile(const char *fileName) {
-    std::fstream file(fileName, std::ios_base::in | std::ios_base::out);
+    std::fstream file(fileName, std::fstream::in | std::fstream::out | std::fstream::app);
 
     file.seekg(0, std::fstream::end);
     this->TextLength = file.tellg();
     file.seekg(0, std::fstream::beg);
 
-    if (this->TextLength == -1) {
-
+    if (this->TextLength < 1) {
         this->TextLength = DefaultSettingsTextLength;
-        this->Text = new char[this->TextLength];
+        this->Text = new char[DefaultSettingsTextLength];
         std::memcpy(this->Text, DefaultSettingsText, DefaultSettingsTextLength);
-
-        file.write(DefaultSettingsText, DefaultSettingsTextLength);
+        file << DefaultSettingsText << std::endl;
     } else {
         this->Text = new char[this->TextLength];
         file.read(this->Text, this->TextLength);
     }
-
     file.close();
 }
 
 
-void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
+inline void
+FindPole(const int8_t *structFlag, int8_t *stateFlag, const SettingsStructEnumType type, ssize_t *i, const char *text,
+         const char *string,
+         size_t stringLength) {
+    if (structFlag[type - 1] == 1) {
+        ssize_t cmpValue = std::strncmp(text, string, stringLength);
+        if (cmpValue == 0 && text[stringLength] == ' ') {
+            *i += stringLength + 1;
+            *stateFlag = type;
+#ifndef NDEBUG
+            std::cout << (int) *stateFlag;
+#endif
+        }
+    }
+}
 
+void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
 
     SettingsFile settingsFile;
     settingsFile.ReadFile(_fileName);
 
+    std::list<int64_t *> coefficientList;
+
 #ifndef NDEBUG
     std::cout << "--------Read Text-------\n";
-    std::cout<<settingsFile.Text<<std::endl;
-    std::cout << "Read Text-------\n";
+    std::cout << settingsFile.Text << std::endl;
+    std::cout << "--------Read Text-------\n";
 #endif
 
-    int8_t structFlags[8];
-    memset(structFlags, 1, 5);
+    int8_t structFlags[8] = {};
+    memset(structFlags, 1, 4);
     int8_t stateFlags[8] = {};
-
-    size_t continueCount = 0;
 
     for (ssize_t i = 0; i < settingsFile.TextLength; i++) {
 
         ///comments cut-off
-        if (settingsFile.Text[i] == '#') { stateFlags[0] = 1; }
-
-        if (stateFlags[0] == 1 && settingsFile.Text[i] != '\n') {
-            continue;
-        } else if (stateFlags[0] == 1 && settingsFile.Text[i] == '\n') {
-            stateFlags[0] = 0;
-            continue;
+        if (settingsFile.Text[i] == '#') {
+            i = std::strchr(&settingsFile.Text[i], '\n') - settingsFile.Text;
         }
 
-        ///cut-off found pole
-        if (continueCount != 0) {
-            continueCount--;
-            continue;
-        }
-
-        ///space cut-off
+        ///space or endl cut-off
         if (settingsFile.Text[i] == ' ') continue;
 
         ///find pole
-        if (structFlags[IsTurnOn - 1] == 1) {
-            ssize_t cmpValue = std::strncmp(&settingsFile.Text[i], TurnOnString, TurnOnStringLength);
-            if (cmpValue == 0 && settingsFile.Text[i + TurnOnStringLength] == ' ') {
-                continueCount = TurnOnStringLength;
-                stateFlags[1] = IsTurnOn;
-#ifndef NDEBUG
-                std::cout << (int) stateFlags[1];
-#endif
-                continue;
-            }
-        }
+        FindPole(structFlags, &stateFlags[0], IsTurnOn, &i, &settingsFile.Text[i], TurnOnString,
+                 TurnOnStringLength);
 
-        if (structFlags[CoefficientArray - 1] == 1) {
-            ssize_t cmpValue = std::strncmp(&settingsFile.Text[i], CoefficientArrayString,
-                                            CoefficientArrayStringLength);
-            if (cmpValue == 0 && settingsFile.Text[i + CoefficientArrayStringLength] == ' ') {
-                continueCount = CoefficientArrayStringLength;
-                stateFlags[1] = CoefficientArray;
-#ifndef NDEBUG
-                std::cout << (int) stateFlags[1];
-#endif
-                continue;
-            }
-        }
+        FindPole(structFlags, &stateFlags[0], CoefficientArray, &i, &settingsFile.Text[i], CoefficientArrayString,
+                 CoefficientArrayStringLength);
 
-        if (structFlags[MaxMotorSpeed - 1] == 1) {
-            ssize_t cmpValue = std::strncmp(&settingsFile.Text[i], MaxMotorSpeedString, MaxMotorSpeedStringLength);
-            if (cmpValue == 0 && settingsFile.Text[i + MaxMotorSpeedStringLength] == ' ') {
-                continueCount = MaxMotorSpeedStringLength;
-                stateFlags[1] = MaxMotorSpeed;
-#ifndef NDEBUG
-                std::cout << (int) stateFlags[1];
-#endif
-                continue;
-            }
-        }
+        FindPole(structFlags, &stateFlags[0], MaxMotorSpeed, &i, &settingsFile.Text[i], MaxMotorSpeedString,
+                 MaxMotorSpeedStringLength);
 
-        if (structFlags[MotorsProtocol - 1] == 1) {
-            ssize_t cmpValue = std::strncmp(&settingsFile.Text[i], MotorsProtocolString, MotorsProtocolStringLength);
-            if (cmpValue == 0 && settingsFile.Text[i + MotorsProtocolStringLength] == ' ') {
-                continueCount = MotorsProtocolStringLength;
-                stateFlags[1] = MotorsProtocol;
-#ifndef NDEBUG
-                std::cout << (int) stateFlags[1];
-#endif
-                continue;
-            }
-        }
+        FindPole(structFlags, &stateFlags[0], MotorsProtocol, &i, &settingsFile.Text[i], MotorsProtocolString,
+                 MotorsProtocolStringLength);
 
-        if (stateFlags[1] != 0 && settingsFile.Text[i] == '=' && settingsFile.Text[i + 1] == ' ') {
-            stateFlags[2] = 1;
+        ///find = if pole founded
+        if (stateFlags[0] != 0 && settingsFile.Text[i] == '=' && settingsFile.Text[i + 1] == ' ') {
+            stateFlags[1] = 1;
             continue;
         }
 
-        if (stateFlags[2]) {
-            if (stateFlags[1] == IsTurnOn) {
+        ///parse arguments
+        if (stateFlags[1]) {
+            if (stateFlags[0] == IsTurnOn) {
                 externalSettingsStruct->IsTurnOn = std::strncmp(&settingsFile.Text[i], "true", 4) == 0;
-                externalSettingsStruct->IsTurnOn ? structFlags[0] = 0 : structFlags[0] = 1;
-                stateFlags[1] = 0;
-                continueCount = 3;
+                externalSettingsStruct->IsTurnOn ?
+                        structFlags[IsTurnOn - 1] = 0 : structFlags[IsTurnOn - 1] = 1;
+                stateFlags[0] = 0;
+                i = std::strchr(&settingsFile.Text[i], '\n') - settingsFile.Text;
 #ifndef NDEBUG
                 std::cout << '=' << externalSettingsStruct->IsTurnOn;
+
+#endif
+                continue;
+            }
+            if (stateFlags[0] == CoefficientArray) {
+                i = std::strchr(&settingsFile.Text[i], '[') - settingsFile.Text + 1;
+
+                for (; i < settingsFile.TextLength; i++) {
+                    int64_t *array = new int64_t[6];
+
+                    ssize_t ptr = std::strchr(&settingsFile.Text[i], '[') - settingsFile.Text + 1;
+
+                    if (ptr < settingsFile.TextLength && ptr > 0) { i = ptr; }
+                    else break;
+
+                    size_t count = 0;
+
+                    while (count < 5) {
+                        array[count] = std::stol(&settingsFile.Text[i]);
+                        count++;
+                        i = std::strchr(&settingsFile.Text[i], ',') - settingsFile.Text + 1;
+                    }
+                    array[count] = std::stol(&settingsFile.Text[i]);
+
+                    ptr = std::strchr(&settingsFile.Text[i], ']') - settingsFile.Text + 1;
+
+                    if (ptr < settingsFile.TextLength && ptr > 0) { i = ptr; }
+                    else break;
+
+#ifndef NDEBUG
+                    std::cout << "[";
+                    for (size_t j = 0; j < 5; j++) {
+                        std::cout << array[j] << ",";
+                    }
+                    std::cout << array[5] << "]\n";
+#endif
+                    coefficientList.push_back(array);
+                }
+
+                structFlags[CoefficientArray - 1] = 0;
+                stateFlags[0] = 0;
+                continue;
+            }
+
+            if (stateFlags[0] == MaxMotorSpeed) {
+                externalSettingsStruct->MaxMotorSpeed = std::stol(&settingsFile.Text[i]);
+                externalSettingsStruct->MaxMotorSpeed != -1 ?
+                        structFlags[MaxMotorSpeed - 1] = 0 : structFlags[MaxMotorSpeed - 1] = 1;
+                stateFlags[0] = 0;
+                i = std::strchr(&settingsFile.Text[i], '\n') - settingsFile.Text;
+#ifndef NDEBUG
+                std::cout << '=' << externalSettingsStruct->MaxMotorSpeed;
+#endif
+                continue;
+            }
+
+            if (stateFlags[0] == MotorsProtocol) {
+                externalSettingsStruct->MotorsProtocol = std::stol(&settingsFile.Text[i]);
+                externalSettingsStruct->MotorsProtocol != -1 ?
+                        structFlags[MotorsProtocol - 1] = 0 : structFlags[MotorsProtocol - 1] = 1;
+                stateFlags[0] = 0;
+                i = std::strchr(&settingsFile.Text[i], '\n') - settingsFile.Text;
+#ifndef NDEBUG
+                std::cout << '=' << externalSettingsStruct->MotorsProtocol;
 #endif
                 continue;
             }
         }
+
+
 #ifndef NDEBUG
         std::cout << settingsFile.Text[i];
     }
@@ -169,6 +203,16 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
 #else
     }
 #endif
+
+    externalSettingsStruct->CoefficientArray = new int64_t[coefficientList.size() * 6];
+
+    size_t i = 0;
+    for (int64_t* array : coefficientList) {
+        for (size_t j = 0; j < 6; j++) {
+            externalSettingsStruct->CoefficientArray[i * j] = array[j];
+        }
+        i++;
+    }
 
     if (*((int64_t *) structFlags) != 0) {
         externalSettingsStruct->IsTurnOn = false;

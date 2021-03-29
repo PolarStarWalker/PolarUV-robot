@@ -10,7 +10,6 @@ int main() {
     SettingsStruct settingsStruct;
     SettingsFileService settingsFileService("settings");
     settingsFileService.GetSettings(&settingsStruct);
-    settingsStruct.IsTurnOn = true;
 
     Socket socket;
     socket.MakeServerSocket(1999);
@@ -25,6 +24,7 @@ int main() {
     vectorsMatrix = commandsStruct->VectorArray;
     coefficientMatrix = matrix;
 
+
 /*
     for (size_t m = 0; m < 8; m++)
     {
@@ -37,7 +37,7 @@ int main() {
 */
 
     /// main program
-    while (0)
+    while (settingsStruct.IsTurnOn)
     {
         while (socket.GetSocketConnectionStatus()) {
 
