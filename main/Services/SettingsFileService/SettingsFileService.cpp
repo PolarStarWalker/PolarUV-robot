@@ -9,17 +9,17 @@ SettingsStruct &SettingsStruct::operator=(SettingsStruct *right) {
     this->MaxMotorSpeed = right->MaxMotorSpeed;
     this->MotorsProtocol = right->MotorsProtocol;
 
-    delete[] CoefficientArray;
-    this->CoefficientArray = new int64_t[this->ThrustersNumber * 6];
+    delete[] MoveCoefficientArray;
+    this->MoveCoefficientArray = new int64_t[this->ThrustersNumber * 6];
     for (ssize_t i = 0; i < right->ThrustersNumber; i++) {
-        this->CoefficientArray[i] = right->CoefficientArray[i];
+        this->MoveCoefficientArray[i] = right->MoveCoefficientArray[i];
     }
 
     return *this;
 }
 
 SettingsStruct::~SettingsStruct() {
-    delete[] this->CoefficientArray;
+    delete[] this->MoveCoefficientArray;
 }
 
 SettingsFileService::SettingsFileService(const char *fileName) {
@@ -94,8 +94,8 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
         FindPole(structFlags, &stateFlags[0], IsTurnOn, &i, &settingsFile.Text[i], TurnOnString,
                  TurnOnStringLength);
 
-        FindPole(structFlags, &stateFlags[0], CoefficientArray, &i, &settingsFile.Text[i], CoefficientArrayString,
-                 CoefficientArrayStringLength);
+        FindPole(structFlags, &stateFlags[0], MoveCoefficientArray, &i, &settingsFile.Text[i], MoveCoefficientArrayString,
+                 MoveCoefficientArrayStringLength);
 
         FindPole(structFlags, &stateFlags[0], MaxMotorSpeed, &i, &settingsFile.Text[i], MaxMotorSpeedString,
                  MaxMotorSpeedStringLength);
@@ -123,7 +123,7 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
 #endif
                 continue;
             }
-            if (stateFlags[0] == CoefficientArray) {
+            if (stateFlags[0] == MoveCoefficientArray) {
                 i = std::strchr(&settingsFile.Text[i], '[') - settingsFile.Text + 1;
 
                 for (; i < settingsFile.TextLength; i++) {
@@ -158,7 +158,7 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
                     coefficientList.push_back(array);
                 }
 
-                structFlags[CoefficientArray - 1] = 0;
+                structFlags[MoveCoefficientArray - 1] = 0;
                 stateFlags[0] = 0;
                 continue;
             }
@@ -203,16 +203,17 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
 #else
     }
 #endif
-
-    externalSettingsStruct->CoefficientArray = new int64_t[coefficientList.size() * 6];
+    delete[] externalSettingsStruct->MoveCoefficientArray;
+    externalSettingsStruct->MoveCoefficientArray = new int64_t[coefficientList.size() * 6];
 
     size_t i = 0;
     for (int64_t *array : coefficientList) {
         for (size_t j = 0; j < 6; j++) {
-            externalSettingsStruct->CoefficientArray[j + i*6] = array[j];
+            externalSettingsStruct->MoveCoefficientArray[j + i * 6] = array[j];
         }
         i++;
     }
+
     externalSettingsStruct->ThrustersNumber = i;
 
     if (*((int64_t *) structFlags) != 0) {

@@ -19,13 +19,13 @@ int main() {
     FloatMatrixClass vectorsMatrix(6);
 
     vectorsMatrix = commandsStruct->VectorArray;
-    coefficientMatrix = settingsStruct.CoefficientArray;
+    coefficientMatrix = settingsStruct.MoveCoefficientArray;
 
 
     std::cout<<"\n----settings in program----"<<std::endl;
     std::cout<<"IsTurnOn: "<<settingsStruct.IsTurnOn<<std::endl;
     std::cout<<"ThrusterNumber: "<<settingsStruct.ThrustersNumber<<std::endl;
-    std::cout<<"CoefficientArray: \n";
+    std::cout<<"MoveCoefficientArray: \n";
     for (size_t m = 0; m < coefficientMatrix.GetRows(); m++)
     {
         for (size_t n = 0; n < coefficientMatrix.GetColumns(); n++)

@@ -1,9 +1,9 @@
 #TurnOn Robot
 TurnOn = true
 
-#CoefficientArray is a matrix where rows is thrusters that drone have
+#MoveCoefficientArray is a matrix where rows is thrusters that drone have
 #Columns is a move vectors F:x,F:y,F:z,M:z,M:y,M:z
-CoefficientArray = [
+MoveCoefficientArray = [
     [ 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ],
@@ -13,6 +13,9 @@ CoefficientArray = [
     [ 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ]
 ]
+
+# coefficients for each freedom of hand
+HandCoefficientsArray = [ 0, 0 ]
 
 #The maximum speed of each motor (in rpm)
 #If vector is higher max motor speed, that all vectors casting to this speed
