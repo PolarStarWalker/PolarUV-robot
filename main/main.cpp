@@ -21,6 +21,11 @@ int main() {
     vectorsMatrix = commandsStruct->VectorArray;
     coefficientMatrix = settingsStruct.CoefficientArray;
 
+
+
+    std::cout<<"IsTurnOn: "<<settingsStruct.IsTurnOn<<std::endl;
+    std::cout<<"ThrusterNumber: "<<settingsStruct.ThrustersNumber<<std::endl;
+    std::cout<<"CoefficientArray: \n";
     for (size_t m = 0; m < coefficientMatrix.GetRows(); m++)
     {
         for (size_t n = 0; n < coefficientMatrix.GetColumns(); n++)
@@ -29,6 +34,9 @@ int main() {
         }
         std::cout << "\n";
     }
+
+    std::cout<<"MaxMotorSpeed: "<<settingsStruct.MaxMotorSpeed<<std::endl;
+    std::cout<<"MotorProtocol: "<<settingsStruct.MotorsProtocol<<std::endl;
 
     /// main program
     while (false)

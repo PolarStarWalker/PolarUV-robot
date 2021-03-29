@@ -27,7 +27,8 @@ constexpr char DefaultSettingsText[] = "#TurnOn Robot \
 \n#2 - DShot300 - should work\
 \n#2 - DShot600 - should work\
 \n#3 - DShot1200 - work\
-\nMotorsProtocol = 8";
+\nMotorsProtocol = 8\
+\n";
 
 constexpr ssize_t DefaultSettingsTextLength = sizeof(DefaultSettingsText);
 

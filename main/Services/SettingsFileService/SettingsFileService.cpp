@@ -206,8 +206,6 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
 
     externalSettingsStruct->CoefficientArray = new int64_t[coefficientList.size() * 6];
 
-    std::cout << std::endl << coefficientList.size() << std::endl;
-
     size_t i = 0;
     for (int64_t *array : coefficientList) {
         for (size_t j = 0; j < 6; j++) {
