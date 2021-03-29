@@ -206,13 +206,17 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
 
     externalSettingsStruct->CoefficientArray = new int64_t[coefficientList.size() * 6];
 
+    std::cout << std::endl << coefficientList.size() << std::endl;
+
     size_t i = 0;
-    for (int64_t* array : coefficientList) {
+    for (int64_t *array : coefficientList) {
         for (size_t j = 0; j < 6; j++) {
-            externalSettingsStruct->CoefficientArray[i * j] = array[j];
+            externalSettingsStruct->CoefficientArray[j + i*6] = array[j];
         }
         i++;
     }
+    externalSettingsStruct->ThrustersNumber = i;
+
 
     if (*((int64_t *) structFlags) != 0) {
         externalSettingsStruct->IsTurnOn = false;

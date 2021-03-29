@@ -1,4 +1,5 @@
 #include "../include/IntMatrixClass.hpp"
+#include <iostream>
 
 IntMatrixClass::IntMatrixClass(size_t row, size_t column)
 {
@@ -56,8 +57,8 @@ IntMatrixClass operator*=(IntMatrixClass& left, FloatMatrixClass& right)
 {
 	if (!left.IfThisMultiplyebleOn(right))
 	{
-		IntMatrixClass newIntintMatrixClass(0, 0);
-		return newIntintMatrixClass;
+		IntMatrixClass newIntMatrixClass(0, 0);
+		return newIntMatrixClass;
 	}
 
 	IntMatrixClass newIntMatrix(left.GetRows(), right.GetColumns());
@@ -80,10 +81,18 @@ IntMatrixClass& IntMatrixClass::operator=(int64_t* matrix[])
 	{
 		for (size_t column = 0; column < this->_column; column++) 
 		{
-			this->operator[](row)[column] = matrix[row][column]; 
+            this->operator[](row)[column] = matrix[row][column];
 		}
 	}
 
 	return *this;
+}
+
+IntMatrixClass &IntMatrixClass::operator=(int64_t *matrix) {
+    for (size_t i = 0; i <= this->_column * this->_row; i++) {
+        this->_matrix[i] = matrix[i];
+    }
+
+    return *this;
 }
 

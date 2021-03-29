@@ -18,6 +18,7 @@ public:
 	friend IntMatrixClass operator*(IntMatrixClass& left, FloatMatrixClass& right);
 
 	IntMatrixClass& operator=(int64_t* matrix[]);
+    IntMatrixClass& operator=(int64_t matrix[]);
 
 };
 
