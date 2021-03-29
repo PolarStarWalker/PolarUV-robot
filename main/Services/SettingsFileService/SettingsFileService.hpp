@@ -17,7 +17,7 @@ constexpr char DefaultSettingsText[] = "#TurnOn Robot \
 \n		[0, 0, 0, 0, 0, 0],\
 \n		[0, 0, 0, 0, 0, 0]\
 \n]\
-\n\
+\nHandCoefficientsArray = [ 0, 0] \
 \n\
 \n#The maximum speed of each motor(in rpm)\
 \n#If vector is higher max motor speed, that all vectors casting to this speed\
@@ -39,7 +39,7 @@ constexpr size_t TurnOnStringLength = sizeof(TurnOnString)-1;
 constexpr char MoveCoefficientArrayString[] = "MoveCoefficientArray";
 constexpr size_t MoveCoefficientArrayStringLength = sizeof(MoveCoefficientArrayString) - 1;
 
-constexpr char HandCoefficientArrayString[] = "";
+constexpr char HandCoefficientArrayString[] = "HandCoefficientsArray";
 constexpr size_t HandCoefficientArrayStringLength = sizeof(HandCoefficientArrayString-1);
 
 constexpr char MaxMotorSpeedString[] = "MaxMotorSpeed";
