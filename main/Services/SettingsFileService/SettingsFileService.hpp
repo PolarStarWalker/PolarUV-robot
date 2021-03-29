@@ -17,6 +17,7 @@ constexpr char DefaultSettingsText[] = "#TurnOn Robot \
 \n		[0, 0, 0, 0, 0, 0],\
 \n		[0, 0, 0, 0, 0, 0]\
 \n]\
+\n#Coefficients for each freedom of hand\
 \nHandCoefficientsArray = [ 0, 0] \
 \n\
 \n#The maximum speed of each motor(in rpm)\
