@@ -39,7 +39,8 @@ void SettingsFile::ReadFile(const char *fileName) {
         std::memcpy(this->Text, DefaultSettingsText, DefaultSettingsTextLength);
         file << DefaultSettingsText << std::endl;
     } else {
-        this->Text = new char[this->TextLength];
+        this->Text = new char[this->TextLength+1];
+        this->Text[this->TextLength]='\n';
         file.read(this->Text, this->TextLength);
     }
     file.close();
@@ -72,7 +73,7 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
 #ifndef NDEBUG
     std::cout << "--------Read Text-------\n";
     std::cout << settingsFile.Text << std::endl;
-    std::cout << "--------Read Text-------\n";
+    std::cout << "--------Parse text-------\n";
 #endif
 
     int8_t structFlags[8] = {};
@@ -102,7 +103,7 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
         FindPole(structFlags, &stateFlags[0], MotorsProtocol, &i, &settingsFile.Text[i], MotorsProtocolString,
                  MotorsProtocolStringLength);
 
-        ///find = if pole founded
+        ///find '=' if pole founded
         if (stateFlags[0] != 0 && settingsFile.Text[i] == '=' && settingsFile.Text[i + 1] == ' ') {
             stateFlags[1] = 1;
             continue;
@@ -199,7 +200,6 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
         std::cout << (int) structFlags[i - 1];
     }
 
-    std::cout << '\n' << "-----StructFlagsEnd------" << std::endl;
 #else
     }
 #endif
@@ -215,11 +215,9 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
     }
     externalSettingsStruct->ThrustersNumber = i;
 
-
     if (*((int64_t *) structFlags) != 0) {
         externalSettingsStruct->IsTurnOn = false;
     }
 
 }
-
 

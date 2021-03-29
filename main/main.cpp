@@ -22,7 +22,7 @@ int main() {
     coefficientMatrix = settingsStruct.CoefficientArray;
 
 
-
+    std::cout<<"\n----settings in program----"<<std::endl;
     std::cout<<"IsTurnOn: "<<settingsStruct.IsTurnOn<<std::endl;
     std::cout<<"ThrusterNumber: "<<settingsStruct.ThrustersNumber<<std::endl;
     std::cout<<"CoefficientArray: \n";
@@ -34,7 +34,6 @@ int main() {
         }
         std::cout << "\n";
     }
-
     std::cout<<"MaxMotorSpeed: "<<settingsStruct.MaxMotorSpeed<<std::endl;
     std::cout<<"MotorProtocol: "<<settingsStruct.MotorsProtocol<<std::endl;
 
