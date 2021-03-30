@@ -88,8 +88,6 @@ class SettingsFileService
 private:
 	const char* _fileName;
 
-
-
 public:
 
 	explicit SettingsFileService(const char* fileName);
