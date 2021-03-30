@@ -3,7 +3,7 @@ TurnOn = false
 
 #MoveCoefficientArray is a matrix where rows is thrusters that drone have
 #Columns is a move vectors F:x,F:y,F:z,M:z,M:y,M:z
-MoveCoefficientArray = [
+MoveCoefficientArray = {
     [ 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ],
@@ -12,10 +12,10 @@ MoveCoefficientArray = [
     [ 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ]
-]
+}
 
 #Coefficients for each freedom of hand
-HandCoefficientsArray = [ 0, 0 ]
+HandCoefficientArray = [ 0, 0 ]
 
 #The maximum speed of each motor (in rpm)
 #If vector is higher max motor speed, that all vectors casting to this speed

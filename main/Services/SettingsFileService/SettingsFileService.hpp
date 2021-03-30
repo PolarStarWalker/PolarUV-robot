@@ -18,7 +18,7 @@ constexpr char DefaultSettingsText[] = "#TurnOn Robot \
 \n		[0, 0, 0, 0, 0, 0]\
 \n]\
 \n#Coefficients for each freedom of hand\
-\nHandCoefficientsArray = [ 0, 0] \
+\nHandCoefficientArray = [ 0, 0 ] \
 \n\
 \n#The maximum speed of each motor(in rpm)\
 \n#If vector is higher max motor speed, that all vectors casting to this speed\
@@ -40,8 +40,8 @@ constexpr size_t TurnOnStringLength = sizeof(TurnOnString)-1;
 constexpr char MoveCoefficientArrayString[] = "MoveCoefficientArray";
 constexpr size_t MoveCoefficientArrayStringLength = sizeof(MoveCoefficientArrayString) - 1;
 
-constexpr char HandCoefficientArrayString[] = "HandCoefficientsArray";
-constexpr size_t HandCoefficientArrayStringLength = sizeof(HandCoefficientArrayString-1);
+constexpr char HandCoefficientArrayString[] = "HandCoefficientArray";
+constexpr size_t HandCoefficientArrayStringLength = sizeof(HandCoefficientArrayString)-1;
 
 constexpr char MaxMotorSpeedString[] = "MaxMotorSpeed";
 constexpr size_t MaxMotorSpeedStringLength = sizeof(MaxMotorSpeedString)-1;
@@ -63,6 +63,7 @@ struct SettingsStruct {
 	ssize_t ThrustersNumber = -1;
 	ssize_t MaxMotorSpeed = -1;
 	ssize_t MotorsProtocol = -1;
+	ssize_t HandFreedom = -1;
 	int64_t* MoveCoefficientArray = nullptr;
     int64_t* HandCoefficientArray = nullptr;
     bool IsTurnOn = false;
