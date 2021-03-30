@@ -7,7 +7,7 @@ constexpr char DefaultSettingsText[] = "#TurnOn Robot \
 \n\
 \n#MoveCoefficientArray is a matrix where rows is thrusters that drone have\
 \n#Columns is a move vectors F : x, F : y, F : z, M : z, M : y, M : z\
-\nMoveCoefficientArray = [\
+\nMoveCoefficientArray = {\
 \n		[0, 0, 0, 0, 0, 0],\
 \n		[0, 0, 0, 0, 0, 0],\
 \n		[0, 0, 0, 0, 0, 0],\
@@ -16,7 +16,7 @@ constexpr char DefaultSettingsText[] = "#TurnOn Robot \
 \n		[0, 0, 0, 0, 0, 0],\
 \n		[0, 0, 0, 0, 0, 0],\
 \n		[0, 0, 0, 0, 0, 0]\
-\n]\
+\n}\
 \n#Coefficients for each freedom of hand\
 \nHandCoefficientArray = [ 0, 0 ] \
 \n\
