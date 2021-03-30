@@ -9,17 +9,17 @@ SettingsStruct &SettingsStruct::operator=(SettingsStruct *right) {
     this->MaxMotorSpeed = right->MaxMotorSpeed;
     this->MotorsProtocol = right->MotorsProtocol;
 
-    delete[] CoefficientArray;
-    this->CoefficientArray = new int64_t[this->ThrustersNumber * 6];
+    delete[] MoveCoefficientArray;
+    this->MoveCoefficientArray = new int64_t[this->ThrustersNumber * 6];
     for (ssize_t i = 0; i < right->ThrustersNumber; i++) {
-        this->CoefficientArray[i] = right->CoefficientArray[i];
+        this->MoveCoefficientArray[i] = right->MoveCoefficientArray[i];
     }
 
     return *this;
 }
 
 SettingsStruct::~SettingsStruct() {
-    delete[] this->CoefficientArray;
+    delete[] this->MoveCoefficientArray;
 }
 
 SettingsFileService::SettingsFileService(const char *fileName) {
@@ -39,7 +39,8 @@ void SettingsFile::ReadFile(const char *fileName) {
         std::memcpy(this->Text, DefaultSettingsText, DefaultSettingsTextLength);
         file << DefaultSettingsText << std::endl;
     } else {
-        this->Text = new char[this->TextLength];
+        this->Text = new char[this->TextLength + 1];
+        this->Text[this->TextLength] = '\n';
         file.read(this->Text, this->TextLength);
     }
     file.close();
@@ -67,16 +68,17 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
     SettingsFile settingsFile;
     settingsFile.ReadFile(_fileName);
 
-    std::list<int64_t *> coefficientList;
+    std::list<int64_t *> moveCoefficientArrayList;
+    std::list<int64_t> handCoefficientsList;
 
 #ifndef NDEBUG
     std::cout << "--------Read Text-------\n";
     std::cout << settingsFile.Text << std::endl;
-    std::cout << "--------Read Text-------\n";
+    std::cout << "--------Parse text-------\n";
 #endif
 
     int8_t structFlags[8] = {};
-    memset(structFlags, 1, 4);
+    memset(structFlags, 1, 5);
     int8_t stateFlags[8] = {};
 
     for (ssize_t i = 0; i < settingsFile.TextLength; i++) {
@@ -93,8 +95,13 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
         FindPole(structFlags, &stateFlags[0], IsTurnOn, &i, &settingsFile.Text[i], TurnOnString,
                  TurnOnStringLength);
 
-        FindPole(structFlags, &stateFlags[0], CoefficientArray, &i, &settingsFile.Text[i], CoefficientArrayString,
-                 CoefficientArrayStringLength);
+        FindPole(structFlags, &stateFlags[0], MoveCoefficientArray, &i, &settingsFile.Text[i],
+                 MoveCoefficientArrayString,
+                 MoveCoefficientArrayStringLength);
+
+        FindPole(structFlags, &stateFlags[0], HandCoefficientArray, &i, &settingsFile.Text[i],
+                 HandCoefficientArrayString,
+                 HandCoefficientArrayStringLength);
 
         FindPole(structFlags, &stateFlags[0], MaxMotorSpeed, &i, &settingsFile.Text[i], MaxMotorSpeedString,
                  MaxMotorSpeedStringLength);
@@ -102,7 +109,9 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
         FindPole(structFlags, &stateFlags[0], MotorsProtocol, &i, &settingsFile.Text[i], MotorsProtocolString,
                  MotorsProtocolStringLength);
 
-        ///find = if pole founded
+
+
+        ///find '=' if pole founded
         if (stateFlags[0] != 0 && settingsFile.Text[i] == '=' && settingsFile.Text[i + 1] == ' ') {
             stateFlags[1] = 1;
             continue;
@@ -118,20 +127,21 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
                 i = std::strchr(&settingsFile.Text[i], '\n') - settingsFile.Text;
 #ifndef NDEBUG
                 std::cout << '=' << externalSettingsStruct->IsTurnOn;
-
 #endif
                 continue;
             }
-            if (stateFlags[0] == CoefficientArray) {
-                i = std::strchr(&settingsFile.Text[i], '[') - settingsFile.Text + 1;
+            if (stateFlags[0] == MoveCoefficientArray) {
+                i = std::strchr(&settingsFile.Text[i], '{') - settingsFile.Text + 1;
+                ssize_t endpoint = std::strchr(&settingsFile.Text[i], '}') - settingsFile.Text;
+                for (; i < endpoint; i++) {
 
-                for (; i < settingsFile.TextLength; i++) {
-                    int64_t *array = new int64_t[6];
 
                     ssize_t ptr = std::strchr(&settingsFile.Text[i], '[') - settingsFile.Text + 1;
 
                     if (ptr < settingsFile.TextLength && ptr > 0) { i = ptr; }
                     else break;
+
+                    int64_t *array = new int64_t[6];
 
                     size_t count = 0;
 
@@ -154,10 +164,28 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
                     }
                     std::cout << array[5] << "]\n";
 #endif
-                    coefficientList.push_back(array);
+                    moveCoefficientArrayList.push_back(array);
                 }
 
-                structFlags[CoefficientArray - 1] = 0;
+                structFlags[MoveCoefficientArray - 1] = 0;
+                stateFlags[0] = 0;
+                continue;
+            }
+
+            if (stateFlags[0] == HandCoefficientArray) {
+                i = std::strchr(&settingsFile.Text[i], '[') - settingsFile.Text + 1;
+                const ssize_t length = std::strchr(&settingsFile.Text[i], ']') - settingsFile.Text + 1;
+                std::cout << settingsFile.Text[i];
+                for (; i < settingsFile.TextLength; i++) {
+                    int64_t coefficient = std::stol(&settingsFile.Text[i]);
+                    handCoefficientsList.push_back(coefficient);
+                    size_t ptr = std::strchr(&settingsFile.Text[i], ',') - settingsFile.Text + 1;
+                    if (ptr > 0 && ptr < settingsFile.TextLength) { i = ptr; }
+                    else break;
+                    if (i > length) break;
+                }
+                i = length;
+                structFlags[HandCoefficientArray - 1] = 0;
                 stateFlags[0] = 0;
                 continue;
             }
@@ -199,21 +227,33 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
         std::cout << (int) structFlags[i - 1];
     }
 
-    std::cout << '\n' << "-----StructFlagsEnd------" << std::endl;
 #else
     }
 #endif
 
-    externalSettingsStruct->CoefficientArray = new int64_t[coefficientList.size() * 6];
+    delete[] externalSettingsStruct->MoveCoefficientArray;
+    externalSettingsStruct->MoveCoefficientArray = new int64_t[moveCoefficientArrayList.size() * 6];
 
-    size_t i = 0;
-    for (int64_t *array : coefficientList) {
+    size_t counter = 0;
+    for (int64_t *array : moveCoefficientArrayList) {
         for (size_t j = 0; j < 6; j++) {
-            externalSettingsStruct->CoefficientArray[j + i*6] = array[j];
+            externalSettingsStruct->MoveCoefficientArray[j + counter * 6] = array[j];
         }
-        i++;
+        delete[] array;
+        counter++;
     }
-    externalSettingsStruct->ThrustersNumber = i;
+    externalSettingsStruct->ThrustersNumber = counter;
+
+
+    delete[] externalSettingsStruct->HandCoefficientArray;
+    externalSettingsStruct->HandCoefficientArray = new int64_t[handCoefficientsList.size() * 6];
+
+    counter = 0;
+    for (int64_t coefficient: handCoefficientsList) {
+        externalSettingsStruct->HandCoefficientArray[counter] = coefficient;
+        counter++;
+    }
+    externalSettingsStruct->HandFreedom = counter;
 
 
     if (*((int64_t *) structFlags) != 0) {
@@ -221,5 +261,4 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
     }
 
 }
-
 
