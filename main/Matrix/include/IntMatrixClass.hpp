@@ -5,7 +5,7 @@
 class IntMatrixClass : public virtual BaseMatrixClass
 {
 private:
-	int64_t* _matrix;
+	int64_t* _matrix = nullptr;
 	
 public:
 	IntMatrixClass(size_t row, size_t column);

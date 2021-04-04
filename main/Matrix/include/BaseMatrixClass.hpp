@@ -11,7 +11,7 @@ protected:
 public:
 	inline bool IfThisMultiplyebleOn(BaseMatrixClass& matrix) 
 	{
-		return this->_column != matrix._row;
+		return this->_column == matrix._row;
 	}
 
 	inline bool IfAddOrSub(BaseMatrixClass& matrix) 

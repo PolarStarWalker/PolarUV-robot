@@ -1,5 +1,6 @@
 #include "../include/IntMatrixClass.hpp"
 #include <iostream>
+#include <cstring>
 
 IntMatrixClass::IntMatrixClass(size_t row, size_t column)
 {
@@ -7,6 +8,8 @@ IntMatrixClass::IntMatrixClass(size_t row, size_t column)
 	_column = column;
 
 	_matrix = new int64_t[_row * _column];
+
+	std::memset(_matrix, 0 , _row * _column);
 
 }
 
@@ -36,8 +39,8 @@ IntMatrixClass operator*(IntMatrixClass& left, IntMatrixClass& right) {
 
 	if (!left.IfThisMultiplyebleOn(right)) 
 	{ 
-		IntMatrixClass newIntintMatrixClass(0, 0); 
-		return newIntintMatrixClass; 
+		IntMatrixClass newIntMatrixClass(0, 0);
+		return newIntMatrixClass;
 	}
 
 	IntMatrixClass newIntMatrix(left.GetRows(), right.GetColumns());
@@ -53,7 +56,7 @@ IntMatrixClass operator*(IntMatrixClass& left, IntMatrixClass& right) {
 }
 
 
-IntMatrixClass operator*=(IntMatrixClass& left, FloatMatrixClass& right)
+IntMatrixClass operator*(IntMatrixClass& left, FloatMatrixClass& right)
 {
 	if (!left.IfThisMultiplyebleOn(right))
 	{
