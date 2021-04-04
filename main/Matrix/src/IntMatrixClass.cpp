@@ -1,12 +1,15 @@
 #include "../include/IntMatrixClass.hpp"
 #include <iostream>
+#include <cstring>
 
 IntMatrixClass::IntMatrixClass(size_t row, size_t column)
 {
 	_row = row;
 	_column = column;
 
-	_matrix = new int64_t[_row * _column];
+	_matrix = new int64_t[_row * _column] {};
+
+	std::memset(_matrix, 0 , _row * _column);
 
 }
 
@@ -15,7 +18,7 @@ IntMatrixClass::IntMatrixClass(size_t row)
 	_row = row;
 	_column = 1;
 
-	_matrix = new int64_t[_row];
+	_matrix = new int64_t[_row] {};
 
 }
 
@@ -36,8 +39,8 @@ IntMatrixClass operator*(IntMatrixClass& left, IntMatrixClass& right) {
 
 	if (!left.IfThisMultiplyebleOn(right)) 
 	{ 
-		IntMatrixClass newIntintMatrixClass(0, 0); 
-		return newIntintMatrixClass; 
+		IntMatrixClass newIntMatrixClass(0, 0);
+		return newIntMatrixClass;
 	}
 
 	IntMatrixClass newIntMatrix(left.GetRows(), right.GetColumns());
@@ -49,11 +52,13 @@ IntMatrixClass operator*(IntMatrixClass& left, IntMatrixClass& right) {
 			}
 		}
 	}
+
 	return newIntMatrix;
+
 }
 
 
-IntMatrixClass operator*=(IntMatrixClass& left, FloatMatrixClass& right)
+IntMatrixClass operator*(IntMatrixClass& left, FloatMatrixClass& right)
 {
 	if (!left.IfThisMultiplyebleOn(right))
 	{
@@ -94,5 +99,16 @@ IntMatrixClass &IntMatrixClass::operator=(int64_t *matrix) {
     }
 
     return *this;
+}
+
+IntMatrixClass::IntMatrixClass(const IntMatrixClass &matrix) {
+
+    this->_column = matrix._column;
+    this->_row = matrix._row;
+    this->_matrix = new int64_t [this->_row * this->_row];
+
+    for (size_t i = 0; i <= this->_column * this->_row; i++) {
+        this->_matrix[i] = matrix._matrix[i];
+    }
 }
 

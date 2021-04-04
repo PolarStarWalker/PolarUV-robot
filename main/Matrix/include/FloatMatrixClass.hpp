@@ -8,7 +8,8 @@ private:
 
 public:
 	FloatMatrixClass(size_t row, size_t column);
-	FloatMatrixClass(size_t row);
+    FloatMatrixClass(const FloatMatrixClass &matrix);
+	explicit FloatMatrixClass(size_t row);
 	~FloatMatrixClass();
 
 	double* operator[](size_t value);
