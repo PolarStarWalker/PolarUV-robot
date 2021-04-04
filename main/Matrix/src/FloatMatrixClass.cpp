@@ -77,6 +77,16 @@ FloatMatrixClass& FloatMatrixClass::operator=(float* right)
 	return *this;
 }
 
+FloatMatrixClass::FloatMatrixClass(const FloatMatrixClass &matrix) {
+
+    this->_column = matrix._column;
+    this->_row = matrix._row;
+    this->_matrix = new double [this->_row * this->_row];
+
+    for (size_t i = 0; i <= this->_column * this->_row; i++) {
+        this->_matrix[i] = matrix._matrix[i];
+    }
+}
 
 
 

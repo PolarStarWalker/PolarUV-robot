@@ -73,9 +73,9 @@ int main() {
                 for (size_t j = 0; j < motorsCommands.GetColumns(); j++) {
                     std::cout << motorsCommands[i][j]<< ' ';
                 }
-                std::cout << std::endl;
+                std::cout << ' ';
             }
-            std::cout<<"gg"<<std::endl;
+            std::cout<<std::endl;
         }
 
 
