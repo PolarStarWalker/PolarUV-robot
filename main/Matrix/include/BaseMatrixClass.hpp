@@ -5,20 +5,20 @@
 class BaseMatrixClass
 {
 protected:
-	size_t _row = 0;
-	size_t _column = 0;
+	mutable size_t _row = 0;
+    mutable size_t _column = 0;
 
 public:
-	inline bool IfThisMultiplyebleOn(BaseMatrixClass& matrix) 
+	inline bool IfThisMultiplyebleOn (BaseMatrixClass& matrix) const
 	{
 		return this->_column == matrix._row;
 	}
 
-	inline bool IfAddOrSub(BaseMatrixClass& matrix) 
+	inline bool IfAddOrSub(BaseMatrixClass& matrix) const
 	{
 		return this->_column == matrix._column && this->_row == matrix._row;
 	}
 
-	size_t GetRows() { return _row; }
-	size_t GetColumns() { return _column; }
+    inline size_t GetRows() const { return _row; }
+    inline size_t GetColumns() const { return _column; }
 };

@@ -34,13 +34,8 @@ int main() {
     std::cout << "\n----settings in program----" << std::endl;
     std::cout << "IsTurnOn: " << settingsStruct.IsTurnOn << std::endl;
     std::cout << "ThrusterNumber: " << settingsStruct.ThrustersNumber << std::endl;
-    std::cout << "MoveCoefficientArray: \n";
-    for (size_t m = 0; m < coefficientMatrix.GetRows(); m++) {
-        for (size_t n = 0; n < coefficientMatrix.GetColumns(); n++) {
-            std::cout << coefficientMatrix[m][n] << " ";
-        }
-        std::cout << "\n";
-    }
+    std::cout << "MoveCoefficientMatrix: \n";
+    std::cout << coefficientMatrix;
     std::cout << "HandCoefficientArray: " << std::endl;
     for (size_t i = 0; i < settingsStruct.HandFreedom; i++) {
         std::cout << settingsStruct.HandCoefficientArray[i] << " ";
@@ -69,13 +64,9 @@ int main() {
             vectorsMatrix = commandsStruct->VectorArray;
             IntMatrixClass motorsCommands = coefficientMatrix * vectorsMatrix;
 
-            for (size_t i = 0; i < motorsCommands.GetRows(); i++) {
-                for (size_t j = 0; j < motorsCommands.GetColumns(); j++) {
-                    std::cout << motorsCommands[i][j]<< ' ';
-                }
-                std::cout << ' ';
-            }
-            std::cout<<std::endl;
+            std::cout << motorsCommands;
+
+            std::cout << std::endl;
         }
 
 
