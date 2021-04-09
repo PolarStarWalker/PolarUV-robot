@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.16)
 
 project ("Matrix")
 
-set(SOURCE_LIB src/FloatMatrixClass.cpp  src/IntMatrixClass.cpp)
+set(SOURCE_LIB src/FloatMatrixClass.cpp  src/IntMatrixClass.cpp src/FloatVectorClass.cpp src/FloatVectorClass.cpp)
 
 add_library(Matrix STATIC ${SOURCE_LIB})
 

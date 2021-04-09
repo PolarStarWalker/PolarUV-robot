@@ -1,5 +1,9 @@
 ﻿#include "main.hpp"
+
+#include <cstring>
+
 #include <sched.h>
+
 
 int main() {
     ///set max sched priority
@@ -22,10 +26,11 @@ int main() {
     socket.MakeServerSocket(1999);
     ///set spi
     SPIService commandSender("/dev/spidev0.0");
+    commandSender.Setup();
 
     /// test
     IntMatrixClass coefficientMatrix(settingsStruct.ThrustersNumber, 6);
-    FloatMatrixClass vectorsMatrix(6);
+    FloatVectorClass vectorsMatrix(6);
 
     vectorsMatrix = commandsStruct->VectorArray;
     coefficientMatrix = settingsStruct.MoveCoefficientArray;
@@ -56,17 +61,23 @@ int main() {
         }
 
         for (;;) {
-            std::cout << "Введите через пробел вектора: ";
+            std::cout << "\nВведите через пробел вектора: ";
             for (size_t i = 0; i < 6; i++) {
                 std::cin >> commandsStruct->VectorArray[i];
             }
 
             vectorsMatrix = commandsStruct->VectorArray;
-            IntMatrixClass motorsCommands = coefficientMatrix * vectorsMatrix;
+            FloatVectorClass motorsCommands = coefficientMatrix * vectorsMatrix;
 
             std::cout << motorsCommands;
 
-            std::cout << std::endl;
+            motorsStruct->PacketArray[0] = motorsCommands[0];
+
+            std::memcpy(motorsMessage + 1, motorsStruct, MotorsStructLen);
+            motorsMessage[0] = 's';
+            motorsMessage[MotorsStructLenMessage - 1] = 's';
+
+            commandSender.Write(motorsMessage, MotorsStructLenMessage);
         }
 
 

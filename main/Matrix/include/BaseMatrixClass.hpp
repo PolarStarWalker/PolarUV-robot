@@ -1,6 +1,6 @@
 #pragma once
-#include <stdint.h>
-#include <stddef.h>
+#include <cstdint>
+#include <cstddef>
 
 class BaseMatrixClass
 {
@@ -9,6 +9,7 @@ protected:
     mutable size_t _column = 0;
 
 public:
+
 	inline bool IfThisMultiplyebleOn (BaseMatrixClass& matrix) const
 	{
 		return this->_column == matrix._row;

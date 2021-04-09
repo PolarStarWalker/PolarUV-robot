@@ -1,8 +1,10 @@
-#pragma once
+#ifndef ROV_INTMATRIXCLASS_HPP
+#define ROV_INTMATRIXCLASS_HPP
 
 #include <ostream>
 #include "BaseMatrixClass.hpp"
 #include "FloatMatrixClass.hpp"
+#include "FloatVectorClass.hpp"
 
 class IntMatrixClass : public virtual BaseMatrixClass {
 private:
@@ -25,6 +27,8 @@ public:
 
     friend IntMatrixClass operator*(IntMatrixClass &left, FloatMatrixClass &right);
 
+    friend FloatVectorClass operator*(const IntMatrixClass& matrix, const FloatVectorClass& vector);
+
 
     IntMatrixClass &operator=(int64_t *matrix[]);
 
@@ -37,4 +41,8 @@ IntMatrixClass operator*(IntMatrixClass &left, IntMatrixClass &right);
 
 IntMatrixClass operator*(IntMatrixClass &left, FloatMatrixClass &right);
 
+FloatVectorClass operator*(const IntMatrixClass& matrix, const FloatVectorClass& vector);
+
 std::ostream& operator<<(std::ostream& stream, const IntMatrixClass& matrixClass);
+
+#endif

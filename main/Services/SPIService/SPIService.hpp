@@ -10,14 +10,20 @@
 //ioctl()
 #include <sys/ioctl.h>
 
+//spi
+#include <linux/spi/spidev.h>
 
 class SPIService {
 private:
-    const char *_spiName = nullptr;
     int _spiDescriptor = -1;
 
 public:
     explicit SPIService(const char* SPIName);
+
+    void Setup() const;
+
+    void Read(void* array, size_t length);
+    void Write(const void* array, size_t length);
 
     ~SPIService();
 };

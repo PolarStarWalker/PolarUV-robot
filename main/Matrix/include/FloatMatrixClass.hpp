@@ -1,10 +1,12 @@
-#pragma once
+#ifndef ROV_FLOATMATRIXCLASS_HPP
+#define ROV_FLOATMATRIXCLASS_HPP
+
 #include "BaseMatrixClass.hpp"
 
 class FloatMatrixClass : public virtual BaseMatrixClass
 {
 private:
-	double* _matrix;
+	double* _matrix =nullptr;
 
     double* operator[](size_t value)const;
 public:
@@ -25,3 +27,5 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& stream, const FloatMatrixClass& matrixClass);
+
+#endif

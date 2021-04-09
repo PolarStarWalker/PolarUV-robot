@@ -1,5 +1,9 @@
-#include "../include/IntMatrixClass.hpp"
 #include <cstring>
+#include "../include/IntMatrixClass.hpp"
+#include "../include/FloatVectorClass.hpp"
+
+
+#include <iostream>
 
 IntMatrixClass::IntMatrixClass(size_t row, size_t column) {
     _row = row;
@@ -71,7 +75,7 @@ IntMatrixClass operator*(IntMatrixClass &left, FloatMatrixClass &right) {
 }
 
 
-IntMatrixClass &IntMatrixClass::operator=(int64_t *matrix[]) {
+IntMatrixClass& IntMatrixClass::operator=(int64_t *matrix[]) {
 
     for (size_t row = 0; row < this->_row; row++) {
         for (size_t column = 0; column < this->_column; column++) {
@@ -82,7 +86,7 @@ IntMatrixClass &IntMatrixClass::operator=(int64_t *matrix[]) {
     return *this;
 }
 
-IntMatrixClass &IntMatrixClass::operator=(int64_t *matrix) {
+IntMatrixClass& IntMatrixClass::operator=(int64_t *matrix) {
     for (size_t i = 0; i <= this->_column * this->_row; i++) {
         this->_matrix[i] = matrix[i];
     }
@@ -105,7 +109,7 @@ int64_t *IntMatrixClass::operator[](size_t value) const {
     return &_matrix[value * _column];
 }
 
-std::ostream& operator<<(std::ostream& stream, const IntMatrixClass& matrixClass){
+std::ostream &operator<<(std::ostream &stream, const IntMatrixClass &matrixClass) {
     for (size_t row = 0; row < matrixClass.GetRows(); row++) {
         for (size_t column = 0; column < matrixClass.GetColumns(); column++) {
             stream << (matrixClass.operator[](row)[column]) << ' ';
@@ -113,4 +117,22 @@ std::ostream& operator<<(std::ostream& stream, const IntMatrixClass& matrixClass
         stream << std::endl;
     }
     return stream;
+}
+
+FloatVectorClass operator*(const IntMatrixClass &matrix, const FloatVectorClass &vector) {
+    if (matrix._column != vector.Length()) {
+        FloatVectorClass floatVectorClass(0);
+        return floatVectorClass;
+    }
+
+    FloatVectorClass floatVectorClass(matrix._row);
+
+    for (size_t m = 0; m < matrix._row; m++) {
+        for (size_t n = 0; n < vector._length; n++) {
+            floatVectorClass[m] += matrix.operator[](m)[n] * vector[n];
+
+
+        }
+    }
+    return floatVectorClass;
 }
