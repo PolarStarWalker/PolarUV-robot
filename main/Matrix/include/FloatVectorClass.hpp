@@ -12,16 +12,20 @@ private:
 
     double &operator[](size_t value) const;
 
+    FloatVectorClass(const FloatVectorClass& vector);
+
+    FloatVectorClass(FloatVectorClass&& vector) noexcept;
+
 public:
     explicit FloatVectorClass(size_t length);
 
-    FloatVectorClass(const FloatVectorClass &vector);
+    FloatVectorClass();
 
     ~FloatVectorClass();
 
     double &operator[](size_t value);
 
-    FloatVectorClass &operator=(const FloatVectorClass &right);
+    FloatVectorClass &operator=(FloatVectorClass&& right);
 
     FloatVectorClass &operator=(double *right);
 

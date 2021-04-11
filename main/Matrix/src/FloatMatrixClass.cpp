@@ -1,4 +1,5 @@
 #include "../include/FloatMatrixClass.hpp"
+#include <iostream>
 
 FloatMatrixClass::FloatMatrixClass(size_t row, size_t column) {
     _row = row;
@@ -8,12 +9,23 @@ FloatMatrixClass::FloatMatrixClass(size_t row, size_t column) {
 
 }
 
-FloatMatrixClass::FloatMatrixClass(size_t row) {
-    _row = row;
-    _column = 1;
+FloatMatrixClass::FloatMatrixClass(const FloatMatrixClass& matrix) {
 
-    _matrix = new double[_row]{};
+    this->_column = matrix._column;
+    this->_row = matrix._row;
+    this->_matrix = new double[this->_row * this->_row];
 
+    for (size_t i = 0; i <= this->_column * this->_row; i++) {
+        this->_matrix[i] = matrix._matrix[i];
+    }
+}
+
+FloatMatrixClass::FloatMatrixClass(FloatMatrixClass&& matrix) noexcept{
+    this->_row = matrix._row;
+    this->_column = matrix._column;
+    this->_matrix = matrix._matrix;
+
+    matrix._matrix = nullptr;
 }
 
 FloatMatrixClass::~FloatMatrixClass() {
@@ -71,16 +83,6 @@ FloatMatrixClass &FloatMatrixClass::operator=(float *right) {
     return *this;
 }
 
-FloatMatrixClass::FloatMatrixClass(const FloatMatrixClass &matrix) {
-
-    this->_column = matrix._column;
-    this->_row = matrix._row;
-    this->_matrix = new double[this->_row * this->_row];
-
-    for (size_t i = 0; i <= this->_column * this->_row; i++) {
-        this->_matrix[i] = matrix._matrix[i];
-    }
-}
 
 
 std::ostream &operator<<(std::ostream &stream, const FloatMatrixClass &matrixClass) {

@@ -9,10 +9,14 @@ private:
 	double* _matrix =nullptr;
 
     double* operator[](size_t value)const;
+
+    FloatMatrixClass(const FloatMatrixClass &matrix);
+
+    FloatMatrixClass(FloatMatrixClass&& matrix) noexcept ;
+
 public:
 	FloatMatrixClass(size_t row, size_t column);
-    FloatMatrixClass(const FloatMatrixClass &matrix);
-	explicit FloatMatrixClass(size_t row);
+
 	~FloatMatrixClass();
 
 	double* operator[](size_t value);

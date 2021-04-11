@@ -11,12 +11,13 @@ private:
     int64_t *_matrix = nullptr;
 
     int64_t *operator[](size_t value)const;
+
+    IntMatrixClass(const IntMatrixClass& matrix);
+
+    IntMatrixClass(IntMatrixClass&& matrix) noexcept ;
+
 public:
     IntMatrixClass(size_t row, size_t column);
-
-    IntMatrixClass(const IntMatrixClass &matrix);
-
-    explicit IntMatrixClass(size_t row);
 
     ~IntMatrixClass();
 

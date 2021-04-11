@@ -11,16 +11,25 @@ IntMatrixClass::IntMatrixClass(size_t row, size_t column) {
 
     _matrix = new int64_t[_row * _column]{};
 
-    std::memset(_matrix, 0, _row * _column);
-
 }
 
-IntMatrixClass::IntMatrixClass(size_t row) {
-    _row = row;
-    _column = 1;
+IntMatrixClass::IntMatrixClass(const IntMatrixClass& matrix) {
 
-    _matrix = new int64_t[_row]{};
+    this->_column = matrix._column;
+    this->_row = matrix._row;
+    this->_matrix = new int64_t[this->_row * this->_row];
 
+    for (size_t i = 0; i <= this->_column * this->_row; i++) {
+        this->_matrix[i] = matrix._matrix[i];
+    }
+}
+
+IntMatrixClass::IntMatrixClass(IntMatrixClass&& matrix) noexcept {
+    this->_row = matrix._row;
+    this->_column = matrix._column;
+    this->_matrix = matrix._matrix;
+
+    matrix._matrix = nullptr;
 }
 
 
@@ -33,6 +42,9 @@ int64_t *IntMatrixClass::operator[](size_t value) {
     return &_matrix[value * _column];
 }
 
+int64_t *IntMatrixClass::operator[](size_t value) const {
+    return &_matrix[value * _column];
+}
 
 IntMatrixClass operator*(IntMatrixClass &left, IntMatrixClass &right) {
 
@@ -94,21 +106,6 @@ IntMatrixClass& IntMatrixClass::operator=(int64_t *matrix) {
     return *this;
 }
 
-IntMatrixClass::IntMatrixClass(const IntMatrixClass &matrix) {
-
-    this->_column = matrix._column;
-    this->_row = matrix._row;
-    this->_matrix = new int64_t[this->_row * this->_row];
-
-    for (size_t i = 0; i <= this->_column * this->_row; i++) {
-        this->_matrix[i] = matrix._matrix[i];
-    }
-}
-
-int64_t *IntMatrixClass::operator[](size_t value) const {
-    return &_matrix[value * _column];
-}
-
 std::ostream &operator<<(std::ostream &stream, const IntMatrixClass &matrixClass) {
     for (size_t row = 0; row < matrixClass.GetRows(); row++) {
         for (size_t column = 0; column < matrixClass.GetColumns(); column++) {
@@ -136,3 +133,5 @@ FloatVectorClass operator*(const IntMatrixClass &matrix, const FloatVectorClass 
     }
     return floatVectorClass;
 }
+
+

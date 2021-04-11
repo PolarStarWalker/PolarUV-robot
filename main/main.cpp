@@ -15,6 +15,8 @@ int main() {
     ///structs for transfer data
     CommandsStruct *commandsStruct = new CommandsStruct;
     MotorsStruct *motorsStruct = new MotorsStruct;
+
+    FloatVectorClass motorsCommands;
     ///bufer
     char *motorsMessage = new char[MotorsStructLenMessage];
     ///settings from settings file
@@ -67,7 +69,7 @@ int main() {
             }
 
             vectorsMatrix = commandsStruct->VectorArray;
-            FloatVectorClass motorsCommands = coefficientMatrix * vectorsMatrix;
+            motorsCommands = coefficientMatrix * vectorsMatrix;
 
             std::cout << motorsCommands;
 

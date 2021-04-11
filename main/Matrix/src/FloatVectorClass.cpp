@@ -1,5 +1,5 @@
 #include "../include/FloatVectorClass.hpp"
-#include <ostream>
+#include <iostream>
 
 FloatVectorClass::FloatVectorClass(size_t length) {
     this->_vector = new double[length]{};
@@ -7,13 +7,25 @@ FloatVectorClass::FloatVectorClass(size_t length) {
 
 }
 
-FloatVectorClass::FloatVectorClass(const FloatVectorClass &vector) {
+FloatVectorClass::FloatVectorClass() {
+
+}
+
+FloatVectorClass::FloatVectorClass(const FloatVectorClass &vector){
     this->_vector = new double[vector._length];
     this->_length = vector._length;
 
     for (size_t i = 0; i < this->_length; i++) {
         this->_vector[i] = vector._vector[i];
     }
+}
+
+FloatVectorClass::FloatVectorClass(FloatVectorClass&& vector)  noexcept {
+    this->_vector = vector._vector;
+    this->_length = vector._length;
+
+    vector._vector = nullptr;
+    vector._length = 0;
 }
 
 FloatVectorClass::~FloatVectorClass() {
@@ -32,6 +44,17 @@ FloatVectorClass& FloatVectorClass::operator=(double *right) {
     for (size_t i = 0; i < this->_length; i++) {
         this->_vector[i] = right[i];
     }
+    return *this;
+}
+
+
+FloatVectorClass& FloatVectorClass::operator=(FloatVectorClass&& right) {
+    delete[] this->_vector;
+
+    this->_vector = right._vector;
+    this->_length = right._length;
+    right._vector = nullptr;
+
     return *this;
 }
 
