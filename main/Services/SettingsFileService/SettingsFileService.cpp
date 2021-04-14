@@ -138,7 +138,7 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
 
                     ssize_t ptr = std::strchr(&settingsFile.Text[i], '[') - settingsFile.Text + 1;
 
-                    if (ptr < settingsFile.TextLength && ptr > 0) { i = ptr; }
+                    if (ptr < endpoint && ptr > 0) { i = ptr; }
                     else break;
 
                     int64_t *array = new int64_t[6];
