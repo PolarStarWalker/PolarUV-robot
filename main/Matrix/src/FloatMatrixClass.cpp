@@ -95,4 +95,24 @@ std::ostream &operator<<(std::ostream &stream, const FloatMatrixClass &matrixCla
     return stream;
 }
 
+FloatMatrixClass FloatMatrixClass::operator*(int64_t value) {
+
+    for(size_t i = 0; i< this->_row * this->_column; i++){
+        this->_matrix[i] = this->_matrix[i] * value;
+    }
+
+    return *this;
+}
+
+FloatMatrixClass& FloatMatrixClass::operator=(FloatMatrixClass&& floatMatrix) {
+    delete[] this->_matrix;
+
+    this->_matrix = floatMatrix._matrix;
+    this->_row = floatMatrix._row;
+    this->_column = floatMatrix._column;
+
+    floatMatrix._matrix = nullptr;
+
+    return *this;
+}
 

@@ -68,8 +68,8 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
     SettingsFile settingsFile;
     settingsFile.ReadFile(_fileName);
 
-    std::list<int64_t *> moveCoefficientArrayList;
-    std::list<int64_t> handCoefficientsList;
+    std::list<double *> moveCoefficientArrayList;
+    std::list<double> handCoefficientsList;
 
 #ifndef NDEBUG
     std::cout << "--------Read Text-------\n";
@@ -141,16 +141,16 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
                     if (ptr < endpoint && ptr > 0) { i = ptr; }
                     else break;
 
-                    int64_t *array = new int64_t[6];
+                    double *array = new double[6];
 
                     size_t count = 0;
 
                     while (count < 5) {
-                        array[count] = std::stol(&settingsFile.Text[i]);
+                        array[count] = std::stod(&settingsFile.Text[i]);
                         count++;
                         i = std::strchr(&settingsFile.Text[i], ',') - settingsFile.Text + 1;
                     }
-                    array[count] = std::stol(&settingsFile.Text[i]);
+                    array[count] = std::stod(&settingsFile.Text[i]);
 
                     ptr = std::strchr(&settingsFile.Text[i], ']') - settingsFile.Text + 1;
 
@@ -177,7 +177,7 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
                 const ssize_t length = std::strchr(&settingsFile.Text[i], ']') - settingsFile.Text + 1;
                 std::cout << settingsFile.Text[i];
                 for (; i < settingsFile.TextLength; i++) {
-                    int64_t coefficient = std::stol(&settingsFile.Text[i]);
+                    double coefficient = std::stod(&settingsFile.Text[i]);
                     handCoefficientsList.push_back(coefficient);
                     size_t ptr = std::strchr(&settingsFile.Text[i], ',') - settingsFile.Text + 1;
                     if (ptr > 0 && ptr < settingsFile.TextLength) { i = ptr; }
@@ -232,10 +232,10 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
 #endif
 
     delete[] externalSettingsStruct->MoveCoefficientArray;
-    externalSettingsStruct->MoveCoefficientArray = new int64_t[moveCoefficientArrayList.size() * 6];
+    externalSettingsStruct->MoveCoefficientArray = new double[moveCoefficientArrayList.size() * 6];
 
     size_t counter = 0;
-    for (int64_t *array : moveCoefficientArrayList) {
+    for (double *array : moveCoefficientArrayList) {
         for (size_t j = 0; j < 6; j++) {
             externalSettingsStruct->MoveCoefficientArray[j + counter * 6] = array[j];
         }
@@ -246,7 +246,7 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
 
 
     delete[] externalSettingsStruct->HandCoefficientArray;
-    externalSettingsStruct->HandCoefficientArray = new int64_t[handCoefficientsList.size() * 6];
+    externalSettingsStruct->HandCoefficientArray = new double[handCoefficientsList.size() * 6];
 
     counter = 0;
     for (int64_t coefficient: handCoefficientsList) {

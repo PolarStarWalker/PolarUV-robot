@@ -23,6 +23,7 @@ public:
 
     int64_t *operator[](size_t value);
 
+    IntMatrixClass operator*(int64_t value);
 
     friend IntMatrixClass operator*(IntMatrixClass &left, IntMatrixClass &right);
 
@@ -31,9 +32,13 @@ public:
     friend FloatVectorClass operator*(const IntMatrixClass& matrix, const FloatVectorClass& vector);
 
 
-    IntMatrixClass &operator=(int64_t *matrix[]);
+    IntMatrixClass& operator=(int64_t *matrix[]);
 
-    IntMatrixClass &operator=(int64_t matrix[]);
+    IntMatrixClass& operator=(int64_t matrix[]);
+
+    IntMatrixClass& operator=(IntMatrixClass&& intMatrix);
+
+    IntMatrixClass& operator=(const FloatMatrixClass& floatMatrix);
 
     friend std::ostream& operator<<(std::ostream& stream, const IntMatrixClass& matrixClass);
 };

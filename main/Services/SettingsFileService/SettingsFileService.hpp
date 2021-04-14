@@ -64,8 +64,9 @@ struct SettingsStruct {
 	ssize_t MaxMotorSpeed = -1;
 	ssize_t MotorsProtocol = -1;
 	ssize_t HandFreedom = -1;
-	int64_t* MoveCoefficientArray = nullptr;
-    int64_t* HandCoefficientArray = nullptr;
+	ssize_t MaxCommandValue = -1;
+	double* MoveCoefficientArray = nullptr;
+    double* HandCoefficientArray = nullptr;
     bool IsTurnOn = false;
 
 	~SettingsStruct();

@@ -2,7 +2,7 @@
 #include "../include/IntMatrixClass.hpp"
 #include "../include/FloatVectorClass.hpp"
 
-
+#include <cmath>
 #include <iostream>
 
 IntMatrixClass::IntMatrixClass(size_t row, size_t column) {
@@ -132,6 +132,34 @@ FloatVectorClass operator*(const IntMatrixClass &matrix, const FloatVectorClass 
         }
     }
     return floatVectorClass;
+}
+
+IntMatrixClass& IntMatrixClass::operator=(const FloatMatrixClass& floatMatrix) {
+    for(size_t i = 0; i< this->_row * this->_column; i++){
+        this->_matrix[i] = this->_matrix[i] * std::round(floatMatrix._matrix[i]);
+    }
+
+    return *this;
+}
+
+IntMatrixClass& IntMatrixClass::operator=(IntMatrixClass&& intMatrix) {
+    delete[] this->_matrix;
+
+    this->_matrix = intMatrix._matrix;
+    this->_row = intMatrix._row;
+    this->_column = intMatrix._column;
+
+    intMatrix._matrix = nullptr;
+
+    return *this;
+}
+
+IntMatrixClass IntMatrixClass::operator*(int64_t value) {
+    for(size_t i = 0; i< this->_row * this->_column; i++){
+        this->_matrix[i] = this->_matrix[i] * value;
+    }
+
+    return  *this;
 }
 
 

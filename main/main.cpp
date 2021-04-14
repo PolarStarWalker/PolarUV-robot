@@ -16,7 +16,6 @@ int main() {
     CommandsStruct *commandsStruct = new CommandsStruct;
     MotorsStruct *motorsStruct = new MotorsStruct;
 
-    FloatVectorClass motorsCommands;
     ///bufer
     char *motorsMessage = new char[MotorsStructLenMessage];
     ///settings from settings file
@@ -30,13 +29,14 @@ int main() {
     SPIService commandSender("/dev/spidev0.0");
     commandSender.Setup();
 
-    /// test
+    /// program objects
     IntMatrixClass coefficientMatrix(settingsStruct.ThrustersNumber, 6);
-    FloatVectorClass vectorsMatrix(6);
+    FloatVectorClass moveVector(6);
+    FloatMatrixClass coefficientRawMatrix(settingsStruct.ThrustersNumber, 6);
+    FloatVectorClass motorsCommands;
 
-    vectorsMatrix = commandsStruct->VectorArray;
-    coefficientMatrix = settingsStruct.MoveCoefficientArray;
-
+    coefficientRawMatrix = settingsStruct.MoveCoefficientArray;
+    coefficientMatrix = coefficientRawMatrix * settingsStruct.MaxCommandValue;
 
     std::cout << "\n----settings in program----" << std::endl;
     std::cout << "IsTurnOn: " << settingsStruct.IsTurnOn << std::endl;
@@ -68,12 +68,21 @@ int main() {
                 std::cin >> commandsStruct->VectorArray[i];
             }
 
-            vectorsMatrix = commandsStruct->VectorArray;
-            motorsCommands = coefficientMatrix * vectorsMatrix;
+            moveVector = commandsStruct->VectorArray;
+            motorsCommands = coefficientMatrix * moveVector;
+
+            std::cout << coefficientMatrix;
 
             std::cout << motorsCommands;
 
-            motorsStruct->PacketArray[0] = motorsCommands[0];
+            for (size_t i = 0; i < motorsCommands.Length(); i++) {
+                motorsStruct->PacketArray[i];
+            }
+
+
+            for (size_t i = 0; i < motorsCommands.Length(); i++) {
+                std::cout << motorsStruct->PacketArray[i] << std::endl;
+            }
 
             std::memcpy(motorsMessage + 1, motorsStruct, MotorsStructLen);
             motorsMessage[0] = 's';
