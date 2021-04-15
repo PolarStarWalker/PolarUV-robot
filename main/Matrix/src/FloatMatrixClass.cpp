@@ -116,3 +116,20 @@ FloatMatrixClass& FloatMatrixClass::operator=(FloatMatrixClass&& floatMatrix) {
     return *this;
 }
 
+FloatVectorClass FloatMatrixClass::operator*(const FloatVectorClass &vector) {
+
+    if (this->_column != vector.Length()) {
+        return FloatVectorClass(0);
+    }
+
+    FloatVectorClass vectorClass(this->_row);
+
+    for (size_t m = 0; m < this->_row; m++) {
+        for (size_t n = 0; n < vector._length; n++) {
+            vectorClass[m] += this->operator[](m)[n] * vector[n];
+        }
+    }
+    return vectorClass;
+
+}
+

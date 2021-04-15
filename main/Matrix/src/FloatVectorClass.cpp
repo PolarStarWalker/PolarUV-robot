@@ -1,5 +1,7 @@
 #include "../include/FloatVectorClass.hpp"
 #include <iostream>
+#include <array>
+#include <cmath>
 
 FloatVectorClass::FloatVectorClass(size_t length) {
     this->_vector = new double[length]{};
@@ -70,4 +72,38 @@ std::ostream &operator<<(std::ostream &stream, const FloatVectorClass &vectorCla
         stream<<vectorClass._vector[i]<<std::endl;
     }
     return stream;
+}
+
+FloatVectorClass& FloatVectorClass::operator+(int64_t value) {
+    for(size_t i = 0; i < this->_length; i++){
+        this->_vector[i]+=value;
+    }
+}
+
+void FloatVectorClass::Normalize(double value) {
+
+    double maxValue = 0;
+
+    for(size_t i = 0; i < this->_length; i++){
+        double absValue = std::abs(this->_vector[i]);
+        if(absValue>maxValue){
+            maxValue = absValue;
+        };
+    }
+
+    double coefficient = value/maxValue;
+
+    if(coefficient<1){
+        for(size_t i = 0; i < this->_length; i++){
+            this->_vector[i] *= coefficient;
+        }
+    }
+
+
+}
+
+void FloatVectorClass::FillArray(std::array<int16_t, 12>& array) {
+    for(size_t i = 0; i< this->_length; i++){
+        array[i] = std::round(this->_vector[i]);
+    }
 }

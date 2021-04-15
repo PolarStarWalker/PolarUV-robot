@@ -1,7 +1,7 @@
 ﻿#include "main.hpp"
 
 #include <cstring>
-
+#include <array>
 #include <sched.h>
 
 
@@ -30,13 +30,12 @@ int main() {
     commandSender.Setup();
 
     /// program objects
-    IntMatrixClass coefficientMatrix(settingsStruct.ThrustersNumber, 6);
     FloatVectorClass moveVector(6);
-    FloatMatrixClass coefficientRawMatrix(settingsStruct.ThrustersNumber, 6);
+    FloatMatrixClass coefficientMatrix(settingsStruct.ThrustersNumber, 6);
     FloatVectorClass motorsCommands;
 
-    coefficientRawMatrix = settingsStruct.MoveCoefficientArray;
-    coefficientMatrix = coefficientRawMatrix * settingsStruct.MaxCommandValue;
+    coefficientMatrix = settingsStruct.MoveCoefficientArray;
+    coefficientMatrix = coefficientMatrix * settingsStruct.MaxCommandValue;
 
     std::cout << "\n----settings in program----" << std::endl;
     std::cout << "IsTurnOn: " << settingsStruct.IsTurnOn << std::endl;
@@ -71,14 +70,13 @@ int main() {
             moveVector = commandsStruct->VectorArray;
             motorsCommands = coefficientMatrix * moveVector;
 
-            std::cout << coefficientMatrix;
+            motorsCommands.Normalize(2000/2);
 
-            std::cout << motorsCommands;
+            std::array<int16_t, 12> moveArray;
 
-            for (size_t i = 0; i < motorsCommands.Length(); i++) {
-                motorsStruct->PacketArray[i];
-            }
+            motorsCommands.FillArray(&moveArray);
 
+            std::memcpy(motorsStruct->PacketArray, moveArray.begin(), Packet)
 
             for (size_t i = 0; i < motorsCommands.Length(); i++) {
                 std::cout << motorsStruct->PacketArray[i] << std::endl;

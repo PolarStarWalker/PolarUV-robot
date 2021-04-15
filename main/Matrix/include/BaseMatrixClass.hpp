@@ -10,7 +10,7 @@ protected:
 
 public:
 
-	inline bool IfThisMultiplyebleOn (BaseMatrixClass& matrix) const
+	inline bool IfThisMultiplyebleOn (const BaseMatrixClass& matrix) const
 	{
 		return this->_column == matrix._row;
 	}

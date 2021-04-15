@@ -46,19 +46,19 @@ int64_t *IntMatrixClass::operator[](size_t value) const {
     return &_matrix[value * _column];
 }
 
-IntMatrixClass operator*(IntMatrixClass &left, IntMatrixClass &right) {
+IntMatrixClass IntMatrixClass::operator*(IntMatrixClass &intMatrix) {
 
-    if (!left.IfThisMultiplyebleOn(right)) {
+    if (!this->IfThisMultiplyebleOn(intMatrix)) {
         IntMatrixClass newIntMatrixClass(0, 0);
         return newIntMatrixClass;
     }
 
-    IntMatrixClass newIntMatrix(left.GetRows(), right.GetColumns());
+    IntMatrixClass newIntMatrix(this->_row, intMatrix._column);
 
-    for (size_t m = 0; m < left.GetRows(); m++) {
-        for (size_t k = 0; k < left.GetColumns(); k++) {
-            for (size_t n = 0; n < left.GetColumns(); n++) {
-                newIntMatrix[m][k] += left[m][n] * right[n][k];
+    for (size_t m = 0; m < this->_row; m++) {
+        for (size_t k = 0; k < this->_column; k++) {
+            for (size_t n = 0; n < this->_column; n++) {
+                newIntMatrix[m][k] += this->operator[](m)[n] * intMatrix[n][k];
             }
         }
     }
@@ -68,18 +68,18 @@ IntMatrixClass operator*(IntMatrixClass &left, IntMatrixClass &right) {
 }
 
 
-IntMatrixClass operator*(IntMatrixClass &left, FloatMatrixClass &right) {
-    if (!left.IfThisMultiplyebleOn(right)) {
+IntMatrixClass IntMatrixClass::operator*(const FloatMatrixClass &matrix) {
+    if (!this->IfThisMultiplyebleOn(matrix)) {
         IntMatrixClass newIntMatrixClass(0, 0);
         return newIntMatrixClass;
     }
 
-    IntMatrixClass newIntMatrix(left.GetRows(), right.GetColumns());
+    IntMatrixClass newIntMatrix(this->_row, matrix._column);
 
-    for (size_t m = 0; m < left.GetRows(); m++) {
-        for (size_t k = 0; k < right.GetColumns(); k++) {
-            for (size_t n = 0; n < left.GetColumns(); n++) {
-                newIntMatrix[m][k] += left[m][n] * right[n][k];
+    for (size_t m = 0; m < this->_row; m++) {
+        for (size_t k = 0; k < this->_column; k++) {
+            for (size_t n = 0; n < this->_column; n++) {
+                newIntMatrix[m][k] += this->operator[](m)[n] * matrix[n][k];
             }
         }
     }
@@ -116,22 +116,19 @@ std::ostream &operator<<(std::ostream &stream, const IntMatrixClass &matrixClass
     return stream;
 }
 
-FloatVectorClass operator*(const IntMatrixClass &matrix, const FloatVectorClass &vector) {
-    if (matrix._column != vector.Length()) {
-        FloatVectorClass floatVectorClass(0);
-        return floatVectorClass;
+IntVectorClass IntMatrixClass::operator*(const FloatVectorClass &vector) {
+    if (this->_column != vector.Length()) {
+        return IntVectorClass(0);
     }
 
-    FloatVectorClass floatVectorClass(matrix._row);
+    IntVectorClass vectorClass(this->_row);
 
-    for (size_t m = 0; m < matrix._row; m++) {
+    for (size_t m = 0; m < this->_row; m++) {
         for (size_t n = 0; n < vector._length; n++) {
-            floatVectorClass[m] += matrix.operator[](m)[n] * vector[n];
-
-
+            vectorClass[m] += this->operator[](m)[n] * std::round(vector[n]);
         }
     }
-    return floatVectorClass;
+    return vectorClass;
 }
 
 IntMatrixClass& IntMatrixClass::operator=(const FloatMatrixClass& floatMatrix) {

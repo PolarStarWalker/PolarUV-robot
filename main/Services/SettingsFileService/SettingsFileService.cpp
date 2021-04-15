@@ -10,7 +10,7 @@ SettingsStruct &SettingsStruct::operator=(SettingsStruct *right) {
     this->MotorsProtocol = right->MotorsProtocol;
 
     delete[] MoveCoefficientArray;
-    this->MoveCoefficientArray = new int64_t[this->ThrustersNumber * 6];
+    this->MoveCoefficientArray = new double[this->ThrustersNumber * 6];
     for (ssize_t i = 0; i < right->ThrustersNumber; i++) {
         this->MoveCoefficientArray[i] = right->MoveCoefficientArray[i];
     }
