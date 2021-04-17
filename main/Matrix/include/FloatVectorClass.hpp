@@ -35,15 +35,14 @@ public:
 
     double &operator[](size_t value);
 
-    FloatVectorClass& operator+(int64_t value);
+    FloatVectorClass operator+(int64_t value);
 
     FloatVectorClass &operator=(FloatVectorClass&& right);
     FloatVectorClass &operator=(double *right);
     FloatVectorClass &operator=(float *right);
 
     void Normalize(double value);
-
-    void FillArray(std::array<int16_tm, 12>& array);
+    void FillArray(std::array<int16_t, 12>* array);
 
     friend std::ostream &operator<<(std::ostream &stream, const FloatVectorClass &matrixClass);
 };

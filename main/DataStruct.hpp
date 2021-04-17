@@ -61,6 +61,7 @@ struct MotorsStruct {
 };
 
 extern MotorsStruct MotorsStructData;
+constexpr size_t MotorsStructArrayLength = sizeof(MotorsStructData.PacketArray);
 constexpr size_t MotorsStructLen = sizeof(MotorsStructData);
 constexpr size_t MotorsStructLenMessage = MotorsStructLen + 2;
 

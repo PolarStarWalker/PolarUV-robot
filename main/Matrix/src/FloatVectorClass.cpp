@@ -74,10 +74,11 @@ std::ostream &operator<<(std::ostream &stream, const FloatVectorClass &vectorCla
     return stream;
 }
 
-FloatVectorClass& FloatVectorClass::operator+(int64_t value) {
+FloatVectorClass FloatVectorClass::operator+(int64_t value) {
     for(size_t i = 0; i < this->_length; i++){
         this->_vector[i]+=value;
     }
+    return *this;
 }
 
 void FloatVectorClass::Normalize(double value) {
@@ -102,8 +103,8 @@ void FloatVectorClass::Normalize(double value) {
 
 }
 
-void FloatVectorClass::FillArray(std::array<int16_t, 12>& array) {
+void FloatVectorClass::FillArray(std::array<int16_t, 12>* array) {
     for(size_t i = 0; i< this->_length; i++){
-        array[i] = std::round(this->_vector[i]);
+        (*array)[i] = std::round(this->_vector[i]);
     }
 }

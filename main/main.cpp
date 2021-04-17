@@ -17,7 +17,7 @@ int main() {
     MotorsStruct *motorsStruct = new MotorsStruct;
 
     ///bufer
-    char *motorsMessage = new char[MotorsStructLenMessage];
+    char *motorsMessage = new char[2 * MotorsStructLenMessage];
     ///settings from settings file
     SettingsStruct settingsStruct;
     SettingsFileService settingsFileService("settings");
@@ -35,7 +35,7 @@ int main() {
     FloatVectorClass motorsCommands;
 
     coefficientMatrix = settingsStruct.MoveCoefficientArray;
-    coefficientMatrix = coefficientMatrix * settingsStruct.MaxCommandValue;
+    coefficientMatrix = coefficientMatrix * -settingsStruct.MaxCommandValue;
 
     std::cout << "\n----settings in program----" << std::endl;
     std::cout << "IsTurnOn: " << settingsStruct.IsTurnOn << std::endl;
@@ -70,25 +70,40 @@ int main() {
             moveVector = commandsStruct->VectorArray;
             motorsCommands = coefficientMatrix * moveVector;
 
-            motorsCommands.Normalize(2000/2);
+            motorsCommands.Normalize(500);
+
+            motorsCommands = motorsCommands + (1500);
 
             std::array<int16_t, 12> moveArray;
 
             motorsCommands.FillArray(&moveArray);
 
-            std::memcpy(motorsStruct->PacketArray, moveArray.begin(), Packet)
+            std::memcpy(motorsStruct->PacketArray, moveArray.begin(), moveArray.size());
 
-            for (size_t i = 0; i < motorsCommands.Length(); i++) {
+            for (size_t i = 0; i < MotorsStructArrayLength / 2; i++) {
                 std::cout << motorsStruct->PacketArray[i] << std::endl;
             }
 
+            std::cout << MotorsStructLenMessage << std::endl;
+
+
             std::memcpy(motorsMessage + 1, motorsStruct, MotorsStructLen);
+            std::memcpy(motorsMessage + MotorsStructLen + 1, motorsStruct, MotorsStructLen);
             motorsMessage[0] = 's';
-            motorsMessage[MotorsStructLenMessage - 1] = 's';
+            motorsMessage[MotorsStructLen + 1] = 's';
+            motorsMessage[MotorsStructLenMessage] = 's';
+            motorsMessage[MotorsStructLenMessage * 2 - 1] = 's';
 
-            commandSender.Write(motorsMessage, MotorsStructLenMessage);
+            for (size_t i = 0; i < 2; i++) {
+
+                for (size_t j = 0; j < MotorsStructLen + 1; j++) {
+                    std::cout << motorsMessage[j] << '|';
+                }
+                std::cout << motorsMessage[MotorsStructLen+1] << std::endl;
+            }
+
+            commandSender.Write(motorsMessage, MotorsStructLenMessage*2);
         }
-
 
         //socket.Listen();
     }
