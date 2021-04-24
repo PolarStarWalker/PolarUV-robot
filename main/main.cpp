@@ -19,9 +19,8 @@ int main() {
     ///bufer
     char *motorsMessage = new char[2 * MotorsStructLenMessage];
     ///settings from settings file
-    SettingsStruct settingsStruct;
     SettingsFileService settingsFileService("settings");
-    settingsFileService.GetSettings(&settingsStruct);
+    SettingsStruct settingsStruct = settingsFileService.GetSettings();
     ///Set socket
     Socket socket;
     socket.MakeServerSocket(1999);

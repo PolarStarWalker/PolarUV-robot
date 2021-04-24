@@ -3,6 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include <list>
+#include <array>
 
 SettingsStruct &SettingsStruct::operator=(SettingsStruct *right) {
     this->ThrustersNumber = right->ThrustersNumber;
@@ -20,6 +21,20 @@ SettingsStruct &SettingsStruct::operator=(SettingsStruct *right) {
 
 SettingsStruct::~SettingsStruct() {
     delete[] this->MoveCoefficientArray;
+}
+
+SettingsStruct::SettingsStruct(SettingsStruct &&settingsStruct) noexcept {
+    this->ThrustersNumber = settingsStruct.ThrustersNumber;
+    this->MaxMotorSpeed = settingsStruct.MaxMotorSpeed;
+    this->MotorsProtocol = settingsStruct.MotorsProtocol;
+    this->HandFreedom = settingsStruct.HandFreedom;
+    this->MaxCommandValue = settingsStruct.MaxCommandValue;
+    this->MoveCoefficientArray = settingsStruct.MoveCoefficientArray;
+    this->HandCoefficientArray = settingsStruct.HandCoefficientArray;
+    this->IsTurnOn = settingsStruct.IsTurnOn;
+
+    settingsStruct.MoveCoefficientArray = nullptr;
+    settingsStruct.HandCoefficientArray = nullptr;
 }
 
 SettingsFileService::SettingsFileService(const char *fileName) {
@@ -63,12 +78,12 @@ FindPole(const int8_t *structFlag, int8_t *stateFlag, const SettingsStructEnumTy
     }
 }
 
-void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
+void SettingsFileService::ReadAndParseFile(SettingsStruct *externalSettingsStruct) {
 
     SettingsFile settingsFile;
     settingsFile.ReadFile(_fileName);
 
-    std::list<double *> moveCoefficientArrayList;
+    std::list<std::array<double, 6>> moveCoefficientArrayList;
     std::list<double> handCoefficientsList;
 
 #ifndef NDEBUG
@@ -135,13 +150,12 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
                 ssize_t endpoint = std::strchr(&settingsFile.Text[i], '}') - settingsFile.Text;
                 for (; i < endpoint; i++) {
 
-
                     ssize_t ptr = std::strchr(&settingsFile.Text[i], '[') - settingsFile.Text + 1;
 
                     if (ptr < endpoint && ptr > 0) { i = ptr; }
                     else break;
 
-                    double *array = new double[6];
+                    std::array<double, 6> array{};
 
                     size_t count = 0;
 
@@ -235,11 +249,10 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
     externalSettingsStruct->MoveCoefficientArray = new double[moveCoefficientArrayList.size() * 6];
 
     size_t counter = 0;
-    for (double *array : moveCoefficientArrayList) {
+    for (std::array<double, 6> array : moveCoefficientArrayList) {
         for (size_t j = 0; j < 6; j++) {
             externalSettingsStruct->MoveCoefficientArray[j + counter * 6] = array[j];
         }
-        delete[] array;
         counter++;
     }
     externalSettingsStruct->ThrustersNumber = counter;
@@ -260,5 +273,20 @@ void SettingsFileService::GetSettings(SettingsStruct *externalSettingsStruct) {
         externalSettingsStruct->IsTurnOn = false;
     }
 
+
+}
+
+SettingsStruct SettingsFileService::GetSettings() {
+    SettingsStruct settingsStruct;
+    try {
+        this->ReadAndParseFile(&settingsStruct);
+    } catch (...) {
+        std::cout << "Ошибки в файле конфигурации" << std::endl;
+        settingsStruct.IsTurnOn = false;
+        settingsStruct.ThrustersNumber = 0;
+        settingsStruct.HandFreedom = 0;
+    }
+
+    return settingsStruct;
 }
 

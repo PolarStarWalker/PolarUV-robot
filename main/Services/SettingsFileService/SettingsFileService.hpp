@@ -71,6 +71,10 @@ struct SettingsStruct {
 
 	~SettingsStruct();
 
+	SettingsStruct(SettingsStruct&& settingsStruct) noexcept ;
+
+    SettingsStruct()= default;
+
 	SettingsStruct& operator=(SettingsStruct* right);
 };
 
@@ -88,14 +92,15 @@ class SettingsFileService
 {
 private:
 	const char* _fileName;
-
+    void ReadAndParseFile(SettingsStruct* externalSettingsStruct);
 public:
 
 	explicit SettingsFileService(const char* fileName);
 
-	///read file & update SettingsStruct;
-	void GetSettings(SettingsStruct* externalSettingsStruct);
 
+
+    ///read file & update SettingsStruct;
+	SettingsStruct GetSettings();
 };
 
 
