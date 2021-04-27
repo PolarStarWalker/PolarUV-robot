@@ -97,8 +97,6 @@ public:
 
 	explicit SettingsFileService(const char* fileName);
 
-
-
     ///read file & update SettingsStruct;
 	SettingsStruct GetSettings();
 };

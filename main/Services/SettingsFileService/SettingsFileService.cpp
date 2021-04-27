@@ -281,7 +281,7 @@ SettingsStruct SettingsFileService::GetSettings() {
     try {
         this->ReadAndParseFile(&settingsStruct);
     } catch (...) {
-        std::cout << "Ошибки в файле конфигурации" << std::endl;
+        std::cout << std::endl << "Ошибки в файле конфигурации" << std::endl;
         settingsStruct.IsTurnOn = false;
         settingsStruct.ThrustersNumber = 0;
         settingsStruct.HandFreedom = 0;

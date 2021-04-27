@@ -26,7 +26,6 @@ int main() {
     socket.MakeServerSocket(1999);
     ///set spi
     SPIService commandSender("/dev/spidev0.0");
-    commandSender.Setup();
 
     /// program objects
     FloatVectorClass moveVector(6);
@@ -101,7 +100,9 @@ int main() {
                 std::cout << motorsMessage[MotorsStructLen+1] << std::endl;
             }
 
-            commandSender.Write(motorsMessage, MotorsStructLenMessage*2);
+
+            //commandSender.Write(motorsMessage, MotorsStructLenMessage*2);
+            commandSender.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage*2);
         }
 
         //socket.Listen();

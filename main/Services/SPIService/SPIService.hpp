@@ -17,13 +17,16 @@ class SPIService {
 private:
     int _spiDescriptor = -1;
 
+    u_int32_t speed = 5000000;
+    u_int8_t mode = SPI_MODE_0;
+    u_int8_t bits = 8;
+    u_int16_t delay = 0;
+
 public:
     explicit SPIService(const char* SPIName);
-
-    void Setup() const;
-
-    void Read(void* array, size_t length);
-    void Write(const void* array, size_t length);
-
     ~SPIService();
+
+    void ReadWrite(const void* tx, void *rx, size_t length) const;
+
+
 };

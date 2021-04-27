@@ -1,3 +1,4 @@
+#include <iostream>
 #include "SPIService.hpp"
 
 SPIService::SPIService(const char *SPIName) {
@@ -6,20 +7,21 @@ SPIService::SPIService(const char *SPIName) {
 
 SPIService::~SPIService() {
     if (this->_spiDescriptor != -1) close(this->_spiDescriptor);
-}
-
-void SPIService::Setup() const {
-    ioctl(this->_spiDescriptor,SPI_IOC_RD_MAX_SPEED_HZ, 5000000);
-    ioctl(this->_spiDescriptor, SPI_CPOL, 0);
-    ioctl(this->_spiDescriptor, SPI_CPHA, 0);
-    ioctl(this->_spiDescriptor, SPI_CS_HIGH, 0);
 
 }
 
-void SPIService::Read(void *array, size_t length){
-    read(this->_spiDescriptor, array, length);
+void SPIService::ReadWrite(const void *tx, void *rx, size_t length) const {
+
+    struct spi_ioc_transfer message{};
+
+    message.bits_per_word = this->bits;
+    message.cs_change = 0;
+    message.len = length;
+    message.rx_buf = (uint64_t) rx;
+    message.tx_buf = (uint64_t) tx;
+    message.speed_hz = this->speed;
+    message.delay_usecs = this->delay;
+
+    ioctl(this->_spiDescriptor, SPI_IOC_MESSAGE(1), &message);
 }
 
-void SPIService::Write(const void *array, size_t length) {
-    write(this->_spiDescriptor, array, length);
-}
