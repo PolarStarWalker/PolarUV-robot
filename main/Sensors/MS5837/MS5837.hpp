@@ -9,7 +9,7 @@ private:
 
 public:
 
-	MS5837(uint8_t id);
+	explicit MS5837(uint8_t id);
 	~MS5837();
 
 	//from interface

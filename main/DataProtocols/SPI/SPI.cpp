@@ -1,16 +1,16 @@
 #include <iostream>
-#include "SPIService.hpp"
+#include "SPI.hpp"
 
-SPIService::SPIService(const char *SPIName, u_int32_t SPI_Speed_Hz) {
+SPI::SPI(const char *SPIName, u_int32_t SPI_Speed_Hz) {
     this->_spiDescriptor = open(SPIName, O_RDWR);
     this->_speed = SPI_Speed_Hz;
 }
 
-SPIService::~SPIService() {
+SPI::~SPI() {
     if (this->_spiDescriptor != -1) close(this->_spiDescriptor);
 }
 
-void SPIService::ReadWrite(const void *tx, void *rx, size_t length) const {
+void SPI::ReadWrite(const void *tx, void *rx, size_t length) const {
 
     struct spi_ioc_transfer message{};
 

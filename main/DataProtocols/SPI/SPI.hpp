@@ -13,7 +13,7 @@
 //spi
 #include <linux/spi/spidev.h>
 
-class SPIService {
+class SPI {
 private:
     int _spiDescriptor = -1;
 
@@ -23,8 +23,8 @@ private:
     u_int16_t _delay = 0;
 
 public:
-    explicit SPIService(const char* SPIName,  u_int32_t SPI_Speed_Hz = 5000000);
-    ~SPIService();
+    explicit SPI(const char* SPIName, u_int32_t SPI_Speed_Hz = 5000000);
+    ~SPI();
 
     void ReadWrite(const void* tx, void *rx, size_t length) const;
 };
