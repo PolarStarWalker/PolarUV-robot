@@ -4,7 +4,7 @@
 #include <array>
 #include <sched.h>
 
-
+/// Комментарий
 int main() {
     ///set max sched priority
     struct sched_param process{};
