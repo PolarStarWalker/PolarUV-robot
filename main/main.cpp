@@ -34,7 +34,7 @@ int main() {
 
     coefficientMatrix = settingsStruct.MoveCoefficientArray;
     coefficientMatrix = coefficientMatrix * -settingsStruct.MaxCommandValue;
-
+#ifndef NDEBUG
     std::cout << "\n----settings in program----" << std::endl;
     std::cout << "IsTurnOn: " << settingsStruct.IsTurnOn << std::endl;
     std::cout << "ThrusterNumber: " << settingsStruct.ThrustersNumber << std::endl;
@@ -47,6 +47,7 @@ int main() {
     std::cout << std::endl;
     std::cout << "MaxMotorSpeed: " << settingsStruct.MaxMotorSpeed << std::endl;
     std::cout << "MotorProtocol: " << settingsStruct.MotorsProtocol << std::endl;
+#endif
 
     /// main program
     while (settingsStruct.IsTurnOn) {
@@ -83,7 +84,6 @@ int main() {
             }
 
             std::cout << MotorsStructLenMessage << std::endl;
-
 
             std::memcpy(motorsMessage + 1, motorsStruct, MotorsStructLen);
             std::memcpy(motorsMessage + MotorsStructLen + 1, motorsStruct, MotorsStructLen);
