@@ -4,7 +4,6 @@
 #include <array>
 #include <sched.h>
 
-/// Комментарий
 int main() {
     ///set max sched priority
     struct sched_param process{};
@@ -53,7 +52,7 @@ int main() {
     while (settingsStruct.IsTurnOn) {
         while (socket.GetSocketConnectionStatus()) {
 
-            int error = socket.RecvDataLen((char *) commandsStruct, CommandsStructLen);
+            ssize_t error = socket.RecvDataLen((char *) commandsStruct, CommandsStructLen);
 
             if (error++) break;
 
@@ -73,7 +72,7 @@ int main() {
 
             motorsCommands = motorsCommands + (1500);
 
-            std::array<int16_t, 12> moveArray;
+            std::array<int16_t, 12> moveArray{};
 
             motorsCommands.FillArray(&moveArray);
 
