@@ -10,16 +10,16 @@ add_executable (ROV "main.cpp" "main.hpp" "DataStruct.hpp")
 add_subdirectory ("Matrix")
 add_subdirectory ("Sensors")
 add_subdirectory ("Services")
-add_subdirectory ("Socket")
+add_subdirectory ("DataProtocols")
 
 target_precompile_headers(ROV REUSE_FROM Matrix)
 target_precompile_headers(ROV REUSE_FROM Sensors)
-target_precompile_headers(ROV REUSE_FROM Socket)
+target_precompile_headers(ROV REUSE_FROM DataProtocols)
 target_precompile_headers(ROV REUSE_FROM Services)
 
 target_link_libraries(ROV Matrix)
 target_link_libraries(ROV Sensors)
 target_link_libraries(ROV Services)
-target_link_libraries(ROV Socket)
+target_link_libraries(ROV DataProtocols)
 
-# TODO: Добавьте тесты и целевые объекты, если это необходимо.
+

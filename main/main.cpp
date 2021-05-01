@@ -11,6 +11,8 @@ int main() {
     process.sched_priority = 99;
     sched_setscheduler(0, SCHED_RR, &process);
 
+    MS5837 data(1);
+
     ///Set program
     ///structs for transfer data
     CommandsStruct *commandsStruct = new CommandsStruct;
@@ -25,7 +27,7 @@ int main() {
     Socket socket;
     socket.MakeServerSocket(1999);
     ///set spi
-    SPIService commandSender("/dev/spidev0.0");
+    SPI commandSender("/dev/spidev0.0");
 
     /// program objects
     FloatVectorClass moveVector(6);

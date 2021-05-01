@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <arpa/inet.h>
-#include <string.h>
+#include <cstring>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -12,7 +12,7 @@
 #define EXTERNAL_SERVER_IP "192.168.0.50" //Server ip for other computers
 #define INTERNAL_SERVER_IP "0.0.0.0" //Server ip for server
 
-enum SocketRole {
+enum SocketStatus {
 	UnInicialized = 0,
 	Client = 1,
 	Server = 2
@@ -45,7 +45,7 @@ public:
 protected:
 
 	//status (server or client)
-	SocketRole _socketRole = UnInicialized;
+	SocketStatus _socketRole = UnInicialized;
 
 	//stattus of connection
 	bool _connectionStatus = false;
