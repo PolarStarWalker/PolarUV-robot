@@ -111,6 +111,15 @@ int main() {
     delete motorsStruct;
     delete[] motorsMessage;
 
+    /// ---------- Проверка ----------
+    char buff[12] = "";
+    UART myUART = UART('4',9600);
+    while(1) {
+        myUART.recv(buff, 12);
+        std::cout << buff << std::endl;
+    }
+    /// ------------------------------
+
     return 0;
 }
 
