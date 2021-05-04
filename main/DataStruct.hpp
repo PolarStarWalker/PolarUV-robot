@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-enum DShotMode {
+enum DShotMode : int8_t {
 	DShot150 = 1,
 	DShot300 = 2,
 	DShot600 = 4,
