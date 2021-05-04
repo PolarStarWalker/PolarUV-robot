@@ -1,10 +1,10 @@
 #TurnOn Robot
-TurnOn = false
+TurnOn = true
 
 #MoveCoefficientArray is a matrix where rows is thrusters that drone have
 #Columns is a move vectors F:x,F:y,F:z,M:z,M:y,M:z
 MoveCoefficientArray = {
-    [ 0, 0, 0, 0, 0, 0 ],
+    [ 1, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ],
     [ 0, 0, 0, 0, 0, 0 ],

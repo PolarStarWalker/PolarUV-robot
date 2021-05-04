@@ -101,8 +101,6 @@ int main() {
                 std::cout << motorsMessage[MotorsStructLen + 1] << std::endl;
             }
 
-
-            //commandSender.Write(motorsMessage, MotorsStructLenMessage*2);
             commandSender.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage * 2);
         }
 
