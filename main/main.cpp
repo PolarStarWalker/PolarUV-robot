@@ -25,7 +25,7 @@ int main() {
     Socket socket;
     socket.MakeServerSocket(1999);
     ///set spi
-    SPI commandSender("/dev/spidev0.0");
+    SPI commandSender("/dev/spidev0.0", 35000000);
 
     /// program objects
     FloatVectorClass moveVector(6);
@@ -77,16 +77,17 @@ int main() {
 
             motorsCommands.FillArray(&moveArray);
 
-            std::memcpy(motorsStruct->PacketArray, moveArray.begin(), moveArray.size());
+            std::memcpy(motorsStruct->PacketArray, moveArray.begin(), moveArray.size() * 2);
 
             for (size_t i = 0; i < MotorsStructArrayLength / 2; i++) {
                 std::cout << motorsStruct->PacketArray[i] << std::endl;
             }
 
-            std::cout << MotorsStructLenMessage << std::endl;
+            std::cout << MotorsStructLen << std::endl;
+
 
             std::memcpy(motorsMessage + 1, motorsStruct, MotorsStructLen);
-            std::memcpy(motorsMessage + MotorsStructLen + 1, motorsStruct, MotorsStructLen);
+            std::memcpy(motorsMessage + 1 + MotorsStructLenMessage , motorsStruct, MotorsStructLen);
             motorsMessage[0] = 's';
             motorsMessage[MotorsStructLen + 1] = 's';
             motorsMessage[MotorsStructLenMessage] = 's';
@@ -97,12 +98,12 @@ int main() {
                 for (size_t j = 0; j < MotorsStructLen + 1; j++) {
                     std::cout << motorsMessage[j] << '|';
                 }
-                std::cout << motorsMessage[MotorsStructLen+1] << std::endl;
+                std::cout << motorsMessage[MotorsStructLen + 1] << std::endl;
             }
 
 
             //commandSender.Write(motorsMessage, MotorsStructLenMessage*2);
-            commandSender.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage*2);
+            commandSender.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage * 2);
         }
 
         //socket.Listen();
