@@ -24,7 +24,6 @@ UART::UART(char portNumber, speed_t speed){
         std::cout << "Failed to get attributes\n";
     }
 
-    ///ToDo: во самое сложное это флаги, с ними можно долго провозиться, чтобы всё заработало
     /*
     /// Устанавливаем флаги. В них еще не разобрался
     */
@@ -44,15 +43,10 @@ UART::UART(char portNumber, speed_t speed){
     }
 };
 
-//ToDo: recv функция это круто, но как на счёт send?
-ssize_t UART::recv(char *buff, size_t length){
-    /// Считываем данные
-///ToDo: вот тут я чёт не понимаю, read принимает дескриптор, указатель и длинну.
-/// Buf это уже указатель, зачем брать ссылку на указатель?
-    read(this->fileDescriptor, &buff, length);
+ssize_t UART::recv(void *ptr, size_t length){
+    read(this->fileDescriptor, ptr, 1);
 }
 
 UART::~UART(){
-    /// Закрываем порт
     close(this->fileDescriptor);
 }

@@ -110,14 +110,30 @@ int main() {
     delete motorsStruct;
     delete[] motorsMessage;
 
-    /// ---------- Проверка ----------
-    char buff[12] = "";
+/////// ---------- Проверка ----------
+
+    char buff[] = {};
+
+///  Вариант считывания без объекта UART
+//    struct termios attributes;
+//    int fileDescriptor = open("/dev/ttyS4", O_RDWR | O_NOCTTY | O_NDELAY);
+//
+//    tcgetattr(fileDescriptor, &attributes);
+//
+//    cfsetispeed(&attributes, B9600);
+//    cfsetospeed(&attributes, B9600);
+//
+//    tcsetattr(fileDescriptor, TCSAFLUSH, &attributes);
+//
+//    read(fileDescriptor, buff, 12);
+//    std::cout << buff << std::endl;
+
+///  Вариант считывания с объектом UART. Раскомментировать что-то одно
     UART myUART = UART('4',9600);
-    while(1) {
-        myUART.recv(buff, 12);
-        std::cout << buff << std::endl;
-    }
-    /// ------------------------------
+    myUART.recv(buff, 12);
+    std::cout << buff << std::endl;
+
+/////// ------------------------------
 
     return 0;
 }

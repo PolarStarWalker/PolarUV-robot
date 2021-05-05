@@ -8,7 +8,7 @@
 
 class UART {
 private:
-    char device[11] = "/dev/ttyS4";
+    char device[11] = "/dev/ttySX";
     int fileDescriptor = -1;
     struct termios attributes;
 
@@ -16,6 +16,6 @@ public:
     UART(char portNumber, speed_t speed);
     ~UART();
 
-    ssize_t recv(char *buff, size_t length);
+    ssize_t recv(void *ptr, size_t length);
 };
 
