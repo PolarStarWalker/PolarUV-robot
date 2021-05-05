@@ -10,19 +10,20 @@ int main() {
 
     ///Set program
     ///structs for transfer data
-    CommandsStruct *commandsStruct = new CommandsStruct;
-    MotorsStruct *motorsStruct = new MotorsStruct;
+    CommandsStruct commandsStruct;
+    MotorsStruct motorsStruct;
 
     ///bufer
-    char *motorsMessage = new char[2 * MotorsStructLenMessage];
+    char *motorsMessage[2 * MotorsStructLenMessage]{};
     ///settings from settings file
     SettingsFileService settingsFileService("settings");
     SettingsStruct settingsStruct = settingsFileService.GetSettings();
-    ///Set socket
+
+    ///Set data protocols
     Socket socket;
     socket.MakeServerSocket(1999);
-    ///set spi
     SPI commandSender("/dev/spidev0.0", 35000000);
+    UART myUART("/dev/ttyS3", S115200);
 
     /// program objects
     FloatVectorClass moveVector(6);
@@ -31,17 +32,10 @@ int main() {
     coefficientMatrix *= -settingsStruct.MaxCommandValue;
 
     /////// ---------- Проверка ----------
-    char buff[] = {};
-    ///  Вариант считывания с объектом UART. Раскомментировать что-то одно
-    UART myUART("/dev/ttyS3", S115200);
+    char buff[14] = {};
     myUART.recv(buff, 14);
     std::cout << buff << std::endl;
     /////// ------------------------------
-
-
-    delete commandsStruct;
-    delete motorsStruct;
-    delete[] motorsMessage;
 
     return 0;
 }

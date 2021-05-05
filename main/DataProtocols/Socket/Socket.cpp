@@ -128,7 +128,6 @@ int& Socket::ReturnDescriptor() {
 
 Socket::~Socket(){
         if (this->_clientSocketDescriptor != -1) { close(this->_clientSocketDescriptor); }
-        if (this->_serverSocketDescriptor != -1) { close(this->_serverSocketDescriptor); }
 }
 
 int Socket::CloseConnecton()
