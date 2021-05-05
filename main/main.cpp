@@ -58,7 +58,11 @@ int main() {
 
 
         }
+        //socket.Listen();
+    ///end of main program
 
+        ///ToDo: весь этот цикл ты можешь портить как хочешь,
+        /// всё равно в отдельной ветке работаешь
         for (;;) {
             std::cout << "\nВведите через пробел вектора: ";
             for (size_t i = 0; i < 6; i++) {
@@ -103,7 +107,7 @@ int main() {
             commandSender.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage * 2);
         }
 
-        //socket.Listen();
+
     }
 
     delete commandsStruct;
