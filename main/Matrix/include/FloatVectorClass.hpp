@@ -29,7 +29,6 @@ private:
 public:
 
     explicit FloatVectorClass(size_t length);
-    FloatVectorClass();
 
     ~FloatVectorClass();
 

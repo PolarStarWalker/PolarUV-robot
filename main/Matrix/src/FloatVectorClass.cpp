@@ -9,10 +9,6 @@ FloatVectorClass::FloatVectorClass(size_t length) {
 
 }
 
-FloatVectorClass::FloatVectorClass() {
-
-}
-
 FloatVectorClass::FloatVectorClass(const FloatVectorClass &vector){
     this->_vector = new double[vector._length];
     this->_length = vector._length;
@@ -31,7 +27,7 @@ FloatVectorClass::FloatVectorClass(FloatVectorClass&& vector)  noexcept {
 }
 
 FloatVectorClass::~FloatVectorClass() {
-    delete [] this->_vector;
+    delete[] this->_vector;
 }
 
 double &FloatVectorClass::operator[](size_t value) {

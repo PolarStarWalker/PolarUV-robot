@@ -6,15 +6,14 @@
 /// По поводу speed, в целом можно попробовать сделать по взрослому - через enum.
 /// создать SpeedEnum, унаследовать его от speed_t и переписать туда тот #define со скоростями.
 /// Тогда будет типизация и защита от дурака (компилятор не даст скомпилировать, если значения скорости нет в ENUM'e)
-UART::UART(char portNumber, speed_t speed){
+UART::UART(const char* portNumber, UARTSpeedEnum speed){
     /// Подставляем номер порта вместо Х
-    this->device[9] = portNumber;
 
     /// Открываем порт с какими-то флагами
     ///ToDo: O_NDELAY это флаг который открывает устройство в неблокирующем режиме
     /// (как функция считывание UART_DMA по прерыванию)
     /// В целом фитча полезная, но не в нашем случае, поэтому я думаю что его стоит убрать
-    this->fileDescriptor = open(this->device,O_RDWR | O_NOCTTY | O_NDELAY);
+    this->fileDescriptor = open(portNumber, O_RDWR | O_NOCTTY);
     if (this->fileDescriptor == -1){
         std::cout << "Failed to open port\n";
     }
@@ -32,8 +31,8 @@ UART::UART(char portNumber, speed_t speed){
     // Почему то оно не хочет принимать скорость в виде числа speed_t
     // Работает только со своими константами вроде B9600
     // (Временное решение)
-    if(cfsetispeed(&this->attributes, B9600) < 0 ||
-       cfsetospeed(&this->attributes, B9600) < 0) {
+    if(cfsetispeed(&this->attributes, speed) < 0 ||
+       cfsetospeed(&this->attributes, speed) < 0) {
         std::cout << "Failed to set speed\n";
     }
 
@@ -44,7 +43,7 @@ UART::UART(char portNumber, speed_t speed){
 };
 
 ssize_t UART::recv(void *ptr, size_t length){
-    read(this->fileDescriptor, ptr, 1);
+    read(this->fileDescriptor, ptr, length);
 }
 
 UART::~UART(){

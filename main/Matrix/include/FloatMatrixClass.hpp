@@ -32,7 +32,7 @@ public:
 	double* operator[](size_t value);
 	
 	FloatMatrixClass operator*(FloatMatrixClass& right);
-    FloatMatrixClass operator*(int64_t value);
+    FloatMatrixClass& operator*=(int64_t value);
     FloatVectorClass operator*(const FloatVectorClass& vector);
 
 	FloatMatrixClass& operator= (double** right);
