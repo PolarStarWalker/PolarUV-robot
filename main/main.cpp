@@ -58,6 +58,8 @@ int main() {
 
 
         }
+        //socket.Listen();
+    ///end of main program
 
         ///ToDo: весь этот цикл ты можешь портить как хочешь,
         /// всё равно в отдельной ветке работаешь
@@ -105,7 +107,7 @@ int main() {
             commandSender.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage * 2);
         }
 
-        //socket.Listen();
+
     }
 
     delete commandsStruct;
