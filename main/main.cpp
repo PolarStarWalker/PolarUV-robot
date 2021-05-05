@@ -25,7 +25,7 @@ int main() {
     Socket socket;
     socket.MakeServerSocket(1999);
     ///set spi
-    SPI commandSender("/dev/spidev0.0", 35000000);
+    SPI commandSender("/dev/spidev0.0", 26000000);
 
     /// program objects
     FloatVectorClass moveVector(6);
