@@ -23,7 +23,7 @@ int main() {
     Socket socket;
     socket.MakeServerSocket(1999);
     SPI commandSender("/dev/spidev0.0", 35000000);
-    UART uart("/dev/ttyS3", S115200);
+    UART uart("/dev/ttyS4", S115200);
 
     /// program objects
     FloatVectorClass moveVector(6);
@@ -32,9 +32,15 @@ int main() {
     coefficientMatrix *= -settingsStruct.MaxCommandValue;
 
     /////// ---------- Проверка ----------
-    char buff[14] = {};
-    uart.recv(buff, 14);
-    std::cout << buff << std::endl;
+    char low = 0, high = 255;
+    while (1){
+        for (int i = 0; i < 9999; i++){
+            uart.send(&high,1);
+        }
+        for (int i = 0; i < 9999; i++){
+            uart.send(&low,1);
+        }
+    }
     /////// ------------------------------
 
     return 0;
