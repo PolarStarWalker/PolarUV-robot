@@ -13,11 +13,11 @@ int main() {
 
     ///Set program
     ///structs for transfer data
-    CommandsStruct *commandsStruct = new CommandsStruct;
-    MotorsStruct *motorsStruct = new MotorsStruct;
+    CommandsStruct commandsStruct;
+    MotorsStruct motorsStruct;
 
     ///bufer
-    char *motorsMessage = new char[2 * MotorsStructLenMessage];
+    char motorsMessage[2 * MotorsStructLenMessage]{};
     ///settings from settings file
     SettingsFileService settingsFileService("settings");
     SettingsStruct settingsStruct = settingsFileService.GetSettings();
@@ -29,11 +29,11 @@ int main() {
 
     /// program objects
     FloatVectorClass moveVector(6);
-    FloatMatrixClass coefficientMatrix(settingsStruct.ThrustersNumber, 6);
     FloatVectorClass motorsCommands;
+    FloatMatrixClass coefficientMatrix(settingsStruct.ThrustersNumber, 6);
 
     coefficientMatrix = settingsStruct.MoveCoefficientArray;
-    coefficientMatrix = coefficientMatrix * -settingsStruct.MaxCommandValue;
+    coefficientMatrix *= -settingsStruct.MaxCommandValue;
 #ifndef NDEBUG
     std::cout << "\n----settings in program----" << std::endl;
     std::cout << "IsTurnOn: " << settingsStruct.IsTurnOn << std::endl;
@@ -53,7 +53,7 @@ int main() {
     while (settingsStruct.IsTurnOn) {
         while (socket.GetSocketConnectionStatus()) {
 
-            int error = socket.RecvDataLen((char *) commandsStruct, CommandsStructLen);
+            ssize_t error = socket.RecvDataLen((char *) &commandsStruct, CommandsStructLen);
 
             if (error++) break;
 
@@ -63,31 +63,31 @@ int main() {
         for (;;) {
             std::cout << "\nВведите через пробел вектора: ";
             for (size_t i = 0; i < 6; i++) {
-                std::cin >> commandsStruct->VectorArray[i];
+                std::cin >> commandsStruct.VectorArray[i];
             }
 
-            moveVector = commandsStruct->VectorArray;
+            moveVector = commandsStruct.VectorArray;
             motorsCommands = coefficientMatrix * moveVector;
 
             motorsCommands.Normalize(500);
 
             motorsCommands = motorsCommands + (1500);
 
-            std::array<int16_t, 12> moveArray;
+            std::array<int16_t, 12> moveArray{};
 
             motorsCommands.FillArray(&moveArray);
 
-            std::memcpy(motorsStruct->PacketArray, moveArray.begin(), moveArray.size() * 2);
+            std::memcpy(motorsStruct.PacketArray, moveArray.begin(), moveArray.size() * 2);
 
             for (size_t i = 0; i < MotorsStructArrayLength / 2; i++) {
-                std::cout << motorsStruct->PacketArray[i] << std::endl;
+                std::cout << motorsStruct.PacketArray[i] << std::endl;
             }
 
             std::cout << MotorsStructLen << std::endl;
 
 
-            std::memcpy(motorsMessage + 1, motorsStruct, MotorsStructLen);
-            std::memcpy(motorsMessage + 1 + MotorsStructLenMessage , motorsStruct, MotorsStructLen);
+            std::memcpy(motorsMessage + 1, &motorsStruct, MotorsStructLen);
+            std::memcpy(motorsMessage + 1 + MotorsStructLenMessage, &motorsStruct, MotorsStructLen);
             motorsMessage[0] = 's';
             motorsMessage[MotorsStructLen + 1] = 's';
             motorsMessage[MotorsStructLenMessage] = 's';
@@ -106,10 +106,6 @@ int main() {
 
         //socket.Listen();
     }
-
-    delete commandsStruct;
-    delete motorsStruct;
-    delete[] motorsMessage;
 
     return 0;
 }
