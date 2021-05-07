@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "Matrix/Matrix.hpp"
-#include "Sensors/Sensors.hpp"
+#include "Peripheral/Peripheral.hpp"
 #include "DataProtocols/DataProtocols.hpp"
 #include "Services/Services.hpp"
 

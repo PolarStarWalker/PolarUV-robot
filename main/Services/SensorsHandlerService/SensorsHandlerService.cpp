@@ -1,8 +1,8 @@
 #include "SensorsHandlerService.hpp"
 
-void SensorsHandlerService::AddSensor(ISensors* newSensor)
+void SensorsHandlerService::AddSensor(IPeripheral* newSensor)
 {
-	ISensors** tmpSensorsArray = new ISensors* [_sensorsNumber+1];
+	IPeripheral** tmpSensorsArray = new IPeripheral* [_sensorsNumber + 1];
 	
 	for (size_t i = 0; i < _sensorsNumber; i++) {
 		tmpSensorsArray[i] = this->_sensorsArray[i];

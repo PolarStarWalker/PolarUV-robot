@@ -49,7 +49,7 @@ int main() {
     std::cout << "MotorProtocol: " << settingsStruct.MotorsProtocol << std::endl;
 #endif
 
-    /// main program
+/*    /// main program
     while (settingsStruct.IsTurnOn) {
         while (socket.GetSocketConnectionStatus()) {
 
@@ -105,7 +105,7 @@ int main() {
         }
 
         //socket.Listen();
-    }
+    }*/
 
     return 0;
 }
