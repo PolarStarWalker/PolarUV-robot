@@ -1,9 +1,9 @@
 #include <iostream>
 #include "SPI.hpp"
 
-SPI::SPI(const char *SPIName, u_int32_t SPI_Speed_Hz) {
-    this->_spiDescriptor = open(SPIName, O_RDWR);
-    this->_speed = SPI_Speed_Hz;
+SPI::SPI(const char *address, u_int32_t speedHz) {
+    this->_spiDescriptor = open(address, O_RDWR);
+    this->_speed = speedHz;
 }
 
 SPI::~SPI() {

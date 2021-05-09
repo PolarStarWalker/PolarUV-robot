@@ -23,7 +23,7 @@ private:
     u_int16_t _delay = 0;
 
 public:
-    explicit SPI(const char* SPIName, u_int32_t SPI_Speed_Hz = 5000000);
+    explicit SPI(const char* address, u_int32_t speedHz = 5000000);
     ~SPI();
 
     void ReadWrite(const void* tx, void *rx, size_t length) const;

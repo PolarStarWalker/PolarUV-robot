@@ -17,10 +17,11 @@ bool LiftBag::ReadData() {
 
 bool LiftBag::WriteData() {
     //ToDo: отправка сообщений
-    uint8_t msg = this->_flag ? 0xFF : 0x00;
-    //return _uart.recv(&msg, 1) == 1;
+    this->_dataMutex.lock();
+    uint64_t msg = this->_flag ? 0xFFFFFFFFFFFFFFFF : 0x00000000000000;
+    this->_dataMutex.unlock();
 
-    return false;
+    return _uart->recv((uint8_t*) &msg, 1) == 1;
 }
 
 bool LiftBag::Reload() {

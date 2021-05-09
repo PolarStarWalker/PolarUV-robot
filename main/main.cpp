@@ -26,10 +26,11 @@ int main() {
     socket.MakeServerSocket(1999);
     ///set spi
     SPI commandSender("/dev/spidev0.0", 26000000);
+    UART uart("/dev/ttyS3", UART::S115200);
 
     /// program objects
     FloatVectorClass moveVector(6);
-    FloatVectorClass motorsCommands;
+
     FloatMatrixClass coefficientMatrix(settingsStruct.ThrustersNumber, 6);
 
     coefficientMatrix = settingsStruct.MoveCoefficientArray;
@@ -49,7 +50,7 @@ int main() {
     std::cout << "MotorProtocol: " << settingsStruct.MotorsProtocol << std::endl;
 #endif
 
-/*    /// main program
+/*   /// main program
     while (settingsStruct.IsTurnOn) {
         while (socket.GetSocketConnectionStatus()) {
 
@@ -67,7 +68,7 @@ int main() {
             }
 
             moveVector = commandsStruct.VectorArray;
-            motorsCommands = coefficientMatrix * moveVector;
+            FloatVectorClass motorsCommands = coefficientMatrix * moveVector;
 
             motorsCommands.Normalize(500);
 
@@ -106,6 +107,10 @@ int main() {
 
         //socket.Listen();
     }*/
+
+    uint8_t buf[30]{};
+    uart.recv(buf, 12);
+    std::cout << buf << std::endl;
 
     return 0;
 }

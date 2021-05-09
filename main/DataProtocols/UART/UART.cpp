@@ -27,11 +27,11 @@ UART::UART(const char* address, UARTSpeedEnum speed){
     }
 };
 
-ssize_t UART::recv(void *ptr, size_t length){
+ssize_t UART::recv(void *ptr, size_t length) const{
     return read(this->_uartDescriptor, ptr, length);
 }
 
-ssize_t UART::send(void *ptr, size_t length){
+ssize_t UART::send(const void *ptr, size_t length) const{
     return write(this->_uartDescriptor, ptr, length);
 }
 
