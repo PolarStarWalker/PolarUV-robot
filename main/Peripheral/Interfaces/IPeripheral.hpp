@@ -13,11 +13,11 @@ protected:
     bool _status = false;
 
     enum BusTypeEnum : int8_t {
-        BusUninitialized = -1,
-        I2C = 0,
-        UART = 1,
-        SPI = 3
-    } const _busType = BusUninitialized;
+        UninitializedBus = -1,
+        I2CBus = 0,
+        UARTBus = 1,
+        SPIBus = 2
+    } const _busType = UninitializedBus;
 
     enum ActionTypeEnum : int8_t {
         ActionUninitialized = -1,
