@@ -105,6 +105,7 @@ FloatMatrixClass& FloatMatrixClass::operator*=(int64_t value) {
 }
 
 FloatMatrixClass& FloatMatrixClass::operator=(FloatMatrixClass&& floatMatrix) {
+
     delete[] this->_matrix;
 
     this->_matrix = floatMatrix._matrix;
