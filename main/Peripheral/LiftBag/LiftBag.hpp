@@ -6,7 +6,7 @@
 
 class LiftBag : protected IPeripheral {
 private:
-    const UART* _uart;
+    const UART *_uart;
 
     bool _flag;
 
@@ -18,10 +18,9 @@ private:
 
 public:
 
-    LiftBag(const UART* uart);
+    explicit LiftBag(const UART *uart);
+
     void SetData(bool flag);
-
-
 };
 
 

@@ -18,7 +18,6 @@ private:
     int _spiDescriptor = -1;
 
     u_int32_t _speed;
-    u_int8_t Mode = SPI_MODE_0;
     u_int8_t _bits = 8;
     u_int16_t _delay = 0;
 
