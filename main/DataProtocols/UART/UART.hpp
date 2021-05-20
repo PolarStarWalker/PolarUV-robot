@@ -1,10 +1,9 @@
 #pragma once
+
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <iostream>
-
-
 
 class UART {
 private:
@@ -12,7 +11,7 @@ private:
     struct termios attributes;
 
 public:
-    enum UARTSpeedEnum : speed_t{
+    enum UARTSpeedEnum : speed_t {
         S57600 = 0010001,
         S115200 = 0010002,
         S230400 = 0010003,
@@ -30,12 +29,12 @@ public:
         S4000000 = 0010017,
     };
 
-    UART(const char* address, UARTSpeedEnum speed);
+    UART(const char *address, UARTSpeedEnum speed);
+
     ~UART();
 
     ssize_t recv(void *ptr, size_t length) const;
+
     ssize_t send(const void *ptr, size_t length) const;
-
-
 };
 

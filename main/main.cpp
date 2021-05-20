@@ -34,7 +34,7 @@ int main() {
     FloatMatrixClass coefficientMatrix(settingsStruct.ThrustersNumber, 6);
 
     coefficientMatrix = settingsStruct.MoveCoefficientArray;
-    coefficientMatrix *= -settingsStruct.MaxCommandValue;
+    coefficientMatrix *= 10;
 #ifndef NDEBUG
     std::cout << "\n----settings in program----" << std::endl;
     std::cout << "IsTurnOn: " << settingsStruct.IsTurnOn << std::endl;
@@ -50,7 +50,7 @@ int main() {
     std::cout << "MotorProtocol: " << settingsStruct.MotorsProtocol << std::endl;
 #endif
 
-/*   /// main program
+   /// main program
     while (settingsStruct.IsTurnOn) {
         while (socket.GetSocketConnectionStatus()) {
 
@@ -70,9 +70,9 @@ int main() {
             moveVector = commandsStruct.VectorArray;
             FloatVectorClass motorsCommands = coefficientMatrix * moveVector;
 
-            motorsCommands.Normalize(500);
+            motorsCommands.Normalize(2000);
 
-            motorsCommands = motorsCommands + (1500);
+            motorsCommands += 1000;
 
             std::array<int16_t, 12> moveArray{};
 
@@ -106,11 +106,7 @@ int main() {
         }
 
         //socket.Listen();
-    }*/
-
-    uint8_t buf[30]{};
-    uart.recv(buf, 12);
-    std::cout << buf << std::endl;
+    }
 
     return 0;
 }

@@ -5,8 +5,8 @@ cmake_minimum_required (VERSION 3.16)
 
 project ("SensorsHandlerService")
 
-set(SOURCE_LIB SensorsHandlerService.cpp)
+set(SOURCE_LIB PeripheralHandlerService.cpp)
 
 add_library(SensorsHandlerService STATIC ${SOURCE_LIB})
 
-target_precompile_headers(SensorsHandlerService PUBLIC SensorsHandlerService.hpp)
+target_precompile_headers(SensorsHandlerService PUBLIC PeripheralHandlerService.hpp)

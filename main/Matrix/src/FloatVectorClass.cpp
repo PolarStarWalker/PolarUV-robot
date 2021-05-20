@@ -70,7 +70,7 @@ std::ostream &operator<<(std::ostream &stream, const FloatVectorClass &vectorCla
     return stream;
 }
 
-FloatVectorClass FloatVectorClass::operator+(int64_t value) {
+FloatVectorClass& FloatVectorClass::operator+=(int64_t value) {
     for(size_t i = 0; i < this->_length; i++){
         this->_vector[i]+=value;
     }

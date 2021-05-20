@@ -6,43 +6,49 @@
 #include "IntVectorClass.hpp"
 
 class IntMatrixClass;
+
 class FloatVectorClass;
+
 class IntVectorClass;
 
-class FloatMatrixClass : public virtual BaseMatrixClass
-{
+class FloatMatrixClass : public virtual BaseMatrixClass {
     friend IntMatrixClass;
     friend FloatVectorClass;
     friend IntVectorClass;
 
 private:
-	double* _matrix =nullptr;
+    double *_matrix = nullptr;
 
-    double* operator[](size_t value)const;
+    double *operator[](size_t value) const;
 
     FloatMatrixClass(const FloatMatrixClass &matrix);
 
-    FloatMatrixClass(FloatMatrixClass&& matrix) noexcept ;
+    FloatMatrixClass(FloatMatrixClass &&matrix) noexcept;
 
 public:
-	FloatMatrixClass(size_t row, size_t column);
+    FloatMatrixClass(size_t row, size_t column);
 
-	~FloatMatrixClass();
+    ~FloatMatrixClass();
 
-	double* operator[](size_t value);
-	
-	FloatMatrixClass operator*(FloatMatrixClass& right);
-    FloatMatrixClass& operator*=(int64_t value);
-    FloatVectorClass operator*(const FloatVectorClass& vector);
+    double *operator[](size_t value);
 
-	FloatMatrixClass& operator= (double** right);
-	FloatMatrixClass& operator= (double* right);
-	FloatMatrixClass& operator= (float* right);
-    FloatMatrixClass& operator= (FloatMatrixClass&& floatMatrix);
+    FloatMatrixClass operator*(FloatMatrixClass &right);
 
-    friend std::ostream& operator<<(std::ostream& stream, const FloatMatrixClass& matrixClass);
+    FloatMatrixClass &operator*=(int64_t value);
+
+    FloatVectorClass operator*(const FloatVectorClass &vector);
+
+    FloatMatrixClass &operator=(double **right);
+
+    FloatMatrixClass &operator=(double *right);
+
+    FloatMatrixClass &operator=(float *right);
+
+    FloatMatrixClass &operator=(FloatMatrixClass &&floatMatrix);
+
+    friend std::ostream &operator<<(std::ostream &stream, const FloatMatrixClass &matrixClass);
 };
 
-std::ostream& operator<<(std::ostream& stream, const FloatMatrixClass& matrixClass);
+std::ostream &operator<<(std::ostream &stream, const FloatMatrixClass &matrixClass);
 
 #endif

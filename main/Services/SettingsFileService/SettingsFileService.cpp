@@ -28,7 +28,6 @@ SettingsStruct::SettingsStruct(SettingsStruct &&settingsStruct) noexcept {
     this->MaxMotorSpeed = settingsStruct.MaxMotorSpeed;
     this->MotorsProtocol = settingsStruct.MotorsProtocol;
     this->HandFreedom = settingsStruct.HandFreedom;
-    this->MaxCommandValue = settingsStruct.MaxCommandValue;
     this->MoveCoefficientArray = settingsStruct.MoveCoefficientArray;
     this->HandCoefficientArray = settingsStruct.HandCoefficientArray;
     this->IsTurnOn = settingsStruct.IsTurnOn;

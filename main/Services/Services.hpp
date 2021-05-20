@@ -1,4 +1,4 @@
 #pragma once
 #include "./SettingsFileService/SettingsFileService.hpp"
-#include "./SensorsHandlerService/SensorsHandlerService.hpp"
+#include "./SensorsHandlerService/PeripheralHandlerService.hpp"
 #include "./StreetingService/SteeringService.hpp"

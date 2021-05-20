@@ -34,7 +34,7 @@ public:
 
     double &operator[](size_t value);
 
-    FloatVectorClass operator+(int64_t value);
+    FloatVectorClass& operator+=(int64_t value);
 
     FloatVectorClass &operator=(FloatVectorClass&& right);
     FloatVectorClass &operator=(double *right);
