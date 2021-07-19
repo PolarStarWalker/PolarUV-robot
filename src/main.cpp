@@ -57,7 +57,7 @@ int main() {
     std::cout << "Client connected\n";
 
 
-    /// main program
+    /// src program
     while (settingsStruct.IsTurnOn) {
         while (socket.IsOnline()) {
             if (socket.RecvDataLen(message, 44) != 0)

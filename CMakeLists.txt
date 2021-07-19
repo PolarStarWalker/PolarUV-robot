@@ -14,4 +14,4 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 project ("robot")
 
 # Включите подпроекты.
-add_subdirectory ("main")
+add_subdirectory ("src")

@@ -1,7 +1,4 @@
-﻿# CMakeList.txt: проект CMake для main; включите исходный код и определения,
-# укажите здесь логику для конкретного проекта.
-#
-cmake_minimum_required (VERSION 3.16)
+﻿cmake_minimum_required (VERSION 3.16)
 
 file(COPY settings DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
