@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../interfaces/IPeripheral.hpp"
+#include "../Interfaces/IPeripheral.hpp"
 #include "MS5837Data.hpp"
 
 class MS5837 : IPeripheral, MS5837Registers {

@@ -50,18 +50,27 @@ int main() {
     std::cout << "MotorProtocol: " << settingsStruct.MotorsProtocol << std::endl;
 #endif
 
-   /// main program
+    char message[44];
+    CommandsStruct* command;
+
+    socket.Listen();
+    std::cout << "Client connected\n";
+
+
+    /// main program
     while (settingsStruct.IsTurnOn) {
-        while (socket.GetSocketConnectionStatus()) {
+        while (socket.IsOnline()) {
+            if (socket.RecvDataLen(message, 44) != 0)
+            {
+                std::cout << "Struct recieved:" << std::endl;
 
-            ssize_t error = socket.RecvDataLen((char *) &commandsStruct, CommandsStructLen);
+                command = (CommandsStruct*)message;
 
-            if (error++) break;
-
-
+                std::cout << *command;
+            }
         }
 
-        for (;;) {
+        /*for (;;) {
             std::cout << "\nВведите через пробел вектора: ";
             for (size_t i = 0; i < 6; i++) {
                 std::cin >> commandsStruct.VectorArray[i];
@@ -103,9 +112,9 @@ int main() {
             }
 
             commandSender.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage * 2);
-        }
+        }*/
 
-        //socket.Listen();
+        socket.Listen();
     }
 
     return 0;

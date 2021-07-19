@@ -1,5 +1,5 @@
 #pragma once
-#include "../interfaces/IData.hpp"
+#include "../Interfaces/IData.hpp"
 
 struct MS5837Data : IData{
 	double depth = 0.0f;

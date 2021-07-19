@@ -66,4 +66,32 @@ constexpr size_t MotorsStructLen = sizeof(MotorsStructData);
 constexpr size_t MotorsStructLenMessage = MotorsStructLen + 2;
 
 
+std::ostream& operator << (std::ostream &s, const CommandsStruct &c)
+{
+    s << "VectorArray: ["
+      << c.VectorArray[0] << ", "
+      << c.VectorArray[1] << ", "
+      << c.VectorArray[2] << ", "
+      << c.VectorArray[3] << ", "
+      << c.VectorArray[4] << ", "
+      << c.VectorArray[5] << "]"
+      << std::endl
 
+      << "The Hand: ["
+      << c.TheHand[0] << ", "
+      << c.TheHand[1] << "]"
+      << std::endl
+
+      << "Camera: ["
+      << c.Camera[0] << ", "
+      << c.Camera[1] << "]"
+      << std::endl
+
+      << "MotorsLock: "
+      << c.MotorsLock << std::endl
+
+      << "Stabilization: "
+      << c.Stabilization << std::endl;
+
+    return s;
+}

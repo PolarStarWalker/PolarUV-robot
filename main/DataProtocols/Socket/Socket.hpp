@@ -7,6 +7,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <fcntl.h>
+#include <poll.h>
 
 //ip settings
 #define EXTERNAL_SERVER_IP "192.168.0.50" //Server ip for other computers
@@ -22,6 +23,8 @@ enum SocketStatus {
 class Socket {
 public:
 
+    ~Socket();
+
 	//Functions for making server socket
 	int MakeServerSocket(uint16_t port);
 	int Listen();
@@ -33,14 +36,9 @@ public:
 	ssize_t RecvDataLen(char* msg, size_t len);
 	ssize_t SendDataLen(char* msg, size_t len);
 
-	//Return descriptor for closing Socket
-	int& ReturnDescriptor();
+	int CloseConnection();
 
-	~Socket();
-
-	int CloseConnecton();
-
-	bool GetSocketConnectionStatus();
+	bool IsOnline();
 
 protected:
 
@@ -48,7 +46,7 @@ protected:
 	SocketStatus _socketRole = UnInicialized;
 
 	//stattus of connection
-	bool _connectionStatus = false;
+	bool _isOnline = false;
 
 	//socket descriptors
 	int _serverSocketDescriptor;
