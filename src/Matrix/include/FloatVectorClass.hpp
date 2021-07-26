@@ -41,7 +41,7 @@ public:
     FloatVectorClass &operator=(float *right);
 
     void Normalize(double value);
-    void FillArray(std::array<int16_t, 12>* array);
+    void FillArray(std::array<uint16_t, 12>* array);
 
     friend std::ostream &operator<<(std::ostream &stream, const FloatVectorClass &matrixClass);
 };

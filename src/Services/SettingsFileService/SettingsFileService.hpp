@@ -57,8 +57,7 @@ enum SettingsStructEnumType{
     HandCoefficientArray = 5,
 };
 
-
-struct SettingsStruct {
+struct OldSettingsStruct {
 
 	ssize_t ThrustersNumber = -1;
 	ssize_t MaxMotorSpeed = -1;
@@ -68,13 +67,13 @@ struct SettingsStruct {
     double* HandCoefficientArray = nullptr;
     bool IsTurnOn = false;
 
-	~SettingsStruct();
+	~OldSettingsStruct();
 
-	SettingsStruct(SettingsStruct&& settingsStruct) noexcept ;
+	OldSettingsStruct(OldSettingsStruct&& settingsStruct) noexcept ;
 
-    SettingsStruct()= default;
+    OldSettingsStruct()= default;
 
-	SettingsStruct& operator=(SettingsStruct* right);
+	OldSettingsStruct& operator=(OldSettingsStruct* right);
 };
 
 struct SettingsFile {
@@ -91,13 +90,13 @@ class SettingsFileService
 {
 private:
 	const char* _fileName;
-    void ReadAndParseFile(SettingsStruct* externalSettingsStruct);
+    void ReadAndParseFile(OldSettingsStruct* externalSettingsStruct);
 public:
 
 	explicit SettingsFileService(const char* fileName);
 
-    ///read file & update SettingsStruct;
-	SettingsStruct GetSettings();
+    ///read file & update OldSettingsStruct;
+	OldSettingsStruct GetSettings();
 };
 
 

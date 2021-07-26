@@ -2,7 +2,7 @@
 
 file(COPY settings DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable (robot "main.cpp" "main.hpp" "DataStruct.hpp")
+add_executable (robot "main.cpp" "main.hpp" "DataStruct.hpp" DataStract.cpp)
 
 add_subdirectory ("Matrix")
 add_subdirectory ("Peripheral")

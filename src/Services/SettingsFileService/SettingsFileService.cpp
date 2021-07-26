@@ -5,7 +5,7 @@
 #include <list>
 #include <array>
 
-SettingsStruct &SettingsStruct::operator=(SettingsStruct *right) {
+OldSettingsStruct &OldSettingsStruct::operator=(OldSettingsStruct *right) {
     this->ThrustersNumber = right->ThrustersNumber;
     this->MaxMotorSpeed = right->MaxMotorSpeed;
     this->MotorsProtocol = right->MotorsProtocol;
@@ -19,11 +19,11 @@ SettingsStruct &SettingsStruct::operator=(SettingsStruct *right) {
     return *this;
 }
 
-SettingsStruct::~SettingsStruct() {
+OldSettingsStruct::~OldSettingsStruct() {
     delete[] this->MoveCoefficientArray;
 }
 
-SettingsStruct::SettingsStruct(SettingsStruct &&settingsStruct) noexcept {
+OldSettingsStruct::OldSettingsStruct(OldSettingsStruct &&settingsStruct) noexcept {
     this->ThrustersNumber = settingsStruct.ThrustersNumber;
     this->MaxMotorSpeed = settingsStruct.MaxMotorSpeed;
     this->MotorsProtocol = settingsStruct.MotorsProtocol;
@@ -77,7 +77,7 @@ FindPole(const int8_t *structFlag, int8_t *stateFlag, const SettingsStructEnumTy
     }
 }
 
-void SettingsFileService::ReadAndParseFile(SettingsStruct *externalSettingsStruct) {
+void SettingsFileService::ReadAndParseFile(OldSettingsStruct *externalSettingsStruct) {
 
     SettingsFile settingsFile;
     settingsFile.ReadFile(_fileName);
@@ -275,8 +275,8 @@ void SettingsFileService::ReadAndParseFile(SettingsStruct *externalSettingsStruc
 
 }
 
-SettingsStruct SettingsFileService::GetSettings() {
-    SettingsStruct settingsStruct;
+OldSettingsStruct SettingsFileService::GetSettings() {
+    OldSettingsStruct settingsStruct;
     try {
         this->ReadAndParseFile(&settingsStruct);
     } catch (...) {

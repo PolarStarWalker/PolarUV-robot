@@ -20,7 +20,7 @@ int main() {
     char motorsMessage[2 * MotorsStructLenMessage]{};
     ///settings from settings file
     SettingsFileService settingsFileService("settings");
-    SettingsStruct settingsStruct = settingsFileService.GetSettings();
+    OldSettingsStruct oldSettingsStruct = settingsFileService.GetSettings();
     ///Set socket
     Socket socket;
     socket.MakeServerSocket(1999);
@@ -30,89 +30,59 @@ int main() {
 
     /// program objects
     FloatVectorClass moveVector(6);
-
-    FloatMatrixClass coefficientMatrix(settingsStruct.ThrustersNumber, 6);
-
-    coefficientMatrix = settingsStruct.MoveCoefficientArray;
+    FloatMatrixClass coefficientMatrix(oldSettingsStruct.ThrustersNumber, 6);
+    coefficientMatrix = oldSettingsStruct.MoveCoefficientArray;
     coefficientMatrix *= 10;
-#ifndef NDEBUG
-    std::cout << "\n----settings in program----" << std::endl;
-    std::cout << "IsTurnOn: " << settingsStruct.IsTurnOn << std::endl;
-    std::cout << "ThrusterNumber: " << settingsStruct.ThrustersNumber << std::endl;
-    std::cout << "MoveCoefficientMatrix: \n";
-    std::cout << coefficientMatrix;
-    std::cout << "HandCoefficientArray: " << std::endl;
-    for (size_t i = 0; i < settingsStruct.HandFreedom; i++) {
-        std::cout << settingsStruct.HandCoefficientArray[i] << " ";
-    }
-    std::cout << std::endl;
-    std::cout << "MaxMotorSpeed: " << settingsStruct.MaxMotorSpeed << std::endl;
-    std::cout << "MotorProtocol: " << settingsStruct.MotorsProtocol << std::endl;
-#endif
 
-    char message[44];
-    CommandsStruct* command;
+    SettingsStruct settingsStruct{};
+    settingsStruct.HandFreedom = oldSettingsStruct.HandFreedom;
+    settingsStruct.ThrustersNumber = oldSettingsStruct.ThrustersNumber;
+    settingsStruct.MoveCoefficientArray = oldSettingsStruct.MoveCoefficientArray;
+    settingsStruct.HandCoefficientArray = oldSettingsStruct.HandCoefficientArray;
+    settingsStruct.MaxMotorSpeed = oldSettingsStruct.MaxMotorSpeed;
+
+#ifndef NDEBUG
+    std::cout << settingsStruct;
+#endif
 
     socket.Listen();
     std::cout << "Client connected\n";
 
-
-    /// src program
-    while (settingsStruct.IsTurnOn) {
+    while (oldSettingsStruct.IsTurnOn) {
         while (socket.IsOnline()) {
-            if (socket.RecvDataLen(message, 44) != 0)
-            {
+            if (socket.RecvDataLen((char *) &commandsStruct, CommandsStructLen) != 0) {
                 std::cout << "Struct recieved:" << std::endl;
 
-                command = (CommandsStruct*)message;
+                moveVector = commandsStruct.VectorArray;
 
-                std::cout << *command;
+                FloatVectorClass motorsCommands = coefficientMatrix * moveVector;
+                motorsCommands.Normalize(1000);
+                motorsCommands += 1000;
+
+                std::array<uint16_t, 12> moveArray{};
+                motorsCommands.FillArray(&moveArray);
+                std::memcpy(motorsStruct.PacketArray, moveArray.begin(), moveArray.size() * 2);
+
+                std::cout << motorsStruct;
+
+/*              std::memcpy(motorsMessage + 1, &motorsStruct, MotorsStructLen);
+                std::memcpy(motorsMessage + 1 + MotorsStructLenMessage, &motorsStruct, MotorsStructLen);
+                motorsMessage[0] = 's';
+                motorsMessage[MotorsStructLen + 1] = 's';
+                motorsMessage[MotorsStructLenMessage] = 's';
+                motorsMessage[MotorsStructLenMessage * 2 - 1] = 's';
+
+                for (size_t i = 0; i < 2; i++) {
+
+                    for (size_t j = 0; j < MotorsStructLen + 1; j++) {
+                        std::cout << motorsMessage[j] << '|';
+                    }
+                    std::cout << motorsMessage[MotorsStructLen + 1] << std::endl;
+                }
+
+                commandSender.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage * 2);*/
             }
         }
-
-        /*for (;;) {
-            std::cout << "\nВведите через пробел вектора: ";
-            for (size_t i = 0; i < 6; i++) {
-                std::cin >> commandsStruct.VectorArray[i];
-            }
-
-            moveVector = commandsStruct.VectorArray;
-            FloatVectorClass motorsCommands = coefficientMatrix * moveVector;
-
-            motorsCommands.Normalize(2000);
-
-            motorsCommands += 1000;
-
-            std::array<int16_t, 12> moveArray{};
-
-            motorsCommands.FillArray(&moveArray);
-
-            std::memcpy(motorsStruct.PacketArray, moveArray.begin(), moveArray.size() * 2);
-
-            for (size_t i = 0; i < MotorsStructArrayLength / 2; i++) {
-                std::cout << motorsStruct.PacketArray[i] << std::endl;
-            }
-
-            std::cout << MotorsStructLen << std::endl;
-
-
-            std::memcpy(motorsMessage + 1, &motorsStruct, MotorsStructLen);
-            std::memcpy(motorsMessage + 1 + MotorsStructLenMessage, &motorsStruct, MotorsStructLen);
-            motorsMessage[0] = 's';
-            motorsMessage[MotorsStructLen + 1] = 's';
-            motorsMessage[MotorsStructLenMessage] = 's';
-            motorsMessage[MotorsStructLenMessage * 2 - 1] = 's';
-
-            for (size_t i = 0; i < 2; i++) {
-
-                for (size_t j = 0; j < MotorsStructLen + 1; j++) {
-                    std::cout << motorsMessage[j] << '|';
-                }
-                std::cout << motorsMessage[MotorsStructLen + 1] << std::endl;
-            }
-
-            commandSender.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage * 2);
-        }*/
 
         socket.Listen();
     }
