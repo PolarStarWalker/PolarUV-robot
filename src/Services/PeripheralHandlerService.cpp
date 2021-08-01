@@ -1,4 +1,4 @@
-#include "PeripheralHandlerService.hpp"
+#include "./SensorsHandlerService/PeripheralHandlerService.hpp"
 
 void PeripheralHandlerService::AddSensor(IPeripheral* newSensor)
 {

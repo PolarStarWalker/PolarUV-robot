@@ -7,7 +7,7 @@
 
 #include "../Socket/Socket.hpp"
 #include "../SPI/SPI.hpp"
-#include "../../DataStruct.hpp"
+#include "../../DataStructs/DataStructs.hpp"
 
 
 

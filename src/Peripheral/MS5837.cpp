@@ -1,4 +1,4 @@
-#include "MS5837.hpp"
+#include "MS5837/MS5837.hpp"
 
 MS5837::MS5837(uint8_t address): IPeripheral(IPeripheral::I2CBus, IPeripheral::Read){
 	this->_address = address;
