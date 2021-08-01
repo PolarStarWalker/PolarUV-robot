@@ -1,5 +1,5 @@
 #include <iostream>
-#include "SPI.hpp"
+#include "./SPI/SPI.hpp"
 
 SPI::SPI(const char *address, u_int32_t speedHz) {
     this->_spiDescriptor = open(address, O_RDWR);

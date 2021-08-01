@@ -1,6 +1,6 @@
 
 #include <cstdint>
-#include "I2C.hpp"
+#include "I2C/I2C.hpp"
 
 I2C::I2C(const char *address) {
     this->_i2CDescriptor = open(address, O_RDWR);

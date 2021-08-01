@@ -1,9 +1,7 @@
 ﻿#include "main.hpp"
-
 #include <cstring>
 #include <array>
 #include <sched.h>
-
 
 int main() {
     ///set max sched priority
@@ -64,6 +62,7 @@ int main() {
                 std::memcpy(motorsStruct.PacketArray, moveArray.begin(), moveArray.size() * 2);
 
                 std::cout << motorsStruct;
+                std::cout << commandsStruct;
 
 /*              std::memcpy(motorsMessage + 1, &motorsStruct, MotorsStructLen);
                 std::memcpy(motorsMessage + 1 + MotorsStructLenMessage, &motorsStruct, MotorsStructLen);

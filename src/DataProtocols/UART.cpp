@@ -1,4 +1,4 @@
-#include "UART.hpp"
+#include "./UART/UART.hpp"
 
 ///ToDo: const и автоформатирование кода (ctrl + alt + enter)
 UART::UART(const char *address, UARTSpeedEnum speed) {
