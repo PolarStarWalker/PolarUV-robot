@@ -8,3 +8,6 @@
 #include "./DataStructs/DataStructs.hpp"
 
 #include <cmath>
+#include <cstring>
+#include <array>
+#include <sched.h>

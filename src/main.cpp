@@ -1,7 +1,5 @@
 ﻿#include "main.hpp"
-#include <cstring>
-#include <array>
-#include <sched.h>
+
 
 int main() {
     ///set max sched priority

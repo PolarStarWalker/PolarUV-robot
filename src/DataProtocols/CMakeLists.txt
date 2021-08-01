@@ -2,6 +2,6 @@
 
 project ("DataProtocols")
 
-add_library(DataProtocols DataProtocols.hpp Socket.cpp SPI.cpp UART.cpp I2C.cpp CommandsProtocol.cpp)
+add_library(DataProtocols DataProtocols.hpp Socket.cpp SPI.cpp UART.cpp I2C.cpp CommandsProtocol.cpp SettingsProtocol.cpp)
 
 target_precompile_headers(DataProtocols PUBLIC DataProtocols.hpp)

@@ -4,3 +4,4 @@
 #include "./SPI/SPI.hpp"
 #include "./UART/UART.hpp"
 #include "./CommandsProtocol/CommandsProtocol.hpp"
+#include "./SettingsProtocol/SettingsProtocol.hpp"
