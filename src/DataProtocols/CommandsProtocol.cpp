@@ -1,34 +1,33 @@
 #include "./CommandsProtocol/CommandsProtocol.hpp"
 #include "../Matrix/include/FloatVectorClass.hpp"
 
-CommandsProtocol::CommandsProtocol(char *SPIDevice) : _spi(SPIDevice, 26000000){
+CommandsProtocol::CommandsProtocol(char *SPIDevice) : _spi(SPIDevice, 26000000) {
 }
 
 void CommandsProtocol::Start() {
     ///settings from settings file
+    ///ToDo Заменить на настройки с земли
     SettingsFileService settingsFileService("settings");
-    OldSettingsStruct oldSettingsStruct = settingsFileService.GetSettings();
 
-    FloatVectorClass moveVector(6);
-    FloatMatrixClass coefficientMatrix(oldSettingsStruct.ThrustersNumber, 6);
-    coefficientMatrix = oldSettingsStruct.MoveCoefficientArray;
-    coefficientMatrix *= 10;
+    for (;;) {
 
-    OldSettingsStruct settingsStruct{};
-    settingsStruct.HandFreedom = oldSettingsStruct.HandFreedom;
-    settingsStruct.ThrustersNumber = oldSettingsStruct.ThrustersNumber;
-    settingsStruct.MoveCoefficientArray = oldSettingsStruct.MoveCoefficientArray;
-    settingsStruct.HandCoefficientArray = oldSettingsStruct.HandCoefficientArray;
-    settingsStruct.MaxMotorSpeed = oldSettingsStruct.MaxMotorSpeed;
+        _commandsSocket.Listen();
 
-    _socket.Listen();
+        SettingsStruct settingsStruct = settingsFileService.GetSettings();
 
-    while (oldSettingsStruct.IsTurnOn) {
-        while (_socket.IsOnline()) {
+        FloatMatrixClass coefficientMatrix(settingsStruct.ThrusterNumber(), 6);
+        coefficientMatrix = settingsStruct.MoveCoefficientArrayBegin();
+        coefficientMatrix *= 10;
+
+        FloatVectorClass moveVector(6);
+
+        std::cout << settingsStruct;
+
+        while (_commandsSocket.IsOnline()) {
 
             CommandsStruct commandsStruct;
 
-            if (_socket.RecvDataLen((char *) &commandsStruct, CommandsStructLen) != 0) {
+            if (_commandsSocket.RecvDataLen((char *) &commandsStruct, CommandsStructLen) != 0) {
                 std::cout << "Struct recieved:" << std::endl;
 
                 moveVector = commandsStruct.VectorArray;
@@ -46,6 +45,7 @@ void CommandsProtocol::Start() {
                 std::cout << motorsStruct;
                 std::cout << commandsStruct;
 
+
 /*              std::memcpy(motorsMessage + 1, &motorsStruct, MotorsStructLen);
                 std::memcpy(motorsMessage + 1 + MotorsStructLenMessage, &motorsStruct, MotorsStructLen);
                 motorsMessage[0] = 's';
@@ -61,10 +61,13 @@ void CommandsProtocol::Start() {
                     std::cout << motorsMessage[MotorsStructLen + 1] << std::endl;
                 }
 
-                commandSender.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage * 2);*/
+                this->_spi.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage * 2);*/
             }
         }
-
-        _socket.Listen();
     }
+}
+
+void CommandsProtocol::StartAsync() {
+    if()
+
 }

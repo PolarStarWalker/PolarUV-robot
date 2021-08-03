@@ -40,7 +40,7 @@ public:
 
     FloatMatrixClass &operator=(double **right);
 
-    FloatMatrixClass &operator=(double *right);
+    FloatMatrixClass &operator=(const double *right);
 
     FloatMatrixClass &operator=(float *right);
 

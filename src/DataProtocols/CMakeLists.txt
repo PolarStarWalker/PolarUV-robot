@@ -2,6 +2,10 @@
 
 project ("DataProtocols")
 
-add_library(DataProtocols DataProtocols.hpp Socket.cpp SPI.cpp UART.cpp I2C.cpp CommandsProtocol.cpp SettingsProtocol.cpp)
+add_subdirectory(DataTransmissions)
+
+add_library(DataProtocols DataProtocols.hpp CommandsProtocol.cpp SettingsProtocol.cpp)
+
+target_link_libraries(DataProtocols STATIC DataTransmissions)
 
 target_precompile_headers(DataProtocols PUBLIC DataProtocols.hpp)

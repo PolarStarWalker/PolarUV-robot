@@ -1,8 +1,5 @@
-//
-// Created by starwalker on 01.08.2021.
-//
-
 #ifndef ROBOT_SETTINGSPROTOCOL_HPP
 #define ROBOT_SETTINGSPROTOCOL_HPP
 
-#endif //ROBOT_SETTINGSPROTOCOL_HPP
+
+#endif

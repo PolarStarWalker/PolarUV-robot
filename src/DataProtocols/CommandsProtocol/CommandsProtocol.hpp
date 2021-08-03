@@ -5,27 +5,21 @@
 #include <cstring>
 
 
-#include "../Socket/Socket.hpp"
-#include "../SPI/SPI.hpp"
+#include "../DataTransmissions/DataTransmissions.hpp"
 #include "../../DataStructs/DataStructs.hpp"
 #include "../../Services/SettingsFileService/SettingsFileService.hpp"
 
 class CommandsProtocol{
 public:
-    CommandsProtocol(char* SPIDevice);
+    explicit CommandsProtocol(char* SPIDevice);
 
     void Start();
     void StartAsync();
-    void SetSettingsStruct();
 
 private:
-    SettingsStruct _settings;
-    Socket _socket;
+    Socket _commandsSocket;
     SPI _spi;
     std::thread _protocolThread;
-
-    std::shared_mutex _settingsMutex;
-
 
 };
 

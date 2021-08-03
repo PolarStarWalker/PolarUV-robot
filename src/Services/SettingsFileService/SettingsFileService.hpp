@@ -1,4 +1,5 @@
 #pragma once
+#include "../../DataStructs/SettingStruct/SettingsStruct.hpp"
 #include <fstream>
 #include <string>
 
@@ -57,25 +58,6 @@ enum SettingsStructEnumType{
     HandCoefficientArray = 5,
 };
 
-struct OldSettingsStruct {
-
-	ssize_t ThrustersNumber = -1;
-	ssize_t MaxMotorSpeed = -1;
-	ssize_t MotorsProtocol = -1;
-	ssize_t HandFreedom = -1;
-	double* MoveCoefficientArray = nullptr;
-    double* HandCoefficientArray = nullptr;
-    bool IsTurnOn = false;
-
-	~OldSettingsStruct();
-
-	OldSettingsStruct(OldSettingsStruct&& settingsStruct) noexcept ;
-
-    OldSettingsStruct()= default;
-
-	OldSettingsStruct& operator=(OldSettingsStruct* right);
-};
-
 struct SettingsFile {
 	ssize_t TextLength = 0;
 	char* Text = nullptr;
@@ -90,13 +72,13 @@ class SettingsFileService
 {
 private:
 	const char* _fileName;
-    void ReadAndParseFile(OldSettingsStruct* externalSettingsStruct);
+    void ReadAndParseFile(SettingsStruct *externalSettingsStruct);
 public:
 
 	explicit SettingsFileService(const char* fileName);
 
     ///read file & update OldSettingsStruct;
-	OldSettingsStruct GetSettings();
+    SettingsStruct GetSettings();
 };
 
 
