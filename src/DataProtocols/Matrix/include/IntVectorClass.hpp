@@ -5,10 +5,10 @@
 #ifndef ROV_INTVECTORCLASS_HPP
 #define ROV_INTVECTORCLASS_HPP
 
-#include "../include/BaseVectorClass.hpp"
-#include "../include/IntMatrixClass.hpp"
-#include "../include/FloatMatrixClass.hpp"
-#include "../include/FloatVectorClass.hpp"
+#include "BaseVectorClass.hpp"
+#include "IntMatrixClass.hpp"
+#include "FloatMatrixClass.hpp"
+#include "FloatVectorClass.hpp"
 
 class IntMatrixClass;
 class FloatMatrixClass;

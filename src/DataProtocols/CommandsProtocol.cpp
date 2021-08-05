@@ -1,7 +1,6 @@
 #include "./CommandsProtocol/CommandsProtocol.hpp"
-#include "../Matrix/include/FloatVectorClass.hpp"
 
-CommandsProtocol::CommandsProtocol(char *SPIDevice) : _spi(SPIDevice, 26000000) {
+CommandsProtocol::CommandsProtocol(const char *SPIDevice) : _spi(SPIDevice, 26000000) {
 }
 
 void CommandsProtocol::Start() {
@@ -68,6 +67,6 @@ void CommandsProtocol::Start() {
 }
 
 void CommandsProtocol::StartAsync() {
-    if()
+//    if()
 
 }

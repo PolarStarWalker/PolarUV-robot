@@ -4,14 +4,14 @@
 #include <thread>
 #include <cstring>
 
-
+#include "../Matrix/Matrix.hpp"
 #include "../DataTransmissions/DataTransmissions.hpp"
 #include "../../DataStructs/DataStructs.hpp"
-#include "../../Services/SettingsFileService/SettingsFileService.hpp"
+#include "../Services/SettingsFileService/SettingsFileService.hpp"
 
 class CommandsProtocol{
 public:
-    explicit CommandsProtocol(char* SPIDevice);
+    explicit CommandsProtocol(const char* SPIDevice);
 
     void Start();
     void StartAsync();
