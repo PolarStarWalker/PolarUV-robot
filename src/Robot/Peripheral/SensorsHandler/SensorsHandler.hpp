@@ -3,11 +3,11 @@
 #include <thread>
 #include <mutex>
 #include <list>
-#include "../../Peripheral/Interfaces/IPeripheral.hpp"
+#include "../Interfaces/IPeripheral.hpp"
 
 
 
-class PeripheralHandlerService {
+class SensorsHandler {
 private:
 	std::mutex _arrayMutex;
 	

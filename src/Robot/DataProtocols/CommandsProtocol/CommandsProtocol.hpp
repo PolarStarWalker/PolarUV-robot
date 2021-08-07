@@ -4,10 +4,10 @@
 #include <thread>
 #include <cstring>
 
-#include "../../../DataProtocols/Matrix/Matrix.hpp"
+#include "../Matrix/Matrix.hpp"
 #include "../DataTransmissions/DataTransmissions.hpp"
+#include "../RobotSettingsProtocol/RobotSettingsProtocol.hpp"
 #include "../../DataStructs/DataStructs.hpp"
-#include "../Services/SettingsFileService/SettingsFileService.hpp"
 
 class CommandsProtocol{
 public:

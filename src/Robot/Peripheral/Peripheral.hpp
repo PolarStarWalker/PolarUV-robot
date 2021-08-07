@@ -3,3 +3,4 @@
 #include "./LiftBag/LiftBag.hpp"
 #include "./Interfaces/IPeripheral.hpp"
 #include "./Interfaces/IData.hpp"
+#include "./SensorsHandler/SensorsHandler.hpp"

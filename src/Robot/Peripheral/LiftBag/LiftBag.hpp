@@ -2,7 +2,7 @@
 #define ROV_LIFTBAG_HPP
 
 #include "../Interfaces/IPeripheral.hpp"
-#include "../../DataTransmissions/UART/UART.hpp"
+#include "../../DataProtocols/DataTransmissions/UART/UART.hpp"
 
 class LiftBag : protected IPeripheral {
 private:

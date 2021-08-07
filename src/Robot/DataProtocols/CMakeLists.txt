@@ -5,10 +5,11 @@ project ("DataProtocols")
 add_subdirectory(Matrix)
 add_subdirectory(DataTransmissions)
 
-add_library(DataProtocols DataProtocols.hpp CommandsProtocol.cpp SettingsProtocol.cpp)
+add_library(DataProtocols DataProtocols.hpp CommandsProtocol.cpp)
 
 target_link_libraries(DataProtocols Matrix)
 target_link_libraries(DataProtocols DataTransmissions)
 
-target_precompile_headers(DataProtocols PUBLIC DataProtocols.hpp)
-target_precompile_headers(DataProtocols PUBLIC DataTransmissions.hpp)
+target_precompile_headers(DataProtocols REUSE_FROM DataTransmissions)
+target_precompile_headers(DataProtocols REUSE_FROM Matrix)
+
