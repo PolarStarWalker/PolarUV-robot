@@ -4,7 +4,7 @@
 #include <thread>
 #include <cstring>
 
-#include "../Matrix/Matrix.hpp"
+#include "../../../DataProtocols/Matrix/Matrix.hpp"
 #include "../DataTransmissions/DataTransmissions.hpp"
 #include "../../DataStructs/DataStructs.hpp"
 #include "../Services/SettingsFileService/SettingsFileService.hpp"

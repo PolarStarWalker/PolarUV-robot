@@ -3,7 +3,7 @@
 #include <thread>
 #include <mutex>
 #include <list>
-#include "../../../Peripheral/Interfaces/IPeripheral.hpp"
+#include "../../Peripheral/Interfaces/IPeripheral.hpp"
 
 
 
