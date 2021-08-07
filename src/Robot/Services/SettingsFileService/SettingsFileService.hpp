@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../DataStructs/SettingStruct/SettingsStruct.hpp"
+#include "../../SettingStruct/SettingsStruct.hpp"
 #include <fstream>
 #include <string>
 

@@ -4,17 +4,15 @@ file(COPY settings DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable (robot "main.cpp" "main.hpp")
 
-add_subdirectory ("Peripheral")
-
 add_subdirectory ("DataProtocols")
-add_subdirectory ("DataStructs")
 
-target_precompile_headers(robot REUSE_FROM Peripheral)
+add_subdirectory ("Robot")
+
 target_precompile_headers(robot REUSE_FROM DataProtocols)
-target_precompile_headers(robot REUSE_FROM DataStructs)
 
-target_link_libraries(robot Peripheral)
+target_precompile_headers(robot REUSE_FROM Robot)
+
 target_link_libraries(robot DataProtocols)
-target_link_libraries(robot DataStructs)
+target_link_libraries(robot Robot)
 
 
