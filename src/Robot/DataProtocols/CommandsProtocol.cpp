@@ -7,17 +7,13 @@ CommandsProtocol::CommandsProtocol(const char *SPIDevice) : _spi(SPIDevice, 2600
 }
 
 void CommandsProtocol::Start() {
-    ///settings from settings file
-    ///ToDo Заменить на настройки с земли
-    RobotSettingsProtocol settingsFileService();
-
     _commandsSocket.MakeServerSocket(1999);
 
     for (;;) {
 
         _commandsSocket.Listen();
 
-        RobotSettingsStruct settingsStruct{};
+        RobotSettingsStruct settingsStruct = RobotSettingsProtocol::GetSettings();
 
         FloatMatrixClass coefficientMatrix(settingsStruct.ThrusterNumber(), 6);
         coefficientMatrix = settingsStruct.ThrusterCoefficientArray();

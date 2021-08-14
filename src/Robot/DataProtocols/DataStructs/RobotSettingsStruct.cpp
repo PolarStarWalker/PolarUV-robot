@@ -1,19 +1,5 @@
 #include "./RobotSettingsStruct/RobotSettingsStruct.hpp"
 
-RobotSettingsStruct::RobotSettingsStruct(const std::vector<double> &copyMoveArray,
-                                         const std::vector<double> &copyHandArray) {
-    this->_length = ArraysOffset + copyMoveArray.size() * sizeof(double) + copyHandArray.size() * sizeof(double);
-    this->_handArrayOffset = ArraysOffset + copyMoveArray.size() * sizeof(double);
-
-    this->_data = new char[this->_length]{};
-
-    std::memcpy(&_data[ArraysOffset], copyMoveArray.data(), copyMoveArray.size() * sizeof(double));
-    std::memcpy(&_data[_handArrayOffset], copyHandArray.data(), copyHandArray.size() * sizeof(double));
-
-    *((int16_t *) (this->_data + HandFreedomOffset)) = copyHandArray.size();
-    *((int16_t *) (this->_data + ThrusterNumberOffset)) = copyMoveArray.size() / 6;
-}
-
 RobotSettingsStruct::RobotSettingsStruct(size_t thrustersNumber, size_t handFreedom) {
     this->_data = new char[ArraysOffset + thrustersNumber * 6 * sizeof(double) + handFreedom * sizeof(double)];
     this->_length = ArraysOffset + thrustersNumber * 6 * sizeof(double) + handFreedom * sizeof(double);
@@ -38,12 +24,13 @@ RobotSettingsStruct::RobotSettingsStruct(const RobotSettingsStruct &robotSetting
         ((uint64_t *) this->_data)[i] = ((uint64_t *) robotSettingsStruct._data)[i];
 }
 
-RobotSettingsStruct::RobotSettingsStruct(RobotSettingsStruct &&robotSettingsStruct) {
+RobotSettingsStruct::RobotSettingsStruct(RobotSettingsStruct &&robotSettingsStruct) noexcept {
     this->_handArrayOffset = robotSettingsStruct._handArrayOffset;
     this->_length = robotSettingsStruct._length;
     this->_data = robotSettingsStruct._data;
     robotSettingsStruct._data = nullptr;
 }
+
 
 RobotSettingsStruct::~RobotSettingsStruct() {
     delete[] this->_data;

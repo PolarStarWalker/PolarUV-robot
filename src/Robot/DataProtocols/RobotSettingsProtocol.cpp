@@ -7,16 +7,16 @@ RobotSettingsProtocol::RobotSettingsProtocol() : _settingSocket() {
     this->_settingSocket.MakeServerSocket(14322);
 }
 
-
-void RobotSettingsProtocol::Listen() {
+void RobotSettingsProtocol::Start() {
     for (;;) {
+
         this->_settingSocket.Listen();
         char direction = 0;
         _settingSocket.RecvDataLen(&direction, sizeof(direction));
 
         if (direction == 'r') {
 
-            RobotSettingsStruct robotSettingsStruct = this->GetSettings();
+            RobotSettingsStruct robotSettingsStruct = GetSettings();
 
             ssize_t size = _settingSocket.SendDataLen(robotSettingsStruct.Begin(), robotSettingsStruct.Size());
 
@@ -43,13 +43,14 @@ void RobotSettingsProtocol::Listen() {
 
             file.write(robotSettingsStruct.Begin(), robotSettingsStruct.Size());
 
-            std::cout << robotSettingsStruct;
-
             continue;
         }
-
-
     }
+}
+
+void RobotSettingsProtocol::StartAsync() {
+    std::thread thread(&RobotSettingsProtocol::Start, this);
+    thread.detach();
 }
 
 
@@ -61,6 +62,10 @@ RobotSettingsStruct RobotSettingsProtocol::GetSettings() {
     int16_t robotStatic[4]{};
 
     file.read((char *) robotStatic, 8);
+
+    if(robotStatic[2] == 0 ||  robotStatic[3] == 0){
+        return RobotSettingsStruct();
+    }
 
     RobotSettingsStruct robotSettingsStruct(robotStatic[2], robotStatic[3]);
 

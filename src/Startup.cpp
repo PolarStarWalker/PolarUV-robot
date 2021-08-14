@@ -8,10 +8,13 @@ int main() {
 
     Robot robot();
 
-    DataProtocols::RobotSettingsProtocol settings;
+    ///Start SettingsProtocol in background
+    DataProtocols::RobotSettingsProtocol settingsProtocol;
+    settingsProtocol.StartAsync();
 
-    settings.Listen();
-
+    ///Start CommandsProtocol in synchronous mode
+    DataProtocols::CommandsProtocol commands("");
+    commands.Start();
 
     return 0;
 }

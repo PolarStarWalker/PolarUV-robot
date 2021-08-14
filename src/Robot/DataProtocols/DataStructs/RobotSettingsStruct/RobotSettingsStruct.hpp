@@ -2,9 +2,8 @@
 #define ROBOT_ROBOTSETTINGSSTRUCT_HPP
 
 #include <iostream>
-#include <vector>
 #include <cstring>
-
+#include <cmath>
 
 namespace {
     enum Offset : size_t {
@@ -16,34 +15,31 @@ namespace {
     };
 }
 
-struct RobotSettingsStructStatic{
-    uint16_t MotorsProtocol;
-    uint16_t MaxMotorSpeed;
-    uint16_t ThrusterNumber;
-    uint16_t HandFreedom;
+struct BaseRobotSettingsStruct{
+    int16_t MotorsProtocol;
+    int16_t MaxMotorSpeed;
+    int16_t ThrusterNumber;
+    int16_t HandFreedom;
 };
+
+constexpr size_t BaseRobotSettingsStructLen = sizeof(BaseRobotSettingsStruct);
 
 class RobotSettingsStruct {
 public:
 
     RobotSettingsStruct();
-    explicit RobotSettingsStruct(const RobotSettingsStructStatic& robotStatic);
-    RobotSettingsStruct(const std::vector<double> &copyMoveArray, const std::vector<double> &copyHandArray);
-
+    //ToDo сделать когда-нибудь более типизированный класс
+    explicit RobotSettingsStruct(const BaseRobotSettingsStruct& robotStatic);
     explicit RobotSettingsStruct(size_t thrustersNumber, size_t handFreedom);
-
-    RobotSettingsStruct(RobotSettingsStruct &&robotSettingsStruct);
-
     RobotSettingsStruct(const RobotSettingsStruct &robotSettingsStruct);
+    RobotSettingsStruct(RobotSettingsStruct &&robotSettingsStruct) noexcept ;
 
     ~RobotSettingsStruct();
 
     RobotSettingsStruct &operator=(const RobotSettingsStruct &robotSettingsStruct) noexcept;
-
     RobotSettingsStruct &operator=(RobotSettingsStruct &&robotSettingsStruct) noexcept;
 
     char *Begin();
-
     char *End();
 
     size_t Size();
