@@ -63,9 +63,10 @@ RobotSettingsStruct RobotSettingsProtocol::GetSettings() {
 
     file.read((char *) robotStatic, 8);
 
-    if(robotStatic[2] == 0 ||  robotStatic[3] == 0){
-        return RobotSettingsStruct();
-    }
+    robotStatic[0] = robotStatic[0] == 0 ? 1 : robotStatic[0];
+    robotStatic[1] = robotStatic[1] == 0 ? 4000 : robotStatic[1];
+    robotStatic[2] = robotStatic[2] == 0 ? 1 : robotStatic[2];
+    robotStatic[3] = robotStatic[3] == 0 ? 1 : robotStatic[3];
 
     RobotSettingsStruct robotSettingsStruct(robotStatic[2], robotStatic[3]);
 

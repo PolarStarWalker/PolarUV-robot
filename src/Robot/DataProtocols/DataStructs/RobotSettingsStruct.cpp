@@ -9,9 +9,9 @@ RobotSettingsStruct::RobotSettingsStruct(size_t thrustersNumber, size_t handFree
 }
 
 RobotSettingsStruct::RobotSettingsStruct() {
-    this->_data = new char[ArraysOffset + 2 * sizeof(double)];
-    *((int16_t *) (this->_data + ThrusterNumberOffset)) = 0;
-    *((int16_t *) (this->_data + HandFreedomOffset)) = 0;
+    this->_data = new char[ArraysOffset + 7 * sizeof(double)]{};
+    *((int16_t *) (this->_data + ThrusterNumberOffset)) = 1;
+    *((int16_t *) (this->_data + HandFreedomOffset)) = 1;
     this->_length = ArraysOffset + 2 * sizeof(double);
     this->_handArrayOffset = ArraysOffset + sizeof(double);
 }
