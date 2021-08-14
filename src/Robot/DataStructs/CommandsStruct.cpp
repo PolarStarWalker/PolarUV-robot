@@ -1,6 +1,6 @@
 #include "./CommandsStruct/CommandsStruct.hpp"
 
-std::ostream &operator<<(std::ostream &ostream, const CommandsStruct &commandsStruct) {
+std::ostream& operator<<(std::ostream &ostream, const CommandsStruct &commandsStruct) {
     ostream << "VectorArray: ["
             << commandsStruct.VectorArray[Fx] << ", "
             << commandsStruct.VectorArray[Fy] << ", "

@@ -1,6 +1,8 @@
 #ifndef ROBOT_COMMANDSSTRUCT_HPP
 #define ROBOT_COMMANDSSTRUCT_HPP
+
 #include <iostream>
+
 enum MoveVector : uint8_t {
     Fx = 0,
     Fy = 1,
@@ -23,6 +25,6 @@ struct CommandsStruct {
 extern CommandsStruct CommandsStructData;
 constexpr size_t CommandsStructLen = sizeof(CommandsStructData);
 
-std::ostream& operator << (std::ostream &ostream, const CommandsStruct &commandsStruct);
+std::ostream &operator<<(std::ostream &ostream, const CommandsStruct &commandsStruct);
 
 #endif

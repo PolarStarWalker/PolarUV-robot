@@ -1,21 +1,26 @@
 #include "./CommandsProtocol/CommandsProtocol.hpp"
 
+using namespace DataProtocols;
+
+
 CommandsProtocol::CommandsProtocol(const char *SPIDevice) : _spi(SPIDevice, 26000000) {
 }
 
 void CommandsProtocol::Start() {
     ///settings from settings file
     ///ToDo Заменить на настройки с земли
-    SettingsFileService settingsFileService("settings");
+    RobotSettingsProtocol settingsFileService();
+
+    _commandsSocket.MakeServerSocket(1999);
 
     for (;;) {
 
         _commandsSocket.Listen();
 
-        SettingsStruct settingsStruct = settingsFileService.GetSettings();
+        RobotSettingsStruct settingsStruct{};
 
         FloatMatrixClass coefficientMatrix(settingsStruct.ThrusterNumber(), 6);
-        coefficientMatrix = settingsStruct.MoveCoefficientArrayBegin();
+        coefficientMatrix = settingsStruct.ThrusterCoefficientArray();
         coefficientMatrix *= 10;
 
         FloatVectorClass moveVector(6);
@@ -64,9 +69,4 @@ void CommandsProtocol::Start() {
             }
         }
     }
-}
-
-void CommandsProtocol::StartAsync() {
-//    if()
-
 }

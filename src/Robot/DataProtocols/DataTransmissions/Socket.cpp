@@ -112,7 +112,6 @@ ssize_t Socket::sendall(int socketDescriptor, char *buf, size_t len, int flags) 
     if (n != len)
         this->_isOnline = false;
 
-
     return n;
 }
 

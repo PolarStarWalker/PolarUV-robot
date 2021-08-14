@@ -1,5 +1,6 @@
 #ifndef ROBOT_COMMANDSPROTOCOL_HPP
 #define ROBOT_COMMANDSPROTOCOL_HPP
+
 #include <shared_mutex>
 #include <thread>
 #include <cstring>
@@ -9,19 +10,19 @@
 #include "../RobotSettingsProtocol/RobotSettingsProtocol.hpp"
 #include "../../DataStructs/DataStructs.hpp"
 
-class CommandsProtocol{
-public:
-    explicit CommandsProtocol(const char* SPIDevice);
+namespace DataProtocols {
 
-    void Start();
-    void StartAsync();
+    class CommandsProtocol {
+    public:
+        explicit CommandsProtocol(const char *SPIDevice);
 
-private:
-    Socket _commandsSocket;
-    SPI _spi;
-    std::thread _protocolThread;
+        void Start();
 
-};
-
+    private:
+        Socket _commandsSocket;
+        SPI _spi;
+        std::fstream file;
+    };
+}
 
 #endif

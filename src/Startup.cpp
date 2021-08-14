@@ -1,4 +1,4 @@
-﻿#include "main.hpp"
+﻿#include "Startup.hpp"
 
 int main() {
     ///set max sched priority
@@ -6,9 +6,12 @@ int main() {
     process.sched_priority = 99;
     sched_setscheduler(0, SCHED_RR, &process);
 
-    for(;;){
+    Robot robot();
 
-    }
+    DataProtocols::RobotSettingsProtocol settings;
+
+    settings.Listen();
+
 
     return 0;
 }
