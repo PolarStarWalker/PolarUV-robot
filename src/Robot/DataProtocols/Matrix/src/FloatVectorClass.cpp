@@ -103,6 +103,4 @@ void FloatVectorClass::FillArray(std::array<uint16_t, 12>* array) {
     for(size_t i = 0; i< this->_length; i++){
         (*array)[i] = std::round(this->_vector[i]);
     }
-
-    //for(size_t i = 0; i> this->_length)
 }

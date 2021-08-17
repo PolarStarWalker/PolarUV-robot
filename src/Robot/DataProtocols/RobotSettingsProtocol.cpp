@@ -7,6 +7,11 @@ RobotSettingsProtocol::RobotSettingsProtocol() : _settingSocket() {
     this->_settingSocket.MakeServerSocket(14322);
 }
 
+void RobotSettingsProtocol::StartAsync() {
+    std::thread thread(&RobotSettingsProtocol::Start, this);
+    thread.detach();
+}
+
 void RobotSettingsProtocol::Start() {
     for (;;) {
 
@@ -28,53 +33,39 @@ void RobotSettingsProtocol::Start() {
 
         if (direction == 'w') {
 
-            int16_t robotStatic[4]{};
+            BaseRobotSettingsStruct robotStatic{};
 
-            _settingSocket.RecvDataLen((char *) &robotStatic, ArraysOffset);
+            _settingSocket.RecvDataLen((char *) &robotStatic, BaseRobotSettingsStructActualSize);
 
-            RobotSettingsStruct robotSettingsStruct(robotStatic[2], robotStatic[3]);
-            robotSettingsStruct.MaxMotorsSpeed() = robotStatic[1];
-            robotSettingsStruct.MotorsProtocol() = robotStatic[0];
+            RobotSettingsStruct robotSettingsStruct(robotStatic);
 
-            _settingSocket.RecvDataLen((char *) robotSettingsStruct.Begin() + ArraysOffset,
-                                       robotSettingsStruct.Size() - ArraysOffset);
+            _settingSocket.RecvDataLen((char *) robotSettingsStruct.Begin() + BaseRobotSettingsStructActualSize,
+                                       robotSettingsStruct.Size() - BaseRobotSettingsStructActualSize);
 
             std::fstream file("robotSettings", std::ios_base::binary | std::ios_base::out | std::ios_base::trunc);
 
             file.write(robotSettingsStruct.Begin(), robotSettingsStruct.Size());
+
+            std::cout << robotSettingsStruct;
 
             continue;
         }
     }
 }
 
-void RobotSettingsProtocol::StartAsync() {
-    std::thread thread(&RobotSettingsProtocol::Start, this);
-    thread.detach();
-}
-
-
 RobotSettingsStruct RobotSettingsProtocol::GetSettings() {
 
     ///ToDo: сделать валидацию для чтения
     std::fstream file("robotSettings", std::ios_base::binary | std::ios_base::in);
 
-    int16_t robotStatic[4]{};
+    BaseRobotSettingsStruct robotStatic{};
 
-    file.read((char *) robotStatic, 8);
+    file.read((char *) &robotStatic, BaseRobotSettingsStructActualSize);
 
-    robotStatic[0] = robotStatic[0] == 0 ? 1 : robotStatic[0];
-    robotStatic[1] = robotStatic[1] == 0 ? 4000 : robotStatic[1];
-    robotStatic[2] = robotStatic[2] == 0 ? 1 : robotStatic[2];
-    robotStatic[3] = robotStatic[3] == 0 ? 1 : robotStatic[3];
+    RobotSettingsStruct robotSettingsStruct(robotStatic);
 
-    RobotSettingsStruct robotSettingsStruct(robotStatic[2], robotStatic[3]);
-
-    robotSettingsStruct.MotorsProtocol() = robotStatic[0];
-    robotSettingsStruct.MaxMotorsSpeed() = robotStatic[1];
-
-
-    file.read(robotSettingsStruct.Begin() + ArraysOffset, robotSettingsStruct.Size() - ArraysOffset);
+    file.read(robotSettingsStruct.Begin() + BaseRobotSettingsStructAllocatedSize,
+              robotSettingsStruct.Size() - BaseRobotSettingsStructAllocatedSize);
 
     return robotSettingsStruct;
 }
