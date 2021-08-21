@@ -12,6 +12,10 @@ int main() {
     DataProtocols::RobotSettingsProtocol settingsProtocol;
     settingsProtocol.StartAsync();
 
+    ///Start VideoProtocol in background
+    RobotVideoProtocol robotVideoProtocol;
+    robotVideoProtocol.StartAsync();
+
     ///Start CommandsProtocol in synchronous mode
     DataProtocols::CommandsProtocol commands("");
     commands.Start();
