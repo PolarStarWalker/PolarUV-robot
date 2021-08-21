@@ -4,6 +4,7 @@
 using namespace DataProtocols;
 
 RobotSettingsProtocol::RobotSettingsProtocol() : _settingSocket() {
+    ///Port created by https://steamcommunity.com/profiles/76561198126802792/
     this->_settingSocket.MakeServerSocket(14322);
 }
 
