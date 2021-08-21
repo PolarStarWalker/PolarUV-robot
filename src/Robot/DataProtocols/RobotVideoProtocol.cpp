@@ -1,11 +1,14 @@
 #include <chrono>
 #include <thread>
+#include <csignal>
+#include <wait.h>
 #include "RobotVideoProtocol/RobotVideoProtocol.hpp"
 #include "DataStructs/VideoPipelineStruct/VideoPipelineStruct.hpp"
 
 RobotVideoProtocol::RobotVideoProtocol() {
     ///Port created by https://steamcommunity.com/profiles/76561198126802792/
     _socket.MakeServerSocket(28840);
+    this->childPid = 0;
 }
 
 void RobotVideoProtocol::Start() {
@@ -35,26 +38,51 @@ void RobotVideoProtocol::Start() {
 
             std::system("chmod +x pipeline");
 
-            this->childPid = fork();
-            if (this->childPid == 0) {
+            if (this->childPid != 0)
+                this->KillStream();
 
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                execlp("pipeline", nullptr);
+            pid_t pid = fork();
+
+            if (pid == 0) {
+                setpgid(0, 0);
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                execlp("bash", "bash", "pipeline", nullptr);
             }
+
+            this->childPid = pid;
+
             continue;
         }
 
         ///finish
         if (action == 'f') {
 
+            this->KillStream();
+
             continue;
         }
     }
 }
 
+void RobotVideoProtocol::KillStream() {
+
+    if (this->childPid != 0) {
+        kill(-this->childPid, SIGTERM);
+        usleep(50 * 1000);
+        kill(-this->childPid, SIGKILL);
+        waitpid(-this->childPid, nullptr, 0);
+    }
+
+    this->childPid = 0;
+}
+
 void RobotVideoProtocol::StartAsync() {
     std::thread thread(&RobotVideoProtocol::Start, this);
     thread.detach();
+}
+
+RobotVideoProtocol::~RobotVideoProtocol() {
+    this->KillStream();
 }
 
 

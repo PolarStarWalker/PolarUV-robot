@@ -10,12 +10,14 @@ class RobotVideoProtocol {
 private:
     Socket _socket;
     pid_t childPid;
+    void KillStream();
     void Start();
+
 
 public:
     RobotVideoProtocol();
+    ~RobotVideoProtocol();
     void StartAsync();
-    void StartPipeline();
 };
 
 

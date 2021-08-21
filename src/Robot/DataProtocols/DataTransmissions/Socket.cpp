@@ -1,7 +1,16 @@
 #include "./Socket/Socket.hpp"
 
 Socket::~Socket() {
-    if (this->_clientSocketDescriptor != -1) { close(this->_clientSocketDescriptor); }
+    switch (this->_socketRole) {
+        case Server:
+            close(this->_serverSocketDescriptor);
+            break;
+        case Client:
+            close(this->_clientSocketDescriptor);
+            break;
+        case UnInicialized:
+            break;
+    }
 }
 
 /// Function that create server socket and bind it
@@ -24,14 +33,15 @@ int Socket::MakeServerSocket(uint16_t port) {
 
 ///function that listen in blocking mode
 int Socket::Listen() {
-#ifndef NDEBUG
+
     std::cout << "Server is listening\n";
-#endif
+
     if (listen(this->_serverSocketDescriptor, SOMAXCONN) == -1) {
         return (-1);
     }
 
-    this->_clientSocketDescriptor = accept(this->_serverSocketDescriptor, (sockaddr *) &(this->_clientAddress),
+    this->_clientSocketDescriptor = accept(this->_serverSocketDescriptor,
+                                           (sockaddr *) &(this->_clientAddress),
                                            &(this->_clientAdressLength));
 
     this->_isOnline = true;
