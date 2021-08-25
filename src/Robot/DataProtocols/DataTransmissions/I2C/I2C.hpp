@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include <cstdint>
+
 //close()
 #include <unistd.h>
 
@@ -32,18 +34,24 @@ public:
 
     void Read(__u16 slaveAddress,
               __u8 *buffer,
-              size_t bufferLength) const;;
+              size_t bufferLength) const;
 
-    void Write(__u16 slaveAddress,
+    uint8_t ReadByte(__u16 slaveAddress,
+                     __u8 slaveRegister) const;
+
+    bool Write(__u16 slaveAddress,
                const __u8 *slaveRegister,
                size_t addressLength,
                const __u8 *buffer,
                size_t bufferLength) const;
 
-
-    void Write(__u16 slaveAddress,
+    bool Write(__u16 slaveAddress,
                const __u8 *buffer,
                size_t bufferLength) const;
+
+    bool WriteByte(__u16 slaveAddress,
+                   __u8 slaveRegister,
+                   __u8 buffer) const;
 };
 
 

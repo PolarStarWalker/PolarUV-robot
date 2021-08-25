@@ -4,3 +4,4 @@
 #include "./Interfaces/IPeripheral.hpp"
 #include "./Interfaces/IData.hpp"
 #include "./SensorsHandler/SensorsHandler.hpp"
+#include "./BNO055/BNO055.hpp"
