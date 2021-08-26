@@ -5,10 +5,10 @@
 #include <thread>
 #include <cstring>
 
-#include "../Matrix/Matrix.hpp"
-#include "../DataTransmissions/DataTransmissions.hpp"
 #include "../RobotSettingsProtocol/RobotSettingsProtocol.hpp"
-#include "../DataStructs/DataStructs.hpp"
+#include "../../Matrix/Matrix.hpp"
+#include "../../DataTransmissions/DataTransmissions.hpp"
+#include "../../DataStructs/DataStructs.hpp"
 
 namespace DataProtocols {
 

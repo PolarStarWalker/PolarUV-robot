@@ -3,7 +3,7 @@
 #include <csignal>
 #include <wait.h>
 #include "RobotVideoProtocol/RobotVideoProtocol.hpp"
-#include "DataStructs/VideoPipelineStruct/VideoPipelineStruct.hpp"
+#include "../DataStructs/VideoPipelineStruct/VideoPipelineStruct.hpp"
 
 RobotVideoProtocol::RobotVideoProtocol() {
     ///Port created by https://steamcommunity.com/profiles/76561198126802792/
