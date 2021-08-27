@@ -4,9 +4,9 @@
 #include <string>
 #include <cstring>
 
-#include "../DataStructs/RobotSettingsStruct/RobotSettingsStruct.hpp"
-#include "../DataTransmissions/Socket/Socket.hpp"
 #include "../BaseProtocol/BaseProtocol.hpp"
+#include "../../DataStructs/RobotSettingsStruct/RobotSettingsStruct.hpp"
+#include "../../DataTransmissions/Socket/Socket.hpp"
 
 namespace DataProtocols {
     class RobotSettingsProtocol : public BaseProtocol{
