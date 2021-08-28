@@ -1,7 +1,7 @@
 #include "./UART/UART.hpp"
 
 ///ToDo: const и автоформатирование кода (ctrl + alt + enter)
-UART::UART(const char *address, UARTSpeedEnum speed) {
+UART::UART(const char *address, SpeedEnum speed) {
     /// Открываем порт для чтения и записи
     this->_uartDescriptor = open(address, O_RDWR | O_NOCTTY);
 

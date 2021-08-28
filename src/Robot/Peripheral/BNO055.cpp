@@ -6,10 +6,10 @@ BNO055::BNO055(const char *i2cAddress, uint16_t bnoAddress) {
 }
 
 BNO055::~BNO055() {
-
+    delete this->_i2c;
 }
 
-bool BNO055::begin(operationMode_t mode) {
+bool BNO055::begin(OperationMode mode) {
 
     /// Connection test
     uint8_t id = _i2c->ReadByte(_bnoAddress, CHIP_ID_REG);
@@ -22,7 +22,7 @@ bool BNO055::begin(operationMode_t mode) {
     }
 
     /// Switch to config mode
-    setOperationMode(OPERATION_MODE_CONFIG);
+    SetOperationMode(OPERATION_MODE_CONFIG);
 
     /// Reset
     _i2c->WriteByte(_bnoAddress, SYS_TRIGGER_REG, 0x20);
@@ -37,59 +37,51 @@ bool BNO055::begin(operationMode_t mode) {
     usleep(10 * 1000);
     _i2c->WriteByte(_bnoAddress, PAGE_ID_REG, 0);
 
-    /// Set the output units
-//    uint8_t unitsel = (0 << 7) | // Orientation = Android
-//                      (0 << 4) | // Temperature = Celsius
-//                      (0 << 2) | // Euler = Degrees
-//                      (1 << 1) | // Gyro = Rads
-//                      (0 << 0);  // Accelerometer = m/s^2
-//    _i2c->WriteByte(_bnoAddress,UNIT_SEL_REG, unitsel);
-
     /// Set the requested operation mode
     _i2c->WriteByte(_bnoAddress, SYS_TRIGGER_REG, 0x0);
     usleep(10 * 1000);
-    setOperationMode(mode);
+    SetOperationMode(mode);
     usleep(20 * 1000);
 
     return true;
 }
 
-void BNO055::setOperationMode(BNO055::operationMode_t mode) {
+void BNO055::SetOperationMode(BNO055::OperationMode mode) {
     _operationMode = mode;
     _i2c->WriteByte(_bnoAddress, OPR_MODE_REG, _operationMode);
     usleep(30 * 1000);
 }
 
-void BNO055::useExternalCrystal(bool useExtCrl) {
-    operationMode_t previousMode = _operationMode;
+void BNO055::UseExternalCrystal(bool useExtCrl) {
+    OperationMode previousMode = _operationMode;
 
-    setOperationMode(OPERATION_MODE_CONFIG);
+    SetOperationMode(OPERATION_MODE_CONFIG);
     usleep(25 * 1000);
 
     _i2c->WriteByte(_bnoAddress, PAGE_ID_REG, 0);
-    if (useExtCrl) {
-        _i2c->WriteByte(_bnoAddress, SYS_TRIGGER_REG, 0x80);
-    } else {
+
+    useExtCrl ?
+        _i2c->WriteByte(_bnoAddress, SYS_TRIGGER_REG, 0x80):
         _i2c->WriteByte(_bnoAddress, SYS_TRIGGER_REG, 0x00);
-    }
+
     usleep(10 * 1000);
 
-    setOperationMode(previousMode);
+    SetOperationMode(previousMode);
     usleep(20 * 1000);
 }
 
-std::array<uint8_t, 4> BNO055::getCalibration() {
+std::array<uint8_t, 4> BNO055::GetCalibration() {
     uint8_t calibrationData = _i2c->ReadByte(_bnoAddress, CALIB_STAT_REG);
     std::array<uint8_t, 4> calibrationArray{
-            (uint8_t) ((calibrationData >> 6) & 0x03), // System
-            (uint8_t) ((calibrationData >> 4) & 0x03), // Gyroscope
-            (uint8_t) ((calibrationData >> 2) & 0x03), // Accelerometer
-            (uint8_t) (calibrationData & 0x03)         // Magnetometer
+            (uint8_t)((calibrationData >> 6) & 0x03), // System
+            (uint8_t)((calibrationData >> 4) & 0x03), // Gyroscope
+            (uint8_t)((calibrationData >> 2) & 0x03), // Accelerometer
+            (uint8_t)(calibrationData & 0x03)         // Magnetometer
     };
     return calibrationArray;
 }
 
-std::array<double, 3> BNO055::getLinearAcceleration() {
+std::array<double, 3> BNO055::GetLinearAcceleration() {
 
     __u8 buffer[6] = {};
     __u8 slaveRegister = LINEAR_ACCEL_DATA_X_LSB_REG;
@@ -109,7 +101,7 @@ std::array<double, 3> BNO055::getLinearAcceleration() {
     return dataArray;
 }
 
-std::array<double, 3> BNO055::getEulerAngles() {
+std::array<double, 3> BNO055::GetEulerAngles() {
 
     __u8 buffer[6] = {};
     __u8 slaveRegister = EULER_H_LSB_REG;
@@ -129,8 +121,8 @@ std::array<double, 3> BNO055::getEulerAngles() {
     return dataArray;
 }
 
-int8_t BNO055::getTemperature() {
-    auto temperature = (int8_t) (_i2c->ReadByte(_bnoAddress, TEMP_REG));
+int8_t BNO055::GetTemperature() {
+    int8_t temperature = (int8_t)(_i2c->ReadByte(_bnoAddress, TEMP_REG));
     return temperature;
 }
 

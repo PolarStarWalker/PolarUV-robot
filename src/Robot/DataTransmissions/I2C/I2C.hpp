@@ -39,12 +39,14 @@ public:
     uint8_t ReadByte(__u16 slaveAddress,
                      __u8 slaveRegister) const;
 
+    ///Note не работает
     bool Write(__u16 slaveAddress,
                const __u8 *slaveRegister,
                size_t addressLength,
                const __u8 *buffer,
                size_t bufferLength) const;
 
+    ///Note не работает
     bool Write(__u16 slaveAddress,
                const __u8 *buffer,
                size_t bufferLength) const;

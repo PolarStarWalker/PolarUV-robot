@@ -1,7 +1,9 @@
 #ifndef ROV_IPERIFERAL_HPP
 #define ROV_IPERIFERAL_HPP
-
 #include <mutex>
+#include "../../DataTransmissions/I2C/I2C.hpp"
+#include "../../DataTransmissions/SPI/SPI.hpp"
+#include "../../DataTransmissions/UART/UART.hpp"
 
 class IPeripheral {
 protected:
@@ -36,4 +38,4 @@ protected:
     virtual bool Reload() = 0;
 };
 
-#endif //ROV_IPERIFERAL_HPP
+#endif

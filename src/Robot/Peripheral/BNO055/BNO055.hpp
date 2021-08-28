@@ -5,11 +5,12 @@
 
 #include <cstdint>
 #include <array>
-#include "../../DataProtocols/DataTransmissions/I2C/I2C.hpp"
+#include "../../DataTransmissions/I2C/I2C.hpp"
+#include "../Interfaces/IPeripheral.hpp"
 
 class BNO055 {
 public:
-    enum register_t : uint8_t {
+    enum BNO055_REGISTERS : uint8_t {
         PAGE_ID_REG = 0X07,
 
         CHIP_ID_REG = 0x00,
@@ -138,13 +139,13 @@ public:
         MAG_RADIUS_MSB_REG = 0X6A
     };
 
-    enum powerMode_t : uint8_t {
+    enum PowerMode : uint8_t {
         POWER_MODE_NORMAL = 0X00,
         POWER_MODE_LOWPOWER = 0X01,
         POWER_MODE_SUSPEND = 0X02
     };
 
-    enum operationMode_t : uint8_t {
+    enum OperationMode : uint8_t {
         OPERATION_MODE_CONFIG = 0X00,
         OPERATION_MODE_ACCONLY = 0X01,
         OPERATION_MODE_MAGONLY = 0X02,
@@ -164,24 +165,24 @@ public:
 
     ~BNO055();
 
-    bool begin(operationMode_t mode = OPERATION_MODE_NDOF);
+    bool begin(OperationMode mode = OPERATION_MODE_NDOF);
 
-    void setOperationMode(operationMode_t mode);
+    void SetOperationMode(OperationMode mode);
 
-    void useExternalCrystal(bool useExtCrl);
+    void UseExternalCrystal(bool useExtCrl);
 
-    std::array<uint8_t, 4> getCalibration();
+    std::array<uint8_t, 4> GetCalibration();
 
-    std::array<double, 3> getLinearAcceleration();
+    std::array<double, 3> GetLinearAcceleration();
 
-    std::array<double, 3> getEulerAngles();
+    std::array<double, 3> GetEulerAngles();
 
-    int8_t getTemperature();
+    int8_t GetTemperature();
 
 private:
     I2C *_i2c;
     uint16_t _bnoAddress;
-    operationMode_t _operationMode;
+    OperationMode _operationMode;
 };
 
 #endif //ROBOT_BNO055_HPP
