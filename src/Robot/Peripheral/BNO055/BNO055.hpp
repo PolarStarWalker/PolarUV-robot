@@ -2,6 +2,7 @@
 #define ROBOT_BNO055_HPP
 
 #define BNO055_ID 0xA0
+#define BNO055_ADDRESS 0x29
 
 #include <cstdint>
 #include <array>
@@ -161,7 +162,7 @@ public:
         OPERATION_MODE_NDOF = 0X0C
     };
 
-    BNO055(const char *i2cAddress, uint16_t bnoAddress);
+    BNO055(const char *i2cDevice, uint16_t sensorAddress);
 
     ~BNO055();
 
@@ -181,8 +182,8 @@ public:
 
 private:
     I2C *_i2c;
-    uint16_t _bnoAddress;
-    OperationMode _operationMode;
+    uint16_t _sensorAddress;
+    OperationMode _operationMode{};
 };
 
 #endif //ROBOT_BNO055_HPP

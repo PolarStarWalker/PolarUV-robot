@@ -20,7 +20,7 @@ int main() {
     DataProtocols::CommandsProtocol commands("");
     commands.Start();
 
-    BNO055 bno = BNO055("/dev/i2c-1",0x29);
+    BNO055 bno = BNO055("/dev/i2c-1",BNO055_ADDRESS);
 
     if (!bno.begin()) {
         std::cout << "Can't connect to BNO055" << std::endl;

@@ -2,7 +2,9 @@
 #include "../Interfaces/IData.hpp"
 
 struct MS5837Data : IData{
-	double depth = 0.0f;
+    double pressure = 0.0;
+    double temperature = 0.0;
+	double depth = 0.0;
 };
 
 
