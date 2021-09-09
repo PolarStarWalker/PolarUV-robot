@@ -159,7 +159,7 @@ bool I2C::WriteByte(__u16 slaveAddress, __u8 slaveRegister, __u8 buffer) const {
     msgset[0].nmsgs = 1;
 
     if (ioctl(this->_i2CDescriptor, I2C_RDWR, &msgset) < 0) {
-        perror("ioctl(I2C_RDWR) in i2c_write");
+        std::cout << "Ошибка при записи данных" << std::endl;
         return false;
     } else {
         return true;

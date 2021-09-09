@@ -7,7 +7,7 @@ MS5837::MS5837(const char *i2cDevice, uint16_t sensorAddress) : IPeripheral(IPer
 
 bool MS5837::Reload() {
     std::lock_guard<std::mutex> mutex(this->_dataMutex);
-    _i2c->WriteByte(_address, 0x00, MS5837_RESET);
+    _i2c->WriteByte(MS5837_ADDRESS, 0x00, MS5837_RESET);
     return true;
 }
 
@@ -48,7 +48,8 @@ bool MS5837::Initialize() {
 }
 
 bool MS5837::ReadData() {
-    std::lock_guard<std::mutex> mutex(this->_dataMutex);
+    // Mutex is not needed, since this function is called in GetData()
+    //std::lock_guard<std::mutex> mutex(this->_dataMutex);
 
     // Request D1 conversion
     _i2c->WriteByte(MS5837_ADDRESS, 0x00, MS5837_CONVERT_D1_8192);
@@ -68,9 +69,9 @@ bool MS5837::ReadData() {
 
     _i2c->WriteByte(MS5837_ADDRESS, 0x00, MS5837_ADC_READ);
 
-    _d2Temperature = _i2c->ReadByte(MS5837_ADDRESS, 0x00);;
-    _d2Temperature = (_d2Temperature << 8) | _i2c->ReadByte(MS5837_ADDRESS, 0x01);;
-    _d2Temperature = (_d2Temperature << 8) | _i2c->ReadByte(MS5837_ADDRESS, 0x02);;
+    _d2Temperature = _i2c->ReadByte(MS5837_ADDRESS, 0x00);
+    _d2Temperature = (_d2Temperature << 8) | _i2c->ReadByte(MS5837_ADDRESS, 0x01);
+    _d2Temperature = (_d2Temperature << 8) | _i2c->ReadByte(MS5837_ADDRESS, 0x02);
 
     Calculate();
 
@@ -187,6 +188,9 @@ uint8_t MS5837::CRC4(uint16_t *n_prom) {
 
 MS5837Data MS5837::GetData() {
     std::lock_guard<std::mutex> mutex(this->_dataMutex);
+
+    this->ReadData();
+
     return this->_data;
 }
 

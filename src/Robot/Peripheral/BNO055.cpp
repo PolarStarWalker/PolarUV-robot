@@ -61,8 +61,8 @@ void BNO055::UseExternalCrystal(bool useExtCrl) {
     _i2c->WriteByte(_sensorAddress, PAGE_ID_REG, 0);
 
     useExtCrl ?
-        _i2c->WriteByte(_sensorAddress, SYS_TRIGGER_REG, 0x80) :
-        _i2c->WriteByte(_sensorAddress, SYS_TRIGGER_REG, 0x00);
+    _i2c->WriteByte(_sensorAddress, SYS_TRIGGER_REG, 0x80) :
+    _i2c->WriteByte(_sensorAddress, SYS_TRIGGER_REG, 0x00);
 
     usleep(10 * 1000);
 
