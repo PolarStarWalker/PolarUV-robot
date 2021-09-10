@@ -16,26 +16,16 @@ public:
         MS5837_CONVERT_D2_8192 = 0x5A
     };
 
-    enum MS5837Models : uint8_t {
-        MS5837_30BA = 0,
-        MS5837_02BA = 1,
-        MS5837_UNRECOGNISED = 255
-    };
-
-    enum MS5837Versions : uint8_t {
-        MS5837_02BA01 = 0x00,
-        MS5837_02BA21 = 0x15,
-        MS5837_30BA26 = 0x1A
-    };
-
     explicit MS5837(const char *i2cDevice, uint16_t MS5837Address);
+
+    ~MS5837();
+
+    void SetFluidDensity(double density);
 
     MS5837Data GetData();
 
     //from sensor
     bool Initialize();
-
-    uint8_t GetId() { return this->_address; }
 
 private:
 
@@ -48,13 +38,10 @@ private:
     uint32_t _d2Temperature{};
     int32_t _temperature{};
     int32_t _p{};
-    uint8_t _model{};
 
     double _fluidDensity = 997.0; // Freshwater
 
     static uint8_t CRC4(uint16_t *n_prom);
-
-    void SetFluidDensity(double density);
 
     void Calculate();
 

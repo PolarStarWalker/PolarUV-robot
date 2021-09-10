@@ -36,8 +36,8 @@ public:
               __u8 *buffer,
               size_t bufferLength) const;
 
-    uint8_t ReadByte(__u16 slaveAddress,
-                     __u8 slaveRegister) const;
+    uint8_t ReadByteFromRegister(__u16 slaveAddress,
+                                 __u8 slaveRegister) const;
 
     ///Note не работает
     bool Write(__u16 slaveAddress,
@@ -51,10 +51,12 @@ public:
                const __u8 *buffer,
                size_t bufferLength) const;
 
-    bool WriteByte(__u16 slaveAddress,
-                   __u8 slaveRegister,
-                   __u8 buffer) const;
-};
+    bool WriteByteToRegister(__u16 slaveAddress,
+                             __u8 slaveRegister,
+                             __u8 byte) const;
 
+    bool WriteByte(__u16 slaveAddress,
+                   __u8 byte) const;
+};
 
 #endif //ROV_I2C_HPP

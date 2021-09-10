@@ -51,14 +51,14 @@ const {
     messages.buf = buffer;
 
     data.msgs = &messages;
-    data.nmsgs = 2;
+    data.nmsgs = 1;
 
     if (ioctl(this->_i2CDescriptor, I2C_RDWR, &data) < 0) {
         std::cout << "Ошибка при чтении данных" << std::endl;
     }
 }
 
-uint8_t I2C::ReadByte(__u16 slaveAddress, __u8 slaveRegister) const {
+uint8_t I2C::ReadByteFromRegister(__u16 slaveAddress, __u8 slaveRegister) const {
     __u8 outbuf[1], inbuf[1];
     struct i2c_msg msgs[2];
     struct i2c_rdwr_ioctl_data msgset[1];
@@ -141,19 +141,40 @@ const {
     }
 }
 
-bool I2C::WriteByte(__u16 slaveAddress, __u8 slaveRegister, __u8 buffer) const {
-    __u8 outbuf[2];
-
+bool I2C::WriteByteToRegister(__u16 slaveAddress, __u8 slaveRegister, __u8 byte) const {
     struct i2c_msg msgs[1];
     struct i2c_rdwr_ioctl_data msgset[1];
 
+    __u8 outbuf[2];
     outbuf[0] = slaveRegister;
-    outbuf[1] = buffer;
+    outbuf[1] = byte;
 
     msgs[0].addr = slaveAddress;
     msgs[0].flags = 0;
     msgs[0].len = 2;
     msgs[0].buf = outbuf;
+
+    msgset[0].msgs = msgs;
+    msgset[0].nmsgs = 1;
+
+    if (ioctl(this->_i2CDescriptor, I2C_RDWR, &msgset) < 0) {
+        std::cout << "Ошибка при записи данных" << std::endl;
+        return false;
+    } else {
+        return true;
+    }
+}
+
+bool I2C::WriteByte(__u16 slaveAddress, __u8 byte) const {
+    struct i2c_msg msgs[1];
+    struct i2c_rdwr_ioctl_data msgset[1];
+
+    __u8 outbuf = byte;
+
+    msgs[0].addr = slaveAddress;
+    msgs[0].flags = 0;
+    msgs[0].len = 1;
+    msgs[0].buf = &outbuf;
 
     msgset[0].msgs = msgs;
     msgset[0].nmsgs = 1;

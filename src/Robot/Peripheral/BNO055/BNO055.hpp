@@ -8,8 +8,9 @@
 #include <array>
 #include "../../DataTransmissions/I2C/I2C.hpp"
 #include "../Interfaces/IPeripheral.hpp"
+#include "BNO055Data.hpp"
 
-class BNO055 {
+class BNO055 : IPeripheral {
 public:
     enum BNO055_REGISTERS : uint8_t {
         PAGE_ID_REG = 0X07,
@@ -166,24 +167,26 @@ public:
 
     ~BNO055();
 
-    bool begin(OperationMode mode = OPERATION_MODE_NDOF);
+    bool Initialize(OperationMode mode = OPERATION_MODE_NDOF);
 
     void SetOperationMode(OperationMode mode);
 
     void UseExternalCrystal(bool useExtCrl);
 
-    std::array<uint8_t, 4> GetCalibration();
-
-    std::array<double, 3> GetLinearAcceleration();
-
-    std::array<double, 3> GetEulerAngles();
-
-    int8_t GetTemperature();
+    BNO055Data GetData();
 
 private:
     I2C *_i2c;
     uint16_t _sensorAddress;
     OperationMode _operationMode{};
+    BNO055Data _data{};
+    std::mutex _dataMutex;
+
+    bool ReadData() final;
+
+    bool WriteData() final;
+
+    bool Reload() final;
 };
 
 #endif //ROBOT_BNO055_HPP
