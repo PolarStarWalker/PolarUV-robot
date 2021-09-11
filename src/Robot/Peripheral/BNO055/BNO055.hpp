@@ -1,13 +1,8 @@
-#ifndef ROBOT_BNO055REGISTERS_HPP
-#define ROBOT_BNO055REGISTERS_HPP
-
-#define BNO055_ADDRESS 0x29
-#define BNO055_ID 0xA0
-
-namespace BNO055 {
+#ifndef ROBOT_BNO055_HPP
+#define ROBOT_BNO055_HPP
+namespace BNO055{
     enum BNO055_REGISTERS : uint8_t {
         PAGE_ID_REG = 0X07,
-
         CHIP_ID_REG = 0x00,
         ACCEL_REV_ID_REG = 0x01,
         MAG_REV_ID_REG = 0x02,
@@ -156,19 +151,18 @@ namespace BNO055 {
         OPERATION_MODE_NDOF = 0X0C
     };
 
-    struct Data {
-        /// {W, I, J, K}
-        std::array<double, 4> Quaternion{};
-        /// {X, Y, Z} degree
+    struct Data{
+        ///{W, I, J, K}
+        std::array<double, 4> Quaternions{};
+        ///{X, Y, Z}
         std::array<double, 3> EulerAngle{};
-        /// {X, Y, Z}
+        ///{X, Y, Z}
         std::array<double, 3> LinearAcceleration{};
         ///{X, Y, Z}
-        std::array<double, 3> MagneticFieldStrength{};
-        ///Temperature
-        double Temperature = 0.0f;
-        ///Calibration data {system, gyro, accel, mag}
-        std::array<uint8_t, 4> CalibrationArray{};
+        std::array<double, 3> MagneticFiled{};
+        ///{X, Y, Z}
+        std::array<uint8_t, 4> Calibration{};
+        int8_t Temperature = 0;
     };
 }
 #endif

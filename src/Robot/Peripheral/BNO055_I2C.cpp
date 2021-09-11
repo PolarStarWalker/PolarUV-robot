@@ -48,7 +48,6 @@ bool BNO055_I2C::Init(I2C *i2c) {
 }
 
 void BNO055_I2C::SetOperationMode(OperationMode mode) {
-    _operationMode = mode;
     _i2c->WriteByteToRegister(_sensorAddress, OPR_MODE_REG, _operationMode);
     usleep(30 * 1000);
 }
@@ -104,6 +103,16 @@ bool BNO055_I2C::ReadData() {
     return true;
 }
 
-bool BNO055_I2C::Restart() {
-    return true;
+bool BNO055_I2C::WriteData() {
+    return false;
+}
+
+BNO055::Data BNO055_I2C::GetData() {
+    std::lock_guard<std::mutex> mutex(this->_dataMutex);
+    this->ReadData();
+    return this->_data;
+}
+
+bool BNO055_I2C::Reload() {
+    return false;
 }

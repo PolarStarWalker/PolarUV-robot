@@ -19,38 +19,20 @@ public:
 
     void UseExternalCrystal(bool useExtCrl);
 
-    inline std::array<double, 3> GetEulerAngle() {
-        this->_dataMutex.lock_shared();
-        std::array<double, 3> eulerAngle = this->_data.EulerAngle;
-        this->_dataMutex.unlock_shared();
-        return eulerAngle;
-    }
+    BNO055::Data GetData();
 
-    inline std::array<double, 3> GetLinearAcceleration() {
-        this->_dataMutex.lock_shared();
-        std::array<double, 3> linearAcceleration = this->_data.LinearAcceleration;
-        this->_dataMutex.unlock_shared();
-        return linearAcceleration;
-    }
-
-    inline std::array<uint8_t, 4> GetCalibration() {
-        this->_dataMutex.lock_shared();
-        std::array<uint8_t, 4> calibration = this->_data.CalibrationArray;
-        this->_dataMutex.unlock_shared();
-        return calibration;
-    }
+private:
+    I2C *_i2c;
+    uint16_t _sensorAddress;
+    BNO055::OperationMode _operationMode{};
+    BNO055::Data _data{};
+    std::mutex _dataMutex;
 
     bool ReadData() final;
 
-    bool Restart() final;
+    bool WriteData() final;
 
-private:
-    BNO055::Data _data;
-    std::shared_mutex _dataMutex;
-    I2C *_i2c;
-    uint16_t _sensorAddress;
-    BNO055::OperationMode _operationMode;
-
+    bool Reload() final;
 };
 
 #endif
