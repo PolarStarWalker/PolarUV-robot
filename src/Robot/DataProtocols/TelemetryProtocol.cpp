@@ -9,7 +9,7 @@ void TelemetryProtocol::Start() {
     for(;;){
         this->_socket.IsOnline();
         TelemetryStruct data = GetTelemetryStruct();
-        _socket.RecvDataLen(&data, TelemetryStructLen);
+        _socket.RecvDataLen((char*) &data, TelemetryStructLen);
     }
 }
 

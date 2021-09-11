@@ -12,13 +12,13 @@
 
 struct I2CSensorsContext {
 
-    explicit I2CSensorsContext(II2CPeripheral *i2cPerephiral) {
-        I2CPerephiral = i2cPerephiral;
+    explicit I2CSensorsContext(II2CPeripheral *i2cPeripheral) {
+        I2CPeripheral = i2cPeripheral;
         IsOnline = false;
         WaitTransmissions = false;
     }
 
-    const II2CPeripheral *I2CPerephiral;
+    II2CPeripheral *I2CPeripheral;
     bool IsOnline;
     bool WaitTransmissions;
 };

@@ -1,21 +1,22 @@
-#include "MS5837/MS5837.hpp"
+/*
+#include "MS5837/MS5837_I2C.hpp"
 
-MS5837::MS5837(const char *i2cDevice, uint16_t sensorAddress) : IPeripheral(IPeripheral::I2CBus, IPeripheral::Read) {
+MS5837_I2C::MS5837_I2C(const char *i2cDevice, uint16_t sensorAddress) : IPeripheral(IPeripheral::I2CBus, IPeripheral::Read) {
     this->_i2c = new I2C(i2cDevice);
     this->_address = sensorAddress;
 }
 
-MS5837::~MS5837() {
+MS5837_I2C::~MS5837_I2C() {
     delete this->_i2c;
 }
 
-bool MS5837::Reload() {
+bool MS5837_I2C::Reload() {
     std::lock_guard<std::mutex> mutex(this->_dataMutex);
     _i2c->WriteByte(MS5837_ADDRESS, MS5837_RESET);
     return true;
 }
 
-bool MS5837::Initialize() {
+bool MS5837_I2C::Initialize() {
 
     this->Reload();
     usleep(10 * 1000);
@@ -38,7 +39,7 @@ bool MS5837::Initialize() {
     return true;
 }
 
-bool MS5837::ReadData() {
+bool MS5837_I2C::ReadData() {
     //Mutex is not needed, since this function is called in GetData()
     //std::lock_guard<std::mutex> mutex(this->_dataMutex);
 
@@ -79,15 +80,15 @@ bool MS5837::ReadData() {
     return true;
 }
 
-bool MS5837::WriteData() {
+bool MS5837_I2C::WriteData() {
     return false;
 }
 
-void MS5837::SetFluidDensity(double density) {
+void MS5837_I2C::SetFluidDensity(double density) {
     _fluidDensity = density;
 }
 
-void MS5837::Calculate() {
+void MS5837_I2C::Calculate() {
 
     int32_t dT = 0;
     int64_t SENS = 0;
@@ -126,7 +127,7 @@ void MS5837::Calculate() {
     _p = (((_d1Pressure * SENS2) / 2097152l - OFF2) / 8192l);
 }
 
-uint8_t MS5837::CRC4(uint16_t *n_prom) {
+uint8_t MS5837_I2C::CRC4(uint16_t *n_prom) {
     uint16_t n_rem = 0;
 
     n_prom[0] = ((n_prom[0]) & 0x0FFF);
@@ -151,7 +152,7 @@ uint8_t MS5837::CRC4(uint16_t *n_prom) {
     return n_rem ^ 0x00;
 }
 
-MS5837Data MS5837::GetData() {
+MS5837Data MS5837_I2C::GetData() {
     std::lock_guard<std::mutex> mutex(this->_dataMutex);
 
     this->ReadData();
@@ -159,3 +160,4 @@ MS5837Data MS5837::GetData() {
     return this->_data;
 }
 
+*/

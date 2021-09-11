@@ -1,7 +1,7 @@
 #include "./SensorsHandler/PeripheralHandler.hpp"
 
 
-bool PeripheralHandler::AddI2CSensor(II2CPerephiral *newSensor) {
+bool PeripheralHandler::AddI2CSensor(II2CPeripheral *newSensor) {
     this->_i2cMutex.lock();
     bool isInit = newSensor->Init(&this->_i2c);
     this->_i2cMutex.unlock();
@@ -16,10 +16,10 @@ bool PeripheralHandler::AddI2CSensor(II2CPerephiral *newSensor) {
 }
 
 PeripheralHandler::PeripheralHandler(const char *i2c,
-                               const char *uart,
-                               UART::SpeedEnum uartSpeed,
-                               const char *spi,
-                               u_int32_t spiSpeedHz) :
+                                     const char *uart,
+                                     UART::SpeedEnum uartSpeed,
+                                     const char *spi,
+                                     u_int32_t spiSpeedHz) :
         _i2c(i2c),
         _uart(uart, uartSpeed),
         _spi(spi, spiSpeedHz) {}
@@ -27,8 +27,13 @@ PeripheralHandler::PeripheralHandler(const char *i2c,
 void PeripheralHandler::Start() {
     for (;;) {
         for (I2CSensorsContext peripheralContext : this->_i2cPeripherals) {
-            peripheralContext.IsOnline = peripheralContext.I2CPerephiral->ReadData();
+            peripheralContext.IsOnline = peripheralContext.I2CPeripheral->ReadData();
         }
         usleep(20 * 1000);
     }
+}
+
+void PeripheralHandler::StartAsync() {
+    std::thread peripheralThread(&PeripheralHandler::Start, this);
+    peripheralThread.detach();
 }

@@ -59,4 +59,4 @@ public:
                    __u8 byte) const;
 };
 
-#endif //ROV_I2C_HPP
+#endif

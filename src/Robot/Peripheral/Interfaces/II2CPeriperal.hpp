@@ -8,15 +8,14 @@ class PeripheralHandler;
 class II2CPeripheral {
     friend PeripheralHandler;
 
-private:
+    //ToDo: делать private
+public:
 
-    virtual bool Init(const I2C* i2c) = 0;
+    virtual bool Init(I2C* i2c) = 0;
 
-    virtual bool ReadData() const = 0;
+    virtual bool ReadData() = 0;
 
-    virtual bool Restart() const = 0;
-
-    const I2C *_i2c;
+    virtual bool Restart() = 0;
 };
 
 #endif
