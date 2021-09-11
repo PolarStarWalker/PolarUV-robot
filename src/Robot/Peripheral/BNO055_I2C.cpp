@@ -1,15 +1,12 @@
-#include "BNO055/BNO055.hpp"
+#include "BNO055/BNO055_I2C.hpp"
 
-BNO055::BNO055(const char *i2cDevice, uint16_t sensorAddress) : IPeripheral(IPeripheral::I2CBus, IPeripheral::Read) {
-    _i2c = new I2C(i2cDevice);
-    _sensorAddress = sensorAddress;
+BNO055_I2C::BNO055_I2C(uint16_t bnoAddress, OperationMode mode = OPERATION_MODE_NDOF) {
+    this->_bnoAddress = bnoAddress;
+    this->_operationMode = mode;
 }
 
-BNO055::~BNO055() {
-    delete this->_i2c;
-}
-
-bool BNO055::Initialize(OperationMode mode) {
+bool BNO055_I2C::Init(const I2C *i2c) {
+    this->_i2c = i2c;
 
     /// Connection test
     uint8_t id = _i2c->ReadByteFromRegister(_sensorAddress, CHIP_ID_REG);
@@ -46,13 +43,13 @@ bool BNO055::Initialize(OperationMode mode) {
     return true;
 }
 
-void BNO055::SetOperationMode(BNO055::OperationMode mode) {
+void BNO055_I2C::SetOperationMode(BNO055_I2C::OperationMode mode) {
     _operationMode = mode;
     _i2c->WriteByteToRegister(_sensorAddress, OPR_MODE_REG, _operationMode);
     usleep(30 * 1000);
 }
 
-void BNO055::UseExternalCrystal(bool useExtCrl) {
+void BNO055_I2C::UseExternalCrystal(bool useExtCrl) {
     OperationMode previousMode = _operationMode;
 
     SetOperationMode(OPERATION_MODE_CONFIG);
@@ -70,12 +67,10 @@ void BNO055::UseExternalCrystal(bool useExtCrl) {
     usleep(20 * 1000);
 }
 
-bool BNO055::ReadData() {
-    //Mutex is not needed, since this function is called in GetData()
-    //std::lock_guard<std::mutex> mutex(this->_dataMutex);
+bool BNO055_I2C::ReadData() {
 
     uint8_t calibrationData = _i2c->ReadByteFromRegister(_sensorAddress, CALIB_STAT_REG);
-    this->_data.calibrationArray[0] = (uint8_t) ((calibrationData >> 6) & 0x03); // System
+    this->CalibrationArray[0] = (uint8_t) ((calibrationData >> 6) & 0x03); // System
     this->_data.calibrationArray[1] = (uint8_t) ((calibrationData >> 4) & 0x03); // Gyroscope
     this->_data.calibrationArray[2] = (uint8_t) ((calibrationData >> 2) & 0x03); // Accelerometer
     this->_data.calibrationArray[3] = (uint8_t) (calibrationData & 0x03);        // Magnetometer
@@ -103,18 +98,4 @@ bool BNO055::ReadData() {
     this->_data.temperature = (int8_t) (_i2c->ReadByteFromRegister(_sensorAddress, TEMP_REG));
 
     return true;
-}
-
-bool BNO055::WriteData() {
-    return false;
-}
-
-BNO055Data BNO055::GetData() {
-    std::lock_guard<std::mutex> mutex(this->_dataMutex);
-    this->ReadData();
-    return this->_data;
-}
-
-bool BNO055::Reload() {
-    return false;
 }

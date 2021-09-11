@@ -17,8 +17,25 @@ int main() {
     robotVideoProtocol.StartAsync();
 
     ///Start CommandsProtocol in synchronous mode
-    DataProtocols::CommandsProtocol commands("");
-    commands.Start();
+//    DataProtocols::CommandsProtocol commands("/dev/spidev0.0");
+//    commands.Start();
+
+    BNO055_I2C bno055_i2c(0x29);
+
+    PeripheralHandler sensorsHandler("/dev/i2c-1",
+                                  "/dev/ttyAMA0",
+                                  UART::S115200,
+                                  "/dev/spidev0.1",
+                                  25000000);
+
+    sensorsHandler.AddI2CSensor(&bno055_i2c);
+
+    sensorsHandler.Start();
+
+    for(;;){
+
+    }
+
 
     return 0;
 }

@@ -1,4 +1,5 @@
 #include "./CommandsProtocol/CommandsProtocol.hpp"
+#include "./TelemetryProtocol/TelemetryProtocol.hpp"
 
 using namespace DataProtocols;
 
@@ -8,6 +9,9 @@ CommandsProtocol::CommandsProtocol(const char *SPIDevice) : _spi(SPIDevice, 2600
 
 void CommandsProtocol::Start() {
     _commandsSocket.MakeServerSocket(1999);
+
+    TelemetryProtocol telemetryProtocol;
+
 
     for (;;) {
 
