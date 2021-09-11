@@ -1,6 +1,12 @@
 #ifndef ROBOT_BNO055_HPP
 #define ROBOT_BNO055_HPP
 namespace BNO055{
+    enum Axis:size_t{
+        X = 0,
+        Y = 1,
+        Z = 2
+    };
+
     enum BNO055_REGISTERS : uint8_t {
         PAGE_ID_REG = 0X07,
         CHIP_ID_REG = 0x00,
@@ -161,7 +167,7 @@ namespace BNO055{
         ///{X, Y, Z}
         std::array<double, 3> MagneticFiled{};
         ///{X, Y, Z}
-        std::array<uint8_t, 4> Calibration{};
+        std::array<uint8_t, 4> CalibrationArray{};
         int8_t Temperature = 0;
     };
 }

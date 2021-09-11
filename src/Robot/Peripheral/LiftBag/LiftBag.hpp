@@ -1,18 +1,16 @@
 #ifndef ROV_LIFTBAG_HPP
 #define ROV_LIFTBAG_HPP
 
-#include "../Interfaces/IPeripheral.hpp"
+#include "../Interfaces/II2CPeripheral.hpp"
 #include "../../DataTransmissions/UART/UART.hpp"
 
-class LiftBag : protected IPeripheral {
+class LiftBag : protected II2CPeripheral {
 private:
     const UART *_uart;
 
     bool _flag;
 
     bool ReadData() final;
-
-    bool WriteData() final;
 
     bool Reload() final;
 

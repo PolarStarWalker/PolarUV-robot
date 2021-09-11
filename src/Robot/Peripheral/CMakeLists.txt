@@ -2,6 +2,6 @@
 
 project ("Peripheral")
 
-add_library(Peripheral Peripheral.hpp LiftBag.cpp MS5837.cpp PeripheralHandler.cpp BNO055_I2C.cpp)
+add_library(Peripheral Peripheral.hpp LiftBag.cpp MS5837_I2C.cpp SensorsHandler.cpp BNO055_I2C.cpp)
 target_precompile_headers(Peripheral PUBLIC Peripheral.hpp)
 

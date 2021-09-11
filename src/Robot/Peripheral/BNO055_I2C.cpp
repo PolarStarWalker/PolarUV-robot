@@ -2,12 +2,13 @@
 
 using namespace BNO055;
 
-BNO055_I2C::BNO055_I2C(uint16_t bnoAddress, OperationMode mode) {
-    this->_sensorAddress = bnoAddress;
-    this->_operationMode = mode;
+BNO055_I2C::BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode) {
+    _sensorAddress = sensorAddress;
+    _operationMode = mode;
 }
 
-bool BNO055_I2C::Init(I2C *i2c) {
+bool BNO055_I2C::Init(const I2C *i2c) {
+
     this->_i2c = i2c;
 
     /// Connection test
@@ -21,7 +22,7 @@ bool BNO055_I2C::Init(I2C *i2c) {
     }
 
     /// Switch to config mode
-    SetOperationMode(OPERATION_MODE_CONFIG);
+    SendOperationMode(OPERATION_MODE_CONFIG);
 
     /// Reset
     _i2c->WriteByteToRegister(_sensorAddress, SYS_TRIGGER_REG, 0x20);
@@ -39,23 +40,24 @@ bool BNO055_I2C::Init(I2C *i2c) {
     /// Set the requested operation mode
     _i2c->WriteByteToRegister(_sensorAddress, SYS_TRIGGER_REG, 0x0);
     usleep(10 * 1000);
-    SetOperationMode(this->_operationMode);
+    SendOperationMode(this->_operationMode);
     usleep(20 * 1000);
 
-    this->UseExternalCrystal(true);
+    UseExternalCrystal(true);
+    usleep(1000 * 1000);
 
     return true;
 }
 
-void BNO055_I2C::SetOperationMode(OperationMode mode) {
-    _i2c->WriteByteToRegister(_sensorAddress, OPR_MODE_REG, _operationMode);
+void BNO055_I2C::SendOperationMode(OperationMode mode) {
+    _i2c->WriteByteToRegister(_sensorAddress, OPR_MODE_REG, mode);
     usleep(30 * 1000);
 }
 
 void BNO055_I2C::UseExternalCrystal(bool useExtCrl) {
     OperationMode previousMode = _operationMode;
 
-    SetOperationMode(OPERATION_MODE_CONFIG);
+    SendOperationMode(OPERATION_MODE_CONFIG);
     usleep(25 * 1000);
 
     _i2c->WriteByteToRegister(_sensorAddress, PAGE_ID_REG, 0);
@@ -66,7 +68,7 @@ void BNO055_I2C::UseExternalCrystal(bool useExtCrl) {
 
     usleep(10 * 1000);
 
-    SetOperationMode(previousMode);
+    SendOperationMode(previousMode);
     usleep(20 * 1000);
 }
 
@@ -84,9 +86,9 @@ bool BNO055_I2C::ReadData() {
     auto accelerationX = (int16_t) (accelerationBuffer[0] | (accelerationBuffer[1] << 8));
     auto accelerationY = (int16_t) (accelerationBuffer[2] | (accelerationBuffer[3] << 8));
     auto accelerationZ = (int16_t) (accelerationBuffer[4] | (accelerationBuffer[5] << 8));
-    this->_data.LinearAcceleration[0] = ((double) accelerationX) / 100.0;
-    this->_data.LinearAcceleration[1] = ((double) accelerationY) / 100.0;
-    this->_data.LinearAcceleration[2] = ((double) accelerationZ) / 100.0;
+    this->_data.LinearAcceleration[X] = ((double) accelerationX) / 100.0;
+    this->_data.LinearAcceleration[Y] = ((double) accelerationY) / 100.0;
+    this->_data.LinearAcceleration[Z] = ((double) accelerationZ) / 100.0;
 
     __u8 eulerBuffer[6] = {};
     __u8 eulerRegister = EULER_H_LSB_REG;
@@ -94,17 +96,13 @@ bool BNO055_I2C::ReadData() {
     auto eulerX = (int16_t) (eulerBuffer[0] | (eulerBuffer[1] << 8));
     auto eulerY = (int16_t) (eulerBuffer[2] | (eulerBuffer[3] << 8));
     auto eulerZ = (int16_t) (eulerBuffer[4] | (eulerBuffer[5] << 8));
-    this->_data.EulerAngle[0] = ((double) eulerX) / 16.0;
-    this->_data.EulerAngle[1] = ((double) eulerY) / 16.0;
-    this->_data.EulerAngle[2] = ((double) eulerZ) / 16.0;
+    this->_data.EulerAngle[X] = ((double) eulerX) / 16.0;
+    this->_data.EulerAngle[Y] = ((double) eulerY) / 16.0;
+    this->_data.EulerAngle[Z] = ((double) eulerZ) / 16.0;
 
     this->_data.Temperature = (int8_t) (_i2c->ReadByteFromRegister(_sensorAddress, TEMP_REG));
 
     return true;
-}
-
-bool BNO055_I2C::WriteData() {
-    return false;
 }
 
 BNO055::Data BNO055_I2C::GetData() {

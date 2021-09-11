@@ -1,22 +1,18 @@
-/*
-#include "MS5837/MS5837_I2C.hpp"
+#include "./MS5837/MS5837_I2C.hpp"
 
-MS5837_I2C::MS5837_I2C(const char *i2cDevice, uint16_t sensorAddress) : IPeripheral(IPeripheral::I2CBus, IPeripheral::Read) {
-    this->_i2c = new I2C(i2cDevice);
-    this->_address = sensorAddress;
+using namespace MS5837;
+
+MS5837_I2C::MS5837_I2C(uint16_t sensorAddress){
+    this->_sensorAddress = sensorAddress;
 }
 
 MS5837_I2C::~MS5837_I2C() {
     delete this->_i2c;
 }
 
-bool MS5837_I2C::Reload() {
-    std::lock_guard<std::mutex> mutex(this->_dataMutex);
-    _i2c->WriteByte(MS5837_ADDRESS, MS5837_RESET);
-    return true;
-}
+bool MS5837_I2C::Init(const I2C* i2c) {
 
-bool MS5837_I2C::Initialize() {
+    this->_i2c = i2c;
 
     this->Reload();
     usleep(10 * 1000);
@@ -35,7 +31,6 @@ bool MS5837_I2C::Initialize() {
         return false; // CRC fail
     }
 
-    this->_status = true;
     return true;
 }
 
@@ -70,18 +65,14 @@ bool MS5837_I2C::ReadData() {
     Calculate();
 
     double pressure = _p * 0.001 / 10.0;
-    this->_data.pressure = pressure;
+    this->_data.Pressure = pressure;
 
-    this->_data.temperature = (double) _temperature / 100.0;
+    this->_data.Temperature = (double) _temperature / 100.0;
 
     double depth = ((_p * 10.0) - 101300) / (_fluidDensity * 9.80665);
-    this->_data.depth = depth;
+    this->_data.Depth = depth;
 
     return true;
-}
-
-bool MS5837_I2C::WriteData() {
-    return false;
 }
 
 void MS5837_I2C::SetFluidDensity(double density) {
@@ -152,12 +143,13 @@ uint8_t MS5837_I2C::CRC4(uint16_t *n_prom) {
     return n_rem ^ 0x00;
 }
 
-MS5837Data MS5837_I2C::GetData() {
-    std::lock_guard<std::mutex> mutex(this->_dataMutex);
-
+MS5837::Data MS5837_I2C::GetData() {
     this->ReadData();
-
     return this->_data;
 }
 
-*/
+bool MS5837_I2C::Reload() {
+    _i2c->WriteByte(MS5837_ADDRESS, MS5837_RESET);
+    return true;
+}
+
