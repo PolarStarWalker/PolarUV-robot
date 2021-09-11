@@ -21,12 +21,12 @@ int main() {
     commands.Start();*/
 
     I2C i2c("/dev/i2c-1");
-    MS5837_I2C sensor(MS5837_ADDRESS);
+    BNO055_I2C sensor(BNO055_ADDRESS);
     sensor.Init(&i2c);
 
     for (size_t i = 0;; ++i) {
-        MS5837::Data data = sensor.GetData();
-        std::cout << "X = " << data.Depth << std::endl;
+        BNO055::Data data = sensor.GetData();
+        std::cout << "X = " << data.EulerAngle[BNO055::X] << std::endl;
         usleep(16 * 1000);
     }
 
