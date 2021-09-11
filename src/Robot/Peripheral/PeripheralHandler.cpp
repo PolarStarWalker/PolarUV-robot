@@ -1,4 +1,4 @@
-#include "./SensorsHandler/PeripheralHandler.hpp"
+#include "./PeripheralHandler/PeripheralHandler.hpp"
 
 
 bool PeripheralHandler::AddI2CSensor(II2CPeripheral *newSensor) {
@@ -29,7 +29,7 @@ void PeripheralHandler::Start() {
         for (I2CSensorsContext peripheralContext : this->_i2cPeripherals) {
             peripheralContext.IsOnline = peripheralContext.I2CPeripheral->ReadData();
         }
-        usleep(20 * 1000);
+        usleep(10 * 1000);
     }
 }
 

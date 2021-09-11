@@ -1,11 +1,15 @@
-#ifndef ROV_IPERIFERAL_HPP
-#define ROV_IPERIFERAL_HPP
+#ifndef ROV_II2CPERIFERAL_HPP
+#define ROV_II2CPERIFERAL_HPP
+
 #include <mutex>
 #include "../../DataTransmissions/I2C/I2C.hpp"
 #include "../../DataTransmissions/SPI/SPI.hpp"
 #include "../../DataTransmissions/UART/UART.hpp"
 
+class PeripheralHandler;
+
 class II2CPeripheral {
+    friend PeripheralHandler;
 protected:
 
     virtual bool ReadData() = 0;

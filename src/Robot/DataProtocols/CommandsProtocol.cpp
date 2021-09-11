@@ -1,17 +1,32 @@
 #include "./CommandsProtocol/CommandsProtocol.hpp"
 #include "./TelemetryProtocol/TelemetryProtocol.hpp"
 
+
 using namespace DataProtocols;
 
 
 CommandsProtocol::CommandsProtocol(const char *SPIDevice) : _spi(SPIDevice, 26000000) {
 }
 
+
+inline std::array<char, 2 * MotorsStructLenMessage> FormMessage(const MotorsStruct &motorsStruct) {
+    std::array<char, 2 * MotorsStructLenMessage> motorsMessage{};
+
+    std::memcpy(motorsMessage.data() + 1, &motorsStruct, MotorsStructLen);
+    std::memcpy(motorsMessage.data() + 1 + MotorsStructLenMessage, &motorsStruct, MotorsStructLen);
+    motorsMessage[0] = 's';
+    motorsMessage[MotorsStructLen + 1] = 's';
+    motorsMessage[MotorsStructLenMessage] = 's';
+    motorsMessage[MotorsStructLenMessage * 2 - 1] = 's';
+
+    return motorsMessage;
+}
+
 void CommandsProtocol::Start() {
     _commandsSocket.MakeServerSocket(1999);
 
-    TelemetryProtocol telemetryProtocol;
 
+    TelemetryProtocol telemetryProtocol;
 
     for (;;) {
 
@@ -46,16 +61,14 @@ void CommandsProtocol::Start() {
                 MotorsStruct motorsStruct;
                 std::memcpy(motorsStruct.PacketArray, moveArray.begin(), moveArray.size() * 2);
 
+                std::array<char, 2 * MotorsStructLenMessage> motorsMessage = FormMessage(motorsStruct);
+
+                this->_spi.ReadWrite(motorsMessage.data(), nullptr, MotorsStructLenMessage * 2);
+
                 std::cout << motorsStruct;
                 std::cout << commandsStruct;
 
-
-/*              std::memcpy(motorsMessage + 1, &motorsStruct, MotorsStructLen);
-                std::memcpy(motorsMessage + 1 + MotorsStructLenMessage, &motorsStruct, MotorsStructLen);
-                motorsMessage[0] = 's';
-                motorsMessage[MotorsStructLen + 1] = 's';
-                motorsMessage[MotorsStructLenMessage] = 's';
-                motorsMessage[MotorsStructLenMessage * 2 - 1] = 's';
+#ifdef DEBUG
 
                 for (size_t i = 0; i < 2; i++) {
 
@@ -64,8 +77,8 @@ void CommandsProtocol::Start() {
                     }
                     std::cout << motorsMessage[MotorsStructLen + 1] << std::endl;
                 }
+#endif
 
-                this->_spi.ReadWrite(motorsMessage, nullptr, MotorsStructLenMessage * 2);*/
             }
         }
     }

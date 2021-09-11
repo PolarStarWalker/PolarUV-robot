@@ -13,5 +13,9 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 project ("robot")
 
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+    add_definitions(-DDEBUG)
+endif()
+
 # Включите подпроекты.
 add_subdirectory ("src")
