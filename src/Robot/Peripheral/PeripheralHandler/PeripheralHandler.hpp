@@ -33,13 +33,10 @@ private:
     std::list<I2CSensorsContext> _i2cPeripherals;
 
     I2C _i2c;
-    SPI _spi;
-    UART _uart;
 
 public:
 
-    PeripheralHandler(const char *i2c, const char *uart, UART::SpeedEnum uartSpeed, const char *spi,
-                      u_int32_t spiSpeedHz = 5000000);
+    PeripheralHandler(const char *i2c);
 
     bool AddI2CSensor(II2CPeripheral *newSensor);
 

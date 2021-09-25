@@ -3,7 +3,8 @@
 #include "I2C/I2C.hpp"
 
 I2C::I2C(const char *address) {
-    this->_i2CDescriptor = open(address, O_RDWR);
+    int descriptor = open(address, O_RDWR);
+    this->_i2CDescriptor = descriptor;
 }
 
 I2C::~I2C() {
@@ -81,8 +82,11 @@ uint8_t I2C::ReadByteFromRegister(__u16 slaveAddress, __u8 slaveRegister) const 
     inbuf[0] = 0;
 
     if (ioctl(this->_i2CDescriptor, I2C_RDWR, &msgset) < 0) {
+#ifdef DEBUG
         std::cout << "Ошибка при чтении данных" << std::endl;
+#endif
     }
+
 
     return inbuf[0];
 }

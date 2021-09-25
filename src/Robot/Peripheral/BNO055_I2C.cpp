@@ -43,9 +43,6 @@ bool BNO055_I2C::Init(const I2C *i2c) {
     SendOperationMode(this->_operationMode);
     usleep(20 * 1000);
 
-    UseExternalCrystal(true);
-    usleep(1000 * 1000);
-
     return true;
 }
 
@@ -98,9 +95,9 @@ bool BNO055_I2C::ReadData() {
     int16_t eulerX = (int16_t) (eulerBuffer[0] | (eulerBuffer[1] << 8));
     int16_t eulerY = (int16_t) (eulerBuffer[2] | (eulerBuffer[3] << 8));
     int16_t eulerZ = (int16_t) (eulerBuffer[4] | (eulerBuffer[5] << 8));
-    data.EulerAngle[X] = ((double) eulerX) / 16.0;
+    data.EulerAngle[X] = ((double) eulerZ) / 16.0;
     data.EulerAngle[Y] = ((double) eulerY) / 16.0;
-    data.EulerAngle[Z] = ((double) eulerZ) / 16.0;
+    data.EulerAngle[Z] = ((double) eulerX) / 16.0;
 
     data.Temperature = (int8_t) (_i2c->ReadByteFromRegister(_sensorAddress, TEMP_REG));
 

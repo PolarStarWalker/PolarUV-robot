@@ -117,6 +117,9 @@ ssize_t Socket::recvall(int socketDescriptor, char *buf, size_t len, int flags) 
 
 ssize_t Socket::sendall(int socketDescriptor, char *buf, size_t len, int flags) {
 
+    if (!this->_isOnline)
+        return -1;
+
     ssize_t n = send(socketDescriptor, buf, len, flags);
 
     if (n != len)
