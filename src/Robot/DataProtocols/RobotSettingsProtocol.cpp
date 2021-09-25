@@ -1,6 +1,5 @@
 #include "RobotSettingsProtocol/RobotSettingsProtocol.hpp"
 
-
 using namespace DataProtocols;
 
 RobotSettingsProtocol::RobotSettingsProtocol() : _settingSocket() {

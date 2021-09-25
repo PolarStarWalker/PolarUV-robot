@@ -26,12 +26,11 @@ struct I2CSensorsContext {
 
 class PeripheralHandler {
 private:
-    std::mutex _arrayMutex;
+
     std::mutex _i2cMutex;
     std::mutex _i2cSensorsMutex;
 
     std::list<I2CSensorsContext> _i2cPeripherals;
-    size_t _sensorsNumber = 0;
 
     I2C _i2c;
     SPI _spi;

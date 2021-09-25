@@ -9,7 +9,7 @@ FloatVectorClass::FloatVectorClass(size_t length) {
 
 }
 
-FloatVectorClass::FloatVectorClass(const FloatVectorClass &vector){
+FloatVectorClass::FloatVectorClass(const FloatVectorClass &vector) {
     this->_vector = new double[vector._length];
     this->_length = vector._length;
 
@@ -18,7 +18,7 @@ FloatVectorClass::FloatVectorClass(const FloatVectorClass &vector){
     }
 }
 
-FloatVectorClass::FloatVectorClass(FloatVectorClass&& vector)  noexcept {
+FloatVectorClass::FloatVectorClass(FloatVectorClass &&vector) noexcept {
     this->_vector = vector._vector;
     this->_length = vector._length;
 
@@ -38,7 +38,7 @@ double &FloatVectorClass::operator[](size_t value) const {
     return this->_vector[value];
 }
 
-FloatVectorClass& FloatVectorClass::operator=(double *right) {
+FloatVectorClass &FloatVectorClass::operator=(double *right) {
     for (size_t i = 0; i < this->_length; i++) {
         this->_vector[i] = right[i];
     }
@@ -46,7 +46,7 @@ FloatVectorClass& FloatVectorClass::operator=(double *right) {
 }
 
 
-FloatVectorClass& FloatVectorClass::operator=(FloatVectorClass&& right) {
+FloatVectorClass &FloatVectorClass::operator=(FloatVectorClass &&right) {
     delete[] this->_vector;
 
     this->_vector = right._vector;
@@ -56,7 +56,7 @@ FloatVectorClass& FloatVectorClass::operator=(FloatVectorClass&& right) {
     return *this;
 }
 
-FloatVectorClass& FloatVectorClass::operator=(float *right) {
+FloatVectorClass &FloatVectorClass::operator=(float *right) {
     for (size_t i = 0; i < this->_length; i++) {
         this->_vector[i] = right[i];
     }
@@ -65,33 +65,33 @@ FloatVectorClass& FloatVectorClass::operator=(float *right) {
 
 std::ostream &operator<<(std::ostream &stream, const FloatVectorClass &vectorClass) {
     for (size_t i = 0; i < vectorClass._length; i++) {
-        stream<<vectorClass._vector[i]<<std::endl;
+        stream << vectorClass._vector[i] << std::endl;
     }
     return stream;
 }
 
-FloatVectorClass& FloatVectorClass::operator+=(int64_t value) {
-    for(size_t i = 0; i < this->_length; i++){
-        this->_vector[i]+=value;
+FloatVectorClass &FloatVectorClass::operator+=(int64_t value) {
+    for (size_t i = 0; i < this->_length; i++) {
+        this->_vector[i] += value;
     }
     return *this;
 }
 
-void FloatVectorClass::Normalize(double value) {
+void FloatVectorClass::Normalize(double amplitude) {
 
     double maxValue = 0;
 
-    for(size_t i = 0; i < this->_length; i++){
+    for (size_t i = 0; i < this->_length; i++) {
         double absValue = std::abs(this->_vector[i]);
-        if(absValue>maxValue){
+        if (absValue > maxValue) {
             maxValue = absValue;
         };
     }
 
-    double coefficient = value/maxValue;
+    double coefficient = amplitude / maxValue;
 
-    if(coefficient<1){
-        for(size_t i = 0; i < this->_length; i++){
+    if (coefficient < 1) {
+        for (size_t i = 0; i < this->_length; i++) {
             this->_vector[i] *= coefficient;
         }
     }
@@ -99,8 +99,8 @@ void FloatVectorClass::Normalize(double value) {
 
 }
 
-void FloatVectorClass::FillArray(std::array<uint16_t, 12>* array) {
-    for(size_t i = 0; i< this->_length; i++){
-        (*array)[i] = std::round(this->_vector[i]);
+void FloatVectorClass::FillArray(std::array<uint16_t, 12> *array, size_t offset) {
+    for (size_t i = 0; i < this->_length; i++) {
+        (*array)[i + offset] = std::round(this->_vector[i]);
     }
 }
