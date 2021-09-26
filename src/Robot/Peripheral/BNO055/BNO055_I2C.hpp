@@ -21,14 +21,14 @@ public:
 
     void UseExternalCrystal(bool useExtCrl);
 
-    BNO055::Data GetData();
+    BNO055::Data GetData() const;
 
 private:
     const I2C *_i2c;
     uint16_t _sensorAddress;
     BNO055::OperationMode _operationMode{};
     BNO055::Data _data{};
-    std::shared_mutex _dataMutex;
+    mutable std::shared_mutex _dataMutex;
 
     bool ReadData() final;
 

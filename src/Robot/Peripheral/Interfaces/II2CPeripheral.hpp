@@ -1,7 +1,7 @@
 #ifndef ROV_II2CPERIFERAL_HPP
 #define ROV_II2CPERIFERAL_HPP
 
-#include <mutex>
+#include <shared_mutex>
 #include "../../DataTransmissions/I2C/I2C.hpp"
 #include "../../DataTransmissions/SPI/SPI.hpp"
 #include "../../DataTransmissions/UART/UART.hpp"

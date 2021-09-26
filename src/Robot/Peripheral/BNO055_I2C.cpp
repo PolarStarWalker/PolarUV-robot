@@ -106,7 +106,7 @@ bool BNO055_I2C::ReadData() {
     return true;
 }
 
-Data BNO055_I2C::GetData() {
+Data BNO055_I2C::GetData() const{
     this->_dataMutex.lock_shared();
     Data data = this->_data;
     this->_dataMutex.unlock_shared();

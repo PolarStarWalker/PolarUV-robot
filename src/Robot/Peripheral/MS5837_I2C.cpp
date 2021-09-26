@@ -2,7 +2,7 @@
 
 using namespace MS5837;
 
-MS5837_I2C::MS5837_I2C(uint16_t sensorAddress){
+MS5837_I2C::MS5837_I2C(uint16_t sensorAddress) {
     this->_sensorAddress = sensorAddress;
 }
 
@@ -10,7 +10,7 @@ MS5837_I2C::~MS5837_I2C() {
     delete this->_i2c;
 }
 
-bool MS5837_I2C::Init(const I2C* i2c) {
+bool MS5837_I2C::Init(const I2C *i2c) {
 
     this->_i2c = i2c;
 
@@ -18,9 +18,9 @@ bool MS5837_I2C::Init(const I2C* i2c) {
     usleep(10 * 1000);
 
     for (uint8_t i = 0; i < 7; i++) {
-        _i2c->WriteByte(MS5837_ADDRESS, MS5837_PROM_READ + (i * 2));
+        _i2c->WriteByte(this->_sensorAddress, MS5837_PROM_READ + (i * 2));
         uint8_t cData[2]{};
-        _i2c->Read(MS5837_ADDRESS, cData, 2);
+        _i2c->Read(this->_sensorAddress, cData, 2);
         C[i] = (cData[0] << 8) | cData[1];
     }
 
@@ -35,42 +35,44 @@ bool MS5837_I2C::Init(const I2C* i2c) {
 }
 
 bool MS5837_I2C::ReadData() {
-    //Mutex is not needed, since this function is called in GetData()
-    //std::lock_guard<std::mutex> mutex(this->_dataMutex);
 
-    _i2c->WriteByte(MS5837_ADDRESS, MS5837_CONVERT_D1_8192);
+    _i2c->WriteByte(this->_sensorAddress, MS5837_CONVERT_D1_8192);
 
     usleep(20 * 1000); // Max conversion time per datasheet
 
-    _i2c->WriteByte(MS5837_ADDRESS, MS5837_ADC_READ);
+    _i2c->WriteByte(this->_sensorAddress, MS5837_ADC_READ);
 
     uint8_t d1Data[0]{};
-    _i2c->Read(MS5837_ADDRESS, d1Data, 3);
+    _i2c->Read(this->_sensorAddress, d1Data, 3);
     _d1Pressure = d1Data[0];
     _d1Pressure = (_d1Pressure << 8) | d1Data[1];
     _d1Pressure = (_d1Pressure << 8) | d1Data[2];
 
-    _i2c->WriteByte(MS5837_ADDRESS, MS5837_CONVERT_D2_8192);
+    _i2c->WriteByte(this->_sensorAddress, MS5837_CONVERT_D2_8192);
 
     usleep(20 * 1000);
 
-    _i2c->WriteByte(MS5837_ADDRESS, MS5837_ADC_READ);
+    _i2c->WriteByte(this->_sensorAddress, MS5837_ADC_READ);
 
     uint8_t d2Data[3]{};
-    _i2c->Read(MS5837_ADDRESS, d2Data, 3);
+    _i2c->Read(this->_sensorAddress, d2Data, 3);
     _d2Temperature = d2Data[0];
     _d2Temperature = (_d2Temperature << 8) | d2Data[1];
     _d2Temperature = (_d2Temperature << 8) | d2Data[2];
 
     Calculate();
 
-    double pressure = _p * 0.001 / 10.0;
-    this->_data.Pressure = pressure;
+    MS5837::Data data{};
 
-    this->_data.Temperature = (double) _temperature / 100.0;
+    double pressure = _p * 0.001 / 10.0;
+    data.Pressure = pressure;
+
+    data.Temperature = (double) _temperature / 100.0;
 
     double depth = ((_p * 10.0) - 101300) / (_fluidDensity * 9.80665);
-    this->_data.Depth = depth;
+    data.Depth = depth;
+
+    this->SetData(data);
 
     return true;
 }
@@ -143,9 +145,12 @@ uint8_t MS5837_I2C::CRC4(uint16_t *n_prom) {
     return n_rem ^ 0x00;
 }
 
-MS5837::Data MS5837_I2C::GetData() {
-    this->ReadData();
-    return this->_data;
+MS5837::Data MS5837_I2C::GetData() const{
+    this->_dataMutex.lock_shared();
+    MS5837::Data data = this->_data;
+    this->_dataMutex.unlock_shared();
+
+    return data;
 }
 
 bool MS5837_I2C::Reload() {

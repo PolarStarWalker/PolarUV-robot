@@ -3,6 +3,8 @@
 #include "../Interfaces/II2CPeripheral.hpp"
 #include "./MS5837.hpp"
 
+
+
 #define MS5837_ADDRESS 0x76
 
 class MS5837_I2C : public II2CPeripheral {
@@ -14,12 +16,14 @@ public:
 
     void SetFluidDensity(double density);
 
-    MS5837::Data GetData();
+    MS5837::Data GetData() const;
 
     //from sensor
     bool Init(const I2C *i2c) final;
 
 private:
+
+    mutable std::shared_mutex _dataMutex;
 
     MS5837::Data _data;
 
@@ -41,4 +45,10 @@ private:
     bool ReadData() final;
 
     bool Reload() final;
+
+    inline void SetData(const MS5837::Data& data){
+        this->_dataMutex.lock();
+        this->_data = data;
+        this->_dataMutex.unlock();
+    }
 };

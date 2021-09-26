@@ -20,11 +20,31 @@ inline std::array<char, 2 * MotorsStructLenMessage> FormMessage(const MotorsStru
     return motorsMessage;
 }
 
+
+inline TelemetryStruct GetTelemetryStruct(const BNO055_I2C &bno055, const MS5837_I2C &ms5837) {
+    BNO055::Data bnoData = bno055.GetData();
+
+    //MS5837::Data msData = ms5837.GetData();
+
+    TelemetryStruct telemetryStruct;
+
+    //telemetryStruct.Depth = msData.Depth;
+    telemetryStruct.Rotation[TelemetryStruct::X] = bnoData.EulerAngle[BNO055::X];
+    telemetryStruct.Rotation[TelemetryStruct::Y] = bnoData.EulerAngle[BNO055::Y];
+    telemetryStruct.Rotation[TelemetryStruct::Z] = bnoData.EulerAngle[BNO055::Z];
+
+    telemetryStruct.Acceleration[TelemetryStruct::X] = bnoData.LinearAcceleration[BNO055::X];
+    telemetryStruct.Acceleration[TelemetryStruct::Y] = bnoData.LinearAcceleration[BNO055::Y];
+    telemetryStruct.Acceleration[TelemetryStruct::Z] = bnoData.LinearAcceleration[BNO055::Z];
+
+    return telemetryStruct;
+}
+
 void CommandsProtocol::Start() {
 
 
     BNO055_I2C bno055(BNO055_ADDRESS);
-    //MS5837_I2C ms5837(MS5837_ADDRESS);
+    MS5837_I2C ms5837(MS5837_ADDRESS);
 
     PeripheralHandler peripheralHandler("/dev/i2c-1");
 
@@ -53,7 +73,9 @@ void CommandsProtocol::Start() {
             CommandsStruct commandsStruct;
 
             if (_commandsSocket.RecvDataLen((char *) &commandsStruct, CommandsStructLen) != 0) {
-                std::cout << "Struct recieved:" << std::endl;
+
+                TelemetryStruct telemetryStruct = GetTelemetryStruct(bno055, ms5837);
+                _commandsSocket.SendDataLen((char *) &telemetryStruct, TelemetryStructLen);
 
                 moveVector = commandsStruct.VectorArray;
 
@@ -73,36 +95,20 @@ void CommandsProtocol::Start() {
                 this->_spi.ReadWrite(motorsMessage.data(), nullptr, MotorsStructLenMessage * 2);
 
 #ifdef DEBUG
-/*                std::cout << settingsStruct;
-                std::cout << motorsStruct;
-                std::cout << commandsStruct;
+                /*                std::cout << settingsStruct;
+                                std::cout << motorsStruct;
+                                std::cout << commandsStruct;
 
-                for (size_t i = 0; i < 2; i++) {
+                                for (size_t i = 0; i < 2; i++) {
 
-                    for (size_t j = 0; j < MotorsStructLen + 1; j++) {
-                        std::cout << motorsMessage[j] << '|';
-                    }
-                    std::cout << motorsMessage[MotorsStructLen + 1] << std::endl;
-                }*/
+                                    for (size_t j = 0; j < MotorsStructLen + 1; j++) {
+                                        std::cout << motorsMessage[j] << '|';
+                                    }
+                                    std::cout << motorsMessage[MotorsStructLen + 1] << std::endl;
+                                }*/
 #endif
 
-                BNO055::Data bnoData = bno055.GetData();
-                //MS5837::Data msData = ms5837.GetData();
 
-                TelemetryStruct telemetryStruct;
-
-                //telemetryStruct.Depth = msData.Depth;
-                telemetryStruct.Rotation[TelemetryStruct::X] = bnoData.EulerAngle[BNO055::X];
-                telemetryStruct.Rotation[TelemetryStruct::Y] = bnoData.EulerAngle[BNO055::Y];
-                telemetryStruct.Rotation[TelemetryStruct::Z] = bnoData.EulerAngle[BNO055::Z];
-
-                telemetryStruct.Acceleration[TelemetryStruct::X] = bnoData.LinearAcceleration[BNO055::X];
-                telemetryStruct.Acceleration[TelemetryStruct::Y] = bnoData.LinearAcceleration[BNO055::Y];
-                telemetryStruct.Acceleration[TelemetryStruct::Z] = bnoData.LinearAcceleration[BNO055::Z];
-
-                _commandsSocket.SendDataLen((char *) &telemetryStruct, TelemetryStructLen);
-
-                std::cout << telemetryStruct << std::endl;
             }
         }
     }
