@@ -20,6 +20,8 @@ struct TelemetryStruct {
 
     float BatteryVoltage = 0.0f;
 
+    int8_t MotionCalibration[4] {};
+
     bool Euler = true;
 };
 

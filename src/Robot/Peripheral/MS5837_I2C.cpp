@@ -27,11 +27,7 @@ bool MS5837_I2C::Init(const I2C *i2c) {
     uint8_t crcRead = C[0] >> 12;
     uint8_t crcCalculated = CRC4(C);
 
-    if (crcCalculated != crcRead) {
-        return false; // CRC fail
-    }
-
-    return true;
+    return crcCalculated == crcRead;
 }
 
 bool MS5837_I2C::ReadData() {
@@ -42,7 +38,7 @@ bool MS5837_I2C::ReadData() {
 
     _i2c->WriteByte(this->_sensorAddress, MS5837_ADC_READ);
 
-    uint8_t d1Data[0]{};
+    uint8_t d1Data[3]{};
     _i2c->Read(this->_sensorAddress, d1Data, 3);
     _d1Pressure = d1Data[0];
     _d1Pressure = (_d1Pressure << 8) | d1Data[1];
@@ -154,7 +150,7 @@ MS5837::Data MS5837_I2C::GetData() const{
 }
 
 bool MS5837_I2C::Reload() {
-    _i2c->WriteByte(MS5837_ADDRESS, MS5837_RESET);
+    _i2c->WriteByte(this->_sensorAddress, MS5837_RESET);
     return true;
 }
 

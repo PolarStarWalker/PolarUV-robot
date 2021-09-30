@@ -37,6 +37,11 @@ inline TelemetryStruct GetTelemetryStruct(const BNO055_I2C &bno055, const MS5837
     telemetryStruct.Acceleration[TelemetryStruct::Y] = bnoData.LinearAcceleration[BNO055::Y];
     telemetryStruct.Acceleration[TelemetryStruct::Z] = bnoData.LinearAcceleration[BNO055::Z];
 
+    telemetryStruct.MotionCalibration[0] = bnoData.CalibrationArray[0];
+    telemetryStruct.MotionCalibration[1] = bnoData.CalibrationArray[1];
+    telemetryStruct.MotionCalibration[2] = bnoData.CalibrationArray[2];
+    telemetryStruct.MotionCalibration[3] = bnoData.CalibrationArray[3];
+
     return telemetryStruct;
 }
 
@@ -95,6 +100,8 @@ void CommandsProtocol::Start() {
                 this->_spi.ReadWrite(motorsMessage.data(), nullptr, MotorsStructLenMessage * 2);
 
 #ifdef DEBUG
+
+                std::cout<<telemetryStruct<<std::endl;
                 /*                std::cout << settingsStruct;
                                 std::cout << motorsStruct;
                                 std::cout << commandsStruct;
