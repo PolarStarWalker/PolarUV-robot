@@ -1,10 +1,14 @@
 #ifndef ROBOT_BNO055_HPP
 #define ROBOT_BNO055_HPP
-namespace BNO055{
-    enum Axis:size_t{
+
+#include "../Filters/Filters.hpp"
+
+namespace BNO055 {
+    enum Axis : size_t {
         X = 0,
         Y = 1,
-        Z = 2
+        Z = 2,
+        W = 3
     };
 
     enum BNO055_REGISTERS : uint8_t {
@@ -157,9 +161,9 @@ namespace BNO055{
         OPERATION_MODE_NDOF = 0X0C
     };
 
-    struct Data{
-        ///{W, I, J, K}
-        std::array<double, 4> Quaternions{};
+    struct Data {
+        ///{X, Y, Z, W}
+        std::array<double, 4> Quaternion{};
         ///{X, Y, Z}
         std::array<double, 3> EulerAngle{};
         ///{X, Y, Z}
@@ -169,6 +173,23 @@ namespace BNO055{
         ///{X, Y, Z}
         std::array<uint8_t, 4> CalibrationArray{};
         int8_t Temperature = 0;
+    };
+
+    enum FilterAxis{
+        QuaternionX = 0,
+        QuaternionY = 1,
+        QuaternionZ = 2,
+        QuaternionW = 3,
+        EulerAngleX = 4,
+        EulerAngleY = 5,
+        EulerAngleZ = 6,
+        LinearAccelerationX = 7,
+        LinearAccelerationY = 8,
+        LinearAccelerationZ = 9,
+        MagneticFiledX = 10,
+        MagneticFiledY = 11,
+        MagneticFiledZ = 12,
+        Temperature = 13,
     };
 }
 #endif

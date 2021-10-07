@@ -62,6 +62,8 @@ void CommandsProtocol::Start() {
 
     for (;;) {
 
+        _commandsSocket.Listen();
+
         RobotSettingsStruct settingsStruct = RobotSettingsProtocol::GetSettings();
 
         FloatMatrixClass coefficientMatrix(settingsStruct.ThrusterNumber(), 6);
@@ -70,8 +72,6 @@ void CommandsProtocol::Start() {
 
         FloatVectorClass moveVector(6);
         FloatVectorClass handVector(settingsStruct.HandFreedom());
-
-        _commandsSocket.Listen();
 
         while (_commandsSocket.IsOnline()) {
 
@@ -101,12 +101,13 @@ void CommandsProtocol::Start() {
 
 #ifdef DEBUG
 
-                std::cout<<telemetryStruct<<std::endl;
-                /*                std::cout << settingsStruct;
-                                std::cout << motorsStruct;
-                                std::cout << commandsStruct;
+                //std::cout<<telemetryStruct<<std::endl;
+                std::cout << settingsStruct << std::endl;
+                std::cout << commandsStruct << std::endl;
+                std::cout << motorsStruct << std::endl;
 
-                                for (size_t i = 0; i < 2; i++) {
+
+                /*                for (size_t i = 0; i < 2; i++) {
 
                                     for (size_t j = 0; j < MotorsStructLen + 1; j++) {
                                         std::cout << motorsMessage[j] << '|';

@@ -15,7 +15,7 @@ class BNO055_I2C : public II2CPeripheral {
 public:
     explicit BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode = BNO055::OPERATION_MODE_NDOF_FMC_OFF);
 
-    bool Init(const I2C* i2c) final;
+    bool Init(const I2C *i2c) final;
 
     void SendOperationMode(BNO055::OperationMode mode);
 
@@ -24,17 +24,19 @@ public:
     BNO055::Data GetData() const;
 
 private:
-    const I2C *_i2c;
-    uint16_t _sensorAddress;
-    BNO055::OperationMode _operationMode{};
     BNO055::Data _data{};
     mutable std::shared_mutex _dataMutex;
+    FiltersGroup<14, 10> _dataFilters;
+    const I2C *_i2c;
+    uint16_t _sensorAddress;
+    BNO055::OperationMode _operationMode;
+
 
     bool ReadData() final;
 
     bool Reload() final;
 
-    inline void SetData(const BNO055::Data& data){
+    inline void SetData(const BNO055::Data &data) {
         this->_dataMutex.lock();
         this->_data = data;
         this->_dataMutex.unlock();
