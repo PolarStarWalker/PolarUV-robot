@@ -1,6 +1,16 @@
 #include "BNO055/BNO055_I2C.hpp"
+#include "cmath"
 
 using namespace BNO055;
+
+
+inline double GetSin(double degreeAngle){
+    return sin(degreeAngle * M_PI / 180);
+}
+
+inline double GetAsin(){
+    return
+}
 
 BNO055_I2C::BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode) {
     _sensorAddress = sensorAddress;
@@ -101,7 +111,7 @@ bool BNO055_I2C::ReadData() {
 
     data.Temperature = (int8_t) (_i2c->ReadByteFromRegister(_sensorAddress, TEMP_REG));
 
-    data.EulerAngle[X] = this->_dataFilters[FilterAxis::QuaternionX]->Filter(data.EulerAngle[X]);
+    data.EulerAngle[X] = this->_dataFilters[FilterAxis::EulerAngleX]->Filter(data.EulerAngle[X]);
     data.EulerAngle[Y] = this->_dataFilters[FilterAxis::EulerAngleY]->Filter(data.EulerAngle[Y]);
     data.EulerAngle[Z] = this->_dataFilters[FilterAxis::EulerAngleZ]->Filter(data.EulerAngle[Z]);
 

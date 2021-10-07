@@ -176,13 +176,13 @@ namespace BNO055 {
     };
 
     enum FilterAxis{
-        QuaternionX = 0,
-        QuaternionY = 1,
-        QuaternionZ = 2,
-        QuaternionW = 3,
-        EulerAngleX = 4,
-        EulerAngleY = 5,
-        EulerAngleZ = 6,
+        EulerAngleX = 0,
+        EulerAngleY = 1,
+        EulerAngleZ = 2,
+        QuaternionX = 3,
+        QuaternionY = 4,
+        QuaternionZ = 5,
+        QuaternionW = 6,
         LinearAccelerationX = 7,
         LinearAccelerationY = 8,
         LinearAccelerationZ = 9,
@@ -191,5 +191,9 @@ namespace BNO055 {
         MagneticFiledZ = 12,
         Temperature = 13,
     };
+
+
+
+
 }
 #endif
