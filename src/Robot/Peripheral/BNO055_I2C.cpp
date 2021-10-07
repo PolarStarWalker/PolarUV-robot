@@ -101,13 +101,13 @@ bool BNO055_I2C::ReadData() {
 
     data.Temperature = (int8_t) (_i2c->ReadByteFromRegister(_sensorAddress, TEMP_REG));
 
-    data.EulerAngle[X] = this->_dataFilters[FilterAxis::EulerAngleX].Filter(data.EulerAngle[X]);
-    data.EulerAngle[Y] = this->_dataFilters[FilterAxis::EulerAngleY].Filter(data.EulerAngle[Y]);
-    data.EulerAngle[Z] = this->_dataFilters[FilterAxis::EulerAngleZ].Filter(data.EulerAngle[Z]);
+    data.EulerAngle[X] = this->_dataFilters[FilterAxis::QuaternionX]->Filter(data.EulerAngle[X]);
+    data.EulerAngle[Y] = this->_dataFilters[FilterAxis::EulerAngleY]->Filter(data.EulerAngle[Y]);
+    data.EulerAngle[Z] = this->_dataFilters[FilterAxis::EulerAngleZ]->Filter(data.EulerAngle[Z]);
 
-    data.LinearAcceleration[X] = this->_dataFilters[FilterAxis::LinearAccelerationX].Filter(data.LinearAcceleration[X]);
-    data.LinearAcceleration[Y] = this->_dataFilters[FilterAxis::LinearAccelerationY].Filter(data.LinearAcceleration[Y]);
-    data.LinearAcceleration[Z] = this->_dataFilters[FilterAxis::LinearAccelerationZ].Filter(data.LinearAcceleration[Z]);
+    data.LinearAcceleration[X] = this->_dataFilters[FilterAxis::LinearAccelerationX]->Filter(data.LinearAcceleration[X]);
+    data.LinearAcceleration[Y] = this->_dataFilters[FilterAxis::LinearAccelerationY]->Filter(data.LinearAcceleration[Y]);
+    data.LinearAcceleration[Z] = this->_dataFilters[FilterAxis::LinearAccelerationZ]->Filter(data.LinearAcceleration[Z]);
 
     SetData(data);
 
