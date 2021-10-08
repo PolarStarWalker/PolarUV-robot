@@ -4,17 +4,36 @@
 using namespace BNO055;
 
 
-inline double GetSin(double degreeAngle){
+inline double GetSin(double degreeAngle) {
     return sin(degreeAngle * M_PI / 180);
 }
 
-inline double GetAsin(){
+inline double GetAsin() {
     return
 }
 
 BNO055_I2C::BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode) {
     _sensorAddress = sensorAddress;
     _operationMode = mode;
+
+    _dataFilters[FilterAxis::EulerAngleX] = new CyclicalMovingAverage<10, 360>;
+    _dataFilters[FilterAxis::EulerAngleY] = new CyclicalMovingAverage<10, 360>;
+    _dataFilters[FilterAxis::EulerAngleZ] = new CyclicalMovingAverage<10, 360>;
+
+    _dataFilters[FilterAxis::QuaternionW] = new MovingAverage<10>;
+    _dataFilters[FilterAxis::QuaternionX] = new MovingAverage<10>;
+    _dataFilters[FilterAxis::QuaternionY] = new MovingAverage<10>;
+    _dataFilters[FilterAxis::QuaternionZ] = new MovingAverage<10>;
+
+    _dataFilters[FilterAxis::LinearAccelerationX] = new MovingAverage<10>;
+    _dataFilters[FilterAxis::LinearAccelerationY] = new MovingAverage<10>;
+    _dataFilters[FilterAxis::LinearAccelerationZ] = new MovingAverage<10>;
+
+    _dataFilters[FilterAxis::MagneticFiledX] = new MovingAverage<10>;
+    _dataFilters[FilterAxis::MagneticFiledY] = new MovingAverage<10>;
+    _dataFilters[FilterAxis::MagneticFiledZ] = new MovingAverage<10>;
+
+    _dataFilters[FilterAxis::Temperature] = new MovingAverage<10>;
 }
 
 bool BNO055_I2C::Init(const I2C *i2c) {
@@ -115,9 +134,12 @@ bool BNO055_I2C::ReadData() {
     data.EulerAngle[Y] = this->_dataFilters[FilterAxis::EulerAngleY]->Filter(data.EulerAngle[Y]);
     data.EulerAngle[Z] = this->_dataFilters[FilterAxis::EulerAngleZ]->Filter(data.EulerAngle[Z]);
 
-    data.LinearAcceleration[X] = this->_dataFilters[FilterAxis::LinearAccelerationX]->Filter(data.LinearAcceleration[X]);
-    data.LinearAcceleration[Y] = this->_dataFilters[FilterAxis::LinearAccelerationY]->Filter(data.LinearAcceleration[Y]);
-    data.LinearAcceleration[Z] = this->_dataFilters[FilterAxis::LinearAccelerationZ]->Filter(data.LinearAcceleration[Z]);
+    data.LinearAcceleration[X] = this->_dataFilters[FilterAxis::LinearAccelerationX]
+            ->Filter(data.LinearAcceleration[X]);
+    data.LinearAcceleration[Y] = this->_dataFilters[FilterAxis::LinearAccelerationY]
+            ->Filter(data.LinearAcceleration[Y]);
+    data.LinearAcceleration[Z] = this->_dataFilters[FilterAxis::LinearAccelerationZ]
+            ->Filter(data.LinearAcceleration[Z]);
 
     SetData(data);
 

@@ -191,9 +191,5 @@ namespace BNO055 {
         MagneticFiledZ = 12,
         Temperature = 13,
     };
-
-
-
-
 }
 #endif

@@ -26,7 +26,7 @@ public:
 private:
     BNO055::Data _data{};
     mutable std::shared_mutex _dataMutex;
-    FiltersGroup<14, 10> _dataFilters;
+    FiltersGroup<14> _dataFilters;
     const I2C *_i2c;
     uint16_t _sensorAddress;
     BNO055::OperationMode _operationMode;

@@ -4,8 +4,6 @@
 class IFilter {
 public:
     virtual double Filter(double value) = 0;
-
-private:
 };
 
 
