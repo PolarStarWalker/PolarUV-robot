@@ -1,7 +1,6 @@
 #ifndef ROBOT_BNO055_HPP
 #define ROBOT_BNO055_HPP
-
-#include "../Filters/Filters.hpp"
+#include "../Filters/FiltersGroup.hpp"
 
 namespace BNO055 {
     enum Axis : size_t {
@@ -175,7 +174,7 @@ namespace BNO055 {
         int8_t Temperature = 0;
     };
 
-    enum FilterAxis{
+    enum FilterAxis : ssize_t {
         EulerAngleX = 0,
         EulerAngleY = 1,
         EulerAngleZ = 2,

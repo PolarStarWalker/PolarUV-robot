@@ -10,6 +10,22 @@ public:
         this->_currentIndex = 0;
     }
 
+    double operator()(double value) final{
+        if (this->_currentIndex == this->_bufferSize)
+            this->_currentIndex = 0;
+
+        //ToDo: использовать какие-нибудь arm intrisics для суммы с накоплением
+        _buffer[this->_currentIndex] = value;
+        ++_currentIndex;
+
+        double maximum = 0.0;
+
+        for (size_t i = 0; i < this->_bufferSize; i++)
+            maximum += _buffer[i];
+
+        return maximum / _bufferSize;
+    }
+
     double Filter(double value) final {
         if (this->_currentIndex == this->_bufferSize)
             this->_currentIndex = 0;

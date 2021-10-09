@@ -2,8 +2,7 @@
 
 #include "../Interfaces/II2CPeripheral.hpp"
 #include "./MS5837.hpp"
-
-
+#include "../Filters/FiltersGroup.hpp"
 
 #define MS5837_ADDRESS 0x76
 
@@ -26,6 +25,8 @@ private:
     mutable std::shared_mutex _dataMutex;
 
     MS5837::Data _data;
+
+    FiltersGroup<3> _dataFilters;
 
     const I2C *_i2c;
 

@@ -2,8 +2,11 @@
 
 using namespace MS5837;
 
-MS5837_I2C::MS5837_I2C(uint16_t sensorAddress) {
-    this->_sensorAddress = sensorAddress;
+MS5837_I2C::MS5837_I2C(uint16_t sensorAddress) : _sensorAddress(sensorAddress){
+
+    this->_dataFilters[Depth] = new MovingAverage<5>;
+    this->_dataFilters[Pressure] = new MovingAverage<5>;
+    this->_dataFilters[Temperature] = new MovingAverage<5>;
 }
 
 MS5837_I2C::~MS5837_I2C() {
@@ -21,6 +24,8 @@ bool MS5837_I2C::Init(const I2C *i2c) {
         _i2c->WriteByte(this->_sensorAddress, MS5837_PROM_READ + (i * 2));
         uint8_t cData[2]{};
         _i2c->Read(this->_sensorAddress, cData, 2);
+        if (cData[0] == 0 && cData[1] == 0)
+            return false;
         C[i] = (cData[0] << 8) | cData[1];
     }
 
@@ -141,7 +146,7 @@ uint8_t MS5837_I2C::CRC4(uint16_t *n_prom) {
     return n_rem ^ 0x00;
 }
 
-MS5837::Data MS5837_I2C::GetData() const{
+MS5837::Data MS5837_I2C::GetData() const {
     this->_dataMutex.lock_shared();
     MS5837::Data data = this->_data;
     this->_dataMutex.unlock_shared();

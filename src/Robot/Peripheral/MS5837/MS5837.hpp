@@ -16,6 +16,12 @@ namespace MS5837 {
         double Temperature = 0.0f;
     };
 
+    enum FiltersAxis : size_t{
+        Depth = 0,
+        Pressure = 1,
+        Temperature = 3
+    };
+
 }
 
 #endif
