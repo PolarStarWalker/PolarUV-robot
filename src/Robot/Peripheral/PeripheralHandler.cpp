@@ -28,7 +28,7 @@ void PeripheralHandler::Start() {
             peripheralContext.IsOnline = peripheralContext.I2CPeripheral->ReadData();
             this->_i2cSensorsMutex.unlock();
         }
-        usleep(10 * 1000);
+        usleep(1 * 1000);
     }
 }
 

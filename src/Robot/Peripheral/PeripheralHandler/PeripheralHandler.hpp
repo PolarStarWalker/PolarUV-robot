@@ -36,7 +36,7 @@ private:
 
 public:
 
-    PeripheralHandler(const char *i2c);
+    explicit PeripheralHandler(const char *i2c);
 
     bool AddI2CSensor(II2CPeripheral *newSensor);
 

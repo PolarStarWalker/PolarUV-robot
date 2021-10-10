@@ -3,33 +3,32 @@
 
 #include "../IFilter.hpp"
 
-template<ssize_t BuffSize>
+template<ssize_t BufferSize>
 class MovingAverage : public IFilter {
 public:
     MovingAverage() {
-        this->_currentIndex = 0;
+        this->_index = 0;
     }
 
     double Filter(double value) final {
-        if (this->_currentIndex == this->_bufferSize)
-            this->_currentIndex = 0;
+        if (_index == BufferSize)
+            _index = 0;
 
         //ToDo: использовать какие-нибудь arm intrisics для суммы с накоплением
-        _buffer[this->_currentIndex] = value;
-        ++_currentIndex;
+        _buffer[_index] = value;
+        ++_index;
 
         double maximum = 0.0;
 
-        for (size_t i = 0; i < this->_bufferSize; i++)
+        for (size_t i = 0; i < BufferSize; i++)
             maximum += _buffer[i];
 
-        return maximum / _bufferSize;
+        return maximum / BufferSize;
     };
 
 private:
-    double _buffer[BuffSize];
-    ssize_t _bufferSize = BuffSize;
-    ssize_t _currentIndex;
+    double _buffer[BufferSize];
+    ssize_t _index;
 };
 
 #endif

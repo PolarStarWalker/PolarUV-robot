@@ -7,9 +7,9 @@ BNO055_I2C::BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode) {
     _operationMode = mode;
 
     //ToDo: убрать
-    _dataFilters[FilterAxis::EulerAngleX] = new Nothing;
-    _dataFilters[FilterAxis::EulerAngleY] = new Nothing;
-    _dataFilters[FilterAxis::EulerAngleZ] = new Nothing;
+    _dataFilters[FilterAxis::EulerAngleX] = new CircleMovingAverage<10>;
+    _dataFilters[FilterAxis::EulerAngleY] = new CircleMovingAverage<10>;
+    _dataFilters[FilterAxis::EulerAngleZ] = new CircleMovingAverage<10>;
 
     _dataFilters[FilterAxis::QuaternionW] = new MovingAverage<10>;
     _dataFilters[FilterAxis::QuaternionX] = new MovingAverage<10>;
@@ -121,10 +121,14 @@ bool BNO055_I2C::ReadData() {
 
     data.Temperature = (int8_t) (_i2c->ReadByteFromRegister(_sensorAddress, TEMP_REG));
 
-    //data.EulerAngle[X] = this->_dataFilters[FilterAxis::EulerAngleX]->Filter(data.EulerAngle[X]);
-    //data.EulerAngle[Y] = this->_dataFilters[FilterAxis::EulerAngleY]->Filter(data.EulerAngle[Y]);
-    data.EulerAngle[Z] = this->_dataFilters[FilterAxis::EulerAngleZ]
-            ->Filter(data.EulerAngle[Z]);
+    data.EulerAngle[X] = (this->_dataFilters[FilterAxis::EulerAngleX]
+            ->Filter(data.EulerAngle[X] * M_PIf64 / 180)) * 180 / M_PIf64;
+
+    data.EulerAngle[Y] = (this->_dataFilters[FilterAxis::EulerAngleY]
+            ->Filter(data.EulerAngle[Y] * M_PIf64 / 180)) * 180 / M_PIf64;
+
+    data.EulerAngle[Z] = (this->_dataFilters[FilterAxis::EulerAngleZ]
+            ->Filter(data.EulerAngle[Z] * M_PIf64 / 180)) * 180 / M_PIf64;
 
     data.LinearAcceleration[X] = this->_dataFilters[FilterAxis::LinearAccelerationX]
             ->Filter(data.LinearAcceleration[X]);

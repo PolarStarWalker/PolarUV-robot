@@ -7,7 +7,7 @@ int main() {
     process.sched_priority = 99;
     sched_setscheduler(0, SCHED_RR, &process);
 
-    Robot robot();
+    Robot robot;
 
     ///Start SettingsProtocol in background
     DataProtocols::RobotSettingsProtocol settingsProtocol;
