@@ -15,7 +15,7 @@ IntVectorClass::IntVectorClass(const IntVectorClass& vector) {
 }
 
 
-IntVectorClass::IntVectorClass(IntVectorClass &&vector) {
+IntVectorClass::IntVectorClass(IntVectorClass &&vector) noexcept{
     this->_length = vector._length;
     this->_matrix = vector._matrix;
 
