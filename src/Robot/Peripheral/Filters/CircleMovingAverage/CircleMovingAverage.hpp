@@ -7,19 +7,19 @@ template<ssize_t BuffSize>
 class CircleMovingAverage : public IFilter {
 public:
     double Filter(double value) final {
-        if (_index == BuffSize)
+        if (_index == 2 * BuffSize)
             _index = 0;
 
-        _cos[_index] = std::cos(value);
-        _sin[_index] = std::sin(value);
-        _index++;
+        _buf[_index] = std::cos(value);
+        _buf[++_index] = std::sin(value);
+        ++_index;
 
         double sinValue = 0;
         double cosValue = 0;
 
-        for (ssize_t i = 0; i < BuffSize; i++) {
-            sinValue += _sin[i];
-            cosValue += _cos[i];
+        for (ssize_t i = 0; i < 2 * BuffSize; ++i) {
+            cosValue += _buf[i];
+            sinValue += _buf[++i];
         }
 
         sinValue /= BuffSize;
@@ -48,8 +48,7 @@ public:
     }
 
 private:
-    double _cos[BuffSize]{};
-    double _sin[BuffSize]{};
+    double _buf[2 * BuffSize]{};
     ssize_t _index;
 };
 
