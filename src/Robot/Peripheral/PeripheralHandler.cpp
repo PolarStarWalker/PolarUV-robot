@@ -16,11 +16,13 @@ bool PeripheralHandler::AddI2CSensor(II2CPeripheral *newSensor) {
     return true;
 }
 
-PeripheralHandler::PeripheralHandler(const char *i2c) :
-        _i2c(i2c) {
+PeripheralHandler::PeripheralHandler(const char *i2c, size_t delay_us) :
+        _i2c(i2c),
+        _delay_us(delay_us) {
     usleep(1000 * 1000);
 }
 
+[[noreturn]]
 void PeripheralHandler::Start() {
     for (;;) {
         for (I2CSensorsContext peripheralContext : this->_i2cPeripherals) {
@@ -28,7 +30,7 @@ void PeripheralHandler::Start() {
             peripheralContext.IsOnline = peripheralContext.I2CPeripheral->ReadData();
             this->_i2cSensorsMutex.unlock();
         }
-        usleep(10 * 1000);
+        usleep(_delay_us);
     }
 }
 

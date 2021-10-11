@@ -18,6 +18,7 @@ namespace DataProtocols {
 
         static RobotSettingsStruct GetSettings();
 
+        [[noreturn]]
         void Start();
         void StartAsync();
     };

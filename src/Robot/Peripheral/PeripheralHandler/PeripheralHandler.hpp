@@ -3,7 +3,7 @@
 
 #include <thread>
 #include <cstring>
-#include <mutex>
+#include <shared_mutex>
 #include <list>
 #include "../Interfaces/II2CPeripheral.hpp"
 
@@ -27,20 +27,21 @@ struct I2CSensorsContext {
 class PeripheralHandler {
 private:
 
-    std::mutex _i2cMutex;
-    std::mutex _i2cSensorsMutex;
+    std::shared_mutex _i2cMutex;
+    std::shared_mutex _i2cSensorsMutex;
 
     std::list<I2CSensorsContext> _i2cPeripherals;
 
     I2C _i2c;
 
+    const size_t _delay_us;
 public:
 
-    PeripheralHandler(const char *i2c);
+    explicit PeripheralHandler(const char *i2c, size_t delay_us = 30000);
 
     bool AddI2CSensor(II2CPeripheral *newSensor);
 
-    void Start();
+    [[noreturn]] void Start();
 
     void StartAsync();
 

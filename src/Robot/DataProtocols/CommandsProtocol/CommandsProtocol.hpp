@@ -16,6 +16,7 @@ namespace DataProtocols {
     public:
         explicit CommandsProtocol(const char *SPIDevice);
 
+        [[noreturn]]
         void Start();
 
     private:

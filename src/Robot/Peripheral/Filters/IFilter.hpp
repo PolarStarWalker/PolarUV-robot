@@ -4,6 +4,7 @@
 class IFilter {
 public:
     virtual double Filter(double value) = 0;
+    virtual ~IFilter() = default;
 };
 
 

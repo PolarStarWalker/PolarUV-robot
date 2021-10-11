@@ -4,6 +4,7 @@
 #include "./IFilter.hpp"
 #include "./MovingAverage/MovingAverage.hpp"
 #include "./Nothing/Nothing.hpp"
+#include "./CircleMovingAverage/CircleMovingAverage.hpp"
 
 template<ssize_t GroupSize>
 class FiltersGroup {
