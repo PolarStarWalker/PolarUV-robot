@@ -4,3 +4,4 @@
 #include "./Interfaces/II2CPeripheral.hpp"
 #include "./PeripheralHandler/PeripheralHandler.hpp"
 #include "./BNO055/BNO055_I2C.hpp"
+#include "./ADS1115/ADS1115_I2C.hpp"

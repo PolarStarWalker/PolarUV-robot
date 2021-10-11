@@ -13,8 +13,8 @@ namespace DataProtocols {
 
         void KillStream();
 
+        [[noreturn]]
         void Start();
-
 
     public:
         RobotVideoProtocol();
