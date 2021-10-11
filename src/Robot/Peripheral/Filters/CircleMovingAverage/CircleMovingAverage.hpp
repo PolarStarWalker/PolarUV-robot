@@ -17,32 +17,29 @@ public:
         double sinValue = 0;
         double cosValue = 0;
 
-        for (ssize_t i = 0; i < 2 * BuffSize; ++i) {
-            cosValue += _buf[i];
-            sinValue += _buf[++i];
+        for (ssize_t i = 0; i < BuffSize; ++i) {
+            cosValue += _buf[2 * i];
+            sinValue += _buf[2 * i + 1];
         }
 
         sinValue /= BuffSize;
         cosValue /= BuffSize;
 
-        double sinProjection = std::asin(sinValue);
-        double cosProjection = std::acos(cosValue);
-
         ///First quarter
-        if (sinProjection >= 0 && cosProjection <= M_PI_2f64)
-            return sinProjection;
+        if (sinValue >= 0 && cosValue <= 0)
+            return std::acos(cosValue);
 
         ///Second quarter
-        if (sinProjection >= 0 && cosProjection >= M_PI_2f64)
-            return cosProjection;
+        if (sinValue >= 0 && cosValue >= 0)
+            return std::acos(cosValue);
 
         ///Third quarter
-        if (sinProjection <= 0 && cosProjection >= M_PI_2f64)
-            return 2 * M_PIf64 - cosProjection;
+        if (sinValue <= 0 && cosValue >= 0)
+            return 2 * M_PIf64 - std::acos(cosValue);
 
         ///Forth quarter
-        if (sinProjection <= 0 && cosProjection <= M_PI_2f64)
-            return sinProjection + 2 * M_PIf64;
+        if (sinValue <= 0 && cosValue <= 0)
+            return std::asin(sinValue) + 2 * M_PIf64;
 
         throw std::exception();
     }
