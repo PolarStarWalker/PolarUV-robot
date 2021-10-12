@@ -2,11 +2,14 @@
 #define ROBOT_NOTHING_HPP
 #include "../IFilter.hpp"
 
-class Nothing : public IFilter{
+class Nothing final : public IFilter{
 public:
-    double Filter(double value) final{
+
+    inline double Filter(double value) final{
         return value;
     }
+
+    inline ~Nothing() final = default;
 };
 
 

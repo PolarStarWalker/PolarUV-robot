@@ -7,9 +7,8 @@
 
 using namespace DataProtocols;
 
-RobotVideoProtocol::RobotVideoProtocol() {
-    ///Port created by https://steamcommunity.com/profiles/76561198126802792/
-    _socket.MakeServerSocket(28840);
+///Port created by https://steamcommunity.com/profiles/76561198126802792/
+RobotVideoProtocol::RobotVideoProtocol() : _socket(28840) {
     this->childPid = 0;
 }
 

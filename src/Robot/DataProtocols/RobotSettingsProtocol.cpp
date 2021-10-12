@@ -2,9 +2,8 @@
 
 using namespace DataProtocols;
 
-RobotSettingsProtocol::RobotSettingsProtocol() : _settingSocket() {
-    ///Port created by https://steamcommunity.com/profiles/76561198126802792/
-    this->_settingSocket.MakeServerSocket(14322);
+///Port created by https://steamcommunity.com/profiles/76561198126802792/
+RobotSettingsProtocol::RobotSettingsProtocol() : _settingSocket(14322) {
 }
 
 void RobotSettingsProtocol::StartAsync() {

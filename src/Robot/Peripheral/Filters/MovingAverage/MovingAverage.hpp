@@ -4,7 +4,7 @@
 #include "../IFilter.hpp"
 
 template<ssize_t BufferSize>
-class MovingAverage : public IFilter {
+class MovingAverage final: public IFilter {
 public:
     MovingAverage() {
         this->_index = 0;

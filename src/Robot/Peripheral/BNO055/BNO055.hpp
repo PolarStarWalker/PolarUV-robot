@@ -1,5 +1,6 @@
 #ifndef ROBOT_BNO055_HPP
 #define ROBOT_BNO055_HPP
+
 #include "../Filters/FiltersGroup.hpp"
 
 namespace BNO055 {
@@ -160,20 +161,6 @@ namespace BNO055 {
         OPERATION_MODE_NDOF = 0X0C
     };
 
-    struct Data {
-        ///{X, Y, Z, W}
-        std::array<double, 4> Quaternion{};
-        ///{X, Y, Z}
-        std::array<double, 3> EulerAngle{};
-        ///{X, Y, Z}
-        std::array<double, 3> LinearAcceleration{};
-        ///{X, Y, Z}
-        std::array<double, 3> MagneticFiled{};
-        ///{X, Y, Z}
-        std::array<uint8_t, 4> CalibrationArray{};
-        int8_t Temperature = 0;
-    };
-
     enum FilterAxis : ssize_t {
         EulerAngleX = 0,
         EulerAngleY = 1,
@@ -190,5 +177,20 @@ namespace BNO055 {
         MagneticFiledZ = 12,
         Temperature = 13,
     };
+
+    struct Data {
+        ///{X, Y, Z, W}
+        std::array<double, 4> Quaternion{};
+        ///{X, Y, Z}
+        std::array<double, 3> EulerAngle{};
+        ///{X, Y, Z}
+        std::array<double, 3> LinearAcceleration{};
+        ///{X, Y, Z}
+        std::array<double, 3> MagneticFiled{};
+        ///{X, Y, Z}
+        std::array<uint8_t, 4> CalibrationArray{};
+        int8_t Temperature = 0;
+    };
+
 }
 #endif
