@@ -128,7 +128,7 @@ bool BNO055_I2C::ReadData() {
             ->Filter(data.EulerAngle[Y] * M_PIf64 / 180)) * 180 / M_PIf64;
 
     data.EulerAngle[Z] = (this->_dataFilters[FilterAxis::EulerAngleZ]
-            ->Filter(data.EulerAngle[Z] * M_PIf64 / 180)) * 180 / M_PIf64;
+            ->Filter((data.EulerAngle[Z] + 90) * M_PIf64 / 180)) * 180 / M_PIf64;
 
     data.LinearAcceleration[X] = this->_dataFilters[FilterAxis::LinearAccelerationX]
             ->Filter(data.LinearAcceleration[X]);

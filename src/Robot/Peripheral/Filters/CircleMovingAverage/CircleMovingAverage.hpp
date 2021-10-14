@@ -25,23 +25,15 @@ public:
         sinValue /= BuffSize;
         cosValue /= BuffSize;
 
-        ///First quarter
-        if (sinValue >= 0 && cosValue <= 0)
+        ///First half
+        if (sinValue > 0)
             return std::acos(cosValue);
 
-        ///Second quarter
-        if (sinValue >= 0 && cosValue >= 0)
-            return std::acos(cosValue);
-
-        ///Third quarter
-        if (sinValue <= 0 && cosValue >= 0)
+        ///Second half
+        if (sinValue < 0)
             return 2 * M_PIf64 - std::acos(cosValue);
 
-        ///Forth quarter
-        if (sinValue <= 0 && cosValue <= 0)
-            return std::asin(sinValue) + 2 * M_PIf64;
-
-        throw std::exception();
+        return 0;
     }
 
 private:
