@@ -26,10 +26,7 @@ public:
 
 	bool IsOnline() const;
 
-protected:
-	//stattus of connection
-	bool _isOnline = false;
-
+private:
 	//socket descriptors
 	int _serverSocketDescriptor;
 	int _clientSocketDescriptor;
@@ -41,6 +38,9 @@ protected:
 	//I don't know what is it, but it needs, chestno
 	socklen_t _serverAddressLength = sizeof(this->_serverAddress);
 	socklen_t _clientAdressLength = sizeof(this->_clientAddress);
+
+    //status of connection
+    bool _isOnline = false;
 
 	//Simple function, for transfer data
 	ssize_t recvall(int s, char* buf, size_t len, int flags);
