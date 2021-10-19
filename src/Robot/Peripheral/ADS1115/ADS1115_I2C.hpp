@@ -4,7 +4,7 @@
 #include "./ADS1115.hpp"
 #include "../Interfaces/II2CPeripheral.hpp"
 
-class ADS1115_I2C : public II2CPeripheral {
+class ADS1115_I2C final : public II2CPeripheral {
 private:
     const I2C *_i2c;
     ADS1115::Gain _gain;

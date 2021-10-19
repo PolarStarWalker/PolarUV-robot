@@ -6,7 +6,7 @@
 
 #define MS5837_ADDRESS 0x76
 
-class MS5837_I2C : public II2CPeripheral {
+class MS5837_I2C final : public II2CPeripheral {
 public:
 
     explicit MS5837_I2C(uint16_t sensorAddress);

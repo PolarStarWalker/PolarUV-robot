@@ -11,7 +11,7 @@
 #include "../Interfaces/II2CPeripheral.hpp"
 #include "../../DataTransmissions/I2C/I2C.hpp"
 
-class BNO055_I2C : public II2CPeripheral {
+class BNO055_I2C final :  public II2CPeripheral  {
 public:
     explicit BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode = BNO055::OPERATION_MODE_NDOF_FMC_OFF);
 

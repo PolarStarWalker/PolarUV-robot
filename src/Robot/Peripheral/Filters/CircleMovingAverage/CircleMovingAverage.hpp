@@ -4,7 +4,7 @@
 #include <cmath>
 
 template<ssize_t BuffSize>
-class CircleMovingAverage : public IFilter {
+class CircleMovingAverage final: public IFilter {
 public:
     double Filter(double value) final {
         if (_index == 2 * BuffSize)
@@ -38,7 +38,7 @@ public:
 
 private:
     double _buf[2 * BuffSize]{};
-    ssize_t _index;
+    ssize_t _index = 0;
 };
 
 
