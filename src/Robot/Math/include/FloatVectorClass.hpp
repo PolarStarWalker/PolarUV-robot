@@ -40,6 +40,7 @@ public:
     FloatVectorClass &operator=(double *right);
     FloatVectorClass &operator=(float *right);
 
+    FloatVectorClass &operator*=(ssize_t value);
 
     void Normalize(double amplitude);
     void FillArray(std::array<uint16_t, 12> *array, size_t offset = 0) const;

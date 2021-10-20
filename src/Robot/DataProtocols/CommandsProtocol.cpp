@@ -1,5 +1,6 @@
 #include "./CommandsProtocol/CommandsProtocol.hpp"
 #include "../Peripheral/Peripheral.hpp"
+#include <vector>
 
 using namespace DataProtocols;
 
@@ -30,11 +31,11 @@ inline std::array<char, 2 * MotorsStructLenMessage> FormMessage(const MotorsStru
 inline TelemetryStruct GetTelemetryStruct(const BNO055_I2C &bno055, const MS5837_I2C &ms5837) {
     BNO055::Data bnoData = bno055.GetData();
 
-    //MS5837::Data msData = ms5837.GetData();
+    MS5837::Data msData = ms5837.GetData();
 
     TelemetryStruct telemetryStruct;
 
-    //telemetryStruct.Depth = msData.Depth;
+    telemetryStruct.Depth = msData.Depth;
     telemetryStruct.Rotation[TelemetryStruct::X] = bnoData.EulerAngle[BNO055::X];
     telemetryStruct.Rotation[TelemetryStruct::Y] = bnoData.EulerAngle[BNO055::Y];
     telemetryStruct.Rotation[TelemetryStruct::Z] = bnoData.EulerAngle[BNO055::Z];
@@ -52,7 +53,6 @@ inline TelemetryStruct GetTelemetryStruct(const BNO055_I2C &bno055, const MS5837
 }
 
 void CommandsProtocol::Start() {
-
 
     BNO055_I2C bno055(BNO055_ADDRESS);
     MS5837_I2C ms5837(MS5837_ADDRESS);
@@ -78,6 +78,8 @@ void CommandsProtocol::Start() {
 
         FloatVectorClass moveVector(6);
         FloatVectorClass handVector(settingsStruct.HandFreedom());
+        handVector = settingsStruct.HandCoefficientArray();
+        handVector *= 10;
 
         while (_commandsSocket.IsOnline()) {
 
@@ -94,11 +96,16 @@ void CommandsProtocol::Start() {
                 motorsCommands.Normalize(1000);
                 motorsCommands += 1000;
 
+                FloatVectorClass handCommands(settingsStruct.HandFreedom());
+                for (size_t i = 0; i < settingsStruct.HandFreedom(); i++) {
+                    handCommands[i] = handVector[i] * commandsStruct.TheHand[i] + 1000;
+                }
+
                 std::array<uint16_t, 12> moveArray{};
                 moveArray.fill(1000);
 
                 motorsCommands.FillArray(&moveArray);
-                handVector.FillArray(&moveArray, motorsCommands.Length());
+                handCommands.FillArray(&moveArray, motorsCommands.Length());
 
                 MotorsStruct motorsStruct;
                 std::memcpy(motorsStruct.PacketArray, moveArray.begin(), moveArray.size() * 2);
@@ -111,14 +118,14 @@ void CommandsProtocol::Start() {
 
                 //std::cout<<telemetryStruct<<std::endl;
                 //std::cout << settingsStruct << std::endl;
-                //std::cout << commandsStruct << std::endl;
+                std::cout << commandsStruct << std::endl;
                 std::cout << motorsStruct << std::endl;
 
 
-                for (size_t j = 0; j < MotorsStructLenMessage * 2; j++) {
+/*                for (size_t j = 0; j < MotorsStructLenMessage * 2; j++) {
                     std::cout << motorsMessage[j] << '|';
                 }
-                std::cout << std::endl;
+                std::cout << std::endl;*/
 #endif
 
 

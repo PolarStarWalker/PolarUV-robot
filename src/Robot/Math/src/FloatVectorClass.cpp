@@ -95,12 +95,18 @@ void FloatVectorClass::Normalize(double amplitude) {
             this->_vector[i] *= coefficient;
         }
     }
-
-
 }
 
 void FloatVectorClass::FillArray(std::array<uint16_t, 12> *array, size_t offset) const {
-    for (size_t i = 0; i < this->_length; i++) {
-        (*array)[i + offset] = std::round(this->_vector[i]);
+    for (size_t i = 0; i < _length; i++) {
+        (*array)[i + offset] = std::round(_vector[i]);
     }
+}
+
+FloatVectorClass &FloatVectorClass::operator*=(ssize_t value) {
+    for(size_t i = 0; i < _length; i++){
+        _vector[i] *= value;
+    }
+
+    return *this;
 }
