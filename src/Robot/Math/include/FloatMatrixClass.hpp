@@ -17,7 +17,7 @@ class FloatMatrixClass : public virtual BaseMatrixClass {
     friend IntVectorClass;
 
 private:
-    double *_matrix = nullptr;
+    double *_matrix;
 
     double *operator[](size_t value) const;
 

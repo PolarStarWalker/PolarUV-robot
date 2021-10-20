@@ -99,7 +99,7 @@ void FloatVectorClass::Normalize(double amplitude) {
 
 }
 
-void FloatVectorClass::FillArray(std::array<uint16_t, 12> *array, size_t offset) {
+void FloatVectorClass::FillArray(std::array<uint16_t, 12> *array, size_t offset) const {
     for (size_t i = 0; i < this->_length; i++) {
         (*array)[i + offset] = std::round(this->_vector[i]);
     }

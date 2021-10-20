@@ -18,8 +18,9 @@ int main() {
     robotVideoProtocol.StartAsync();
 
     ///Start CommandsProtocol in synchronous mode
-    DataProtocols::CommandsProtocol commands("/dev/spidev0.0");
+    DataProtocols::CommandsProtocol commands("/dev/spidev0.0", Mega(35));
     commands.Start();
+
 
     return 0;
 }

@@ -3,10 +3,10 @@
 #
 cmake_minimum_required (VERSION 3.16)
 
-project ("Matrix")
+project (Math)
 
 set(SOURCE_LIB src/FloatMatrixClass.cpp src/IntMatrixClass.cpp src/FloatVectorClass.cpp src/IntVectorClass.cpp)
 
-add_library(Matrix STATIC ${SOURCE_LIB})
+add_library(Math STATIC ${SOURCE_LIB})
 
-target_precompile_headers(Matrix PUBLIC Matrix.hpp)
+target_precompile_headers(Math PUBLIC Math.hpp)

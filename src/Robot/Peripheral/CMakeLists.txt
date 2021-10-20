@@ -2,6 +2,6 @@
 
 project ("Peripheral")
 
-add_library(Peripheral Peripheral.hpp LiftBag.cpp MS5837_I2C.cpp BNO055_I2C.cpp PeripheralHandler.cpp ADS1115_I2C.cpp)
+add_library(Peripheral STATIC Peripheral.hpp LiftBag.cpp MS5837_I2C.cpp BNO055_I2C.cpp PeripheralHandler.cpp ADS1115_I2C.cpp)
 target_precompile_headers(Peripheral PUBLIC Peripheral.hpp)
 

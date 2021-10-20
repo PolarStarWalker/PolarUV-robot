@@ -40,8 +40,9 @@ public:
     FloatVectorClass &operator=(double *right);
     FloatVectorClass &operator=(float *right);
 
+
     void Normalize(double amplitude);
-    void FillArray(std::array<uint16_t, 12> *array, size_t offset = 0);
+    void FillArray(std::array<uint16_t, 12> *array, size_t offset = 0) const;
 
     friend std::ostream &operator<<(std::ostream &stream, const FloatVectorClass &matrixClass);
 };

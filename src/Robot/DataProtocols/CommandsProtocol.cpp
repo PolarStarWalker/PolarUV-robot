@@ -3,18 +3,24 @@
 
 using namespace DataProtocols;
 
-CommandsProtocol::CommandsProtocol(const char *SPIDevice) : _spi(SPIDevice, 26000000) {
+CommandsProtocol::CommandsProtocol(const char *SPIDevice, uint32_t speed) : _spi(SPIDevice, speed) {
 }
 
 
 inline std::array<char, 2 * MotorsStructLenMessage> FormMessage(const MotorsStruct &motorsStruct) {
     std::array<char, 2 * MotorsStructLenMessage> motorsMessage{};
 
-    std::memcpy(motorsMessage.data() + 1, &motorsStruct, MotorsStructLen);
-    std::memcpy(motorsMessage.data() + 1 + MotorsStructLenMessage, &motorsStruct, MotorsStructLen);
+    std::memcpy(motorsMessage.data() + 2, &motorsStruct, MotorsStructLen);
+    std::memcpy(motorsMessage.data() + MotorsStructLenMessage + 2, &motorsStruct, MotorsStructLen);
     motorsMessage[0] = 's';
-    motorsMessage[MotorsStructLen + 1] = 's';
+    motorsMessage[1] = 's';
+
+    motorsMessage[MotorsStructLenMessage - 2] = 's';
+    motorsMessage[MotorsStructLenMessage - 1] = 's';
     motorsMessage[MotorsStructLenMessage] = 's';
+    motorsMessage[MotorsStructLenMessage + 1] = 's';
+
+    motorsMessage[MotorsStructLenMessage * 2 - 2] = 's';
     motorsMessage[MotorsStructLenMessage * 2 - 1] = 's';
 
     return motorsMessage;
@@ -89,6 +95,8 @@ void CommandsProtocol::Start() {
                 motorsCommands += 1000;
 
                 std::array<uint16_t, 12> moveArray{};
+                moveArray.fill(1000);
+
                 motorsCommands.FillArray(&moveArray);
                 handVector.FillArray(&moveArray, motorsCommands.Length());
 
@@ -102,18 +110,15 @@ void CommandsProtocol::Start() {
 #ifdef DEBUG
 
                 //std::cout<<telemetryStruct<<std::endl;
-                std::cout << settingsStruct << std::endl;
-                std::cout << commandsStruct << std::endl;
+                //std::cout << settingsStruct << std::endl;
+                //std::cout << commandsStruct << std::endl;
                 std::cout << motorsStruct << std::endl;
 
 
-                /*                for (size_t i = 0; i < 2; i++) {
-
-                                    for (size_t j = 0; j < MotorsStructLen + 1; j++) {
-                                        std::cout << motorsMessage[j] << '|';
-                                    }
-                                    std::cout << motorsMessage[MotorsStructLen + 1] << std::endl;
-                                }*/
+                for (size_t j = 0; j < MotorsStructLenMessage * 2; j++) {
+                    std::cout << motorsMessage[j] << '|';
+                }
+                std::cout << std::endl;
 #endif
 
 

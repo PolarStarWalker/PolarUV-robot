@@ -1,6 +1,6 @@
 #include "Robot.hpp"
 
-Robot::Robot() : commandsProtocol("/dev/SPIDev0.0") {
+Robot::Robot() : commandsProtocol("/dev/SPIDev0.0", 35) {
 
 }
 

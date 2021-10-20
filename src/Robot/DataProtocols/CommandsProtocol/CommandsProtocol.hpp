@@ -6,7 +6,7 @@
 #include <cstring>
 
 #include "../RobotSettingsProtocol/RobotSettingsProtocol.hpp"
-#include "../../Matrix/Matrix.hpp"
+#include "../../Math/Math.hpp"
 #include "../../DataTransmissions/DataTransmissions.hpp"
 #include "../../DataStructs/DataStructs.hpp"
 
@@ -14,7 +14,7 @@ namespace DataProtocols {
 
     class CommandsProtocol {
     public:
-        explicit CommandsProtocol(const char *SPIDevice);
+        explicit CommandsProtocol(const char *SPIDevice, uint32_t speed);
 
         [[noreturn]]
         void Start();
