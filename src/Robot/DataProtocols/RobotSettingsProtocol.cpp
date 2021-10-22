@@ -22,13 +22,13 @@ void RobotSettingsProtocol::Start() {
         if (direction == 'r') {
 
             RobotSettingsStruct robotSettingsStruct = GetSettings();
-
+#ifndef DEBUG
             ssize_t size = _settingSocket.SendDataLen(robotSettingsStruct.Begin(), robotSettingsStruct.Size());
-
+#else
+            ssize_t size = _settingSocket.SendDataLen(robotSettingsStruct.Begin(), robotSettingsStruct.Size());
             std::cout << size << std::endl;
             std::cout << robotSettingsStruct;
-
-            continue;
+#endif
         }
 
         if (direction == 'w') {
@@ -45,9 +45,9 @@ void RobotSettingsProtocol::Start() {
             std::fstream file("robotSettings", std::ios_base::binary | std::ios_base::out | std::ios_base::trunc);
 
             file.write(robotSettingsStruct.Begin(), robotSettingsStruct.Size());
-
+#ifdef DEBUG
             std::cout << robotSettingsStruct;
-
+#endif
             continue;
         }
     }

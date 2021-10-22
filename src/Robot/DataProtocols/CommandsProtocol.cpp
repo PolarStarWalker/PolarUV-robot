@@ -1,6 +1,5 @@
 #include "./CommandsProtocol/CommandsProtocol.hpp"
 #include "../Peripheral/Peripheral.hpp"
-#include <vector>
 
 using namespace DataProtocols;
 
@@ -60,7 +59,7 @@ void CommandsProtocol::Start() {
     PeripheralHandler peripheralHandler("/dev/i2c-1");
 
     peripheralHandler.AddI2CSensor(&bno055);
-    //peripheralHandler.AddI2CSensor(&ms5837);
+    peripheralHandler.AddI2CSensor(&ms5837);
 
     peripheralHandler.StartAsync();
 
@@ -101,11 +100,17 @@ void CommandsProtocol::Start() {
                     handCommands[i] = handVector[i] * commandsStruct.TheHand[i] + 1000;
                 }
 
+                FloatVectorClass camera(2);
+                camera = commandsStruct.Camera;
+                camera*=1000;
+                camera+=1000;
+
                 std::array<uint16_t, 12> moveArray{};
                 moveArray.fill(1000);
 
                 motorsCommands.FillArray(&moveArray);
                 handCommands.FillArray(&moveArray, motorsCommands.Length());
+                camera.FillArray(&moveArray, motorsCommands.Length() + handCommands.Length());
 
                 MotorsStruct motorsStruct;
                 std::memcpy(motorsStruct.PacketArray, moveArray.begin(), moveArray.size() * 2);

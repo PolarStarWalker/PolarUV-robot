@@ -117,9 +117,9 @@ const {
     if (ioctl(this->_i2CDescriptor, I2C_RDWR, &data) < 0) {
         std::cout << "Ошибка при записи данных" << std::endl;
         return false;
-    } else {
-        return true;
     }
+
+    return true;
 }
 
 bool I2C::Write(__u16 slaveAddress,
@@ -140,9 +140,8 @@ const {
     if (ioctl(this->_i2CDescriptor, I2C_RDWR, &data) < 0) {
         std::cout << "Ошибка при записи данных" << std::endl;
         return false;
-    } else {
-        return true;
     }
+    return true;
 }
 
 bool I2C::WriteByteToRegister(__u16 slaveAddress, __u8 slaveRegister, __u8 byte) const {
@@ -164,9 +163,9 @@ bool I2C::WriteByteToRegister(__u16 slaveAddress, __u8 slaveRegister, __u8 byte)
     if (ioctl(this->_i2CDescriptor, I2C_RDWR, &msgset) < 0) {
         std::cout << "Ошибка при записи данных" << std::endl;
         return false;
-    } else {
-        return true;
     }
+
+    return true;
 }
 
 bool I2C::WriteByte(__u16 slaveAddress, __u8 byte) const {
@@ -186,7 +185,6 @@ bool I2C::WriteByte(__u16 slaveAddress, __u8 byte) const {
     if (ioctl(this->_i2CDescriptor, I2C_RDWR, &msgset) < 0) {
         std::cout << "Ошибка при записи данных" << std::endl;
         return false;
-    } else {
-        return true;
     }
+    return true;
 }
