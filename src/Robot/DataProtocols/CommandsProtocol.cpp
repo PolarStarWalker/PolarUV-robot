@@ -3,7 +3,7 @@
 
 using namespace DataProtocols;
 
-CommandsProtocol::CommandsProtocol(const char *SPIDevice, uint32_t speed) : _spi(SPIDevice, speed) {
+CommandsProtocol::CommandsProtocol(const char *SPIDevice, uint32_t speed) : _spi(SPIDevice, speed),  _commandsSocket(1999) {
 }
 
 
@@ -62,8 +62,6 @@ void CommandsProtocol::Start() {
     peripheralHandler.AddI2CSensor(&ms5837);
 
     peripheralHandler.StartAsync();
-
-    _commandsSocket.MakeServerSocket(1999);
 
     for (;;) {
 

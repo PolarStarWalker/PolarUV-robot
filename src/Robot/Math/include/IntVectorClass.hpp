@@ -23,7 +23,7 @@ private:
     int64_t* _matrix = nullptr;
 
     IntVectorClass(const IntVectorClass& vector);
-    IntVectorClass(IntVectorClass&& vector) noexcept ;
+    IntVectorClass(IntVectorClass&& vector) noexcept;
 
 public:
 
