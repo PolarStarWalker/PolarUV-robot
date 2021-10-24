@@ -8,17 +8,15 @@ set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CMAKE_COMMAND} -E time")
 
 # build options
 set(CMAKE_CXX_STANDARD 20)
+
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
     set(CMAKE_CXX_FLAGS_DEBUG "-g")
+    add_definitions(-DDEBUG)
 else ()
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif ()
 
 project("robot")
-
-if (CMAKE_BUILD_TYPE MATCHES "Debug")
-    add_definitions(-DDEBUG)
-endif ()
 
 # Включите подпроекты.
 add_subdirectory("src")
