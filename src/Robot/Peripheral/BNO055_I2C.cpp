@@ -1,5 +1,5 @@
 #include "BNO055/BNO055_I2C.hpp"
-#include "../Math/SIPrefix/SIPrefix.hpp"
+#include "../Math/SIPrefix.hpp"
 
 using namespace BNO055;
 

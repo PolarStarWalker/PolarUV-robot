@@ -2,7 +2,7 @@
 #define ROBOT_MATH_HPP
 
 #include "./include/IntMatrixClass.hpp"
-#include "./SIPrefix/SIPrefix.hpp"
+#include "SIPrefix.hpp"
 #include "./Matrix.hpp"
 #include "./Vector.hpp"
 
