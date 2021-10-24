@@ -1,4 +1,5 @@
 #include "BNO055/BNO055_I2C.hpp"
+#include "../Math/SIPrefix/SIPrefix.hpp"
 
 using namespace BNO055;
 
@@ -34,7 +35,7 @@ bool BNO055_I2C::Init(const I2C *i2c) {
     /// Connection test
     uint8_t id = _i2c->ReadByteFromRegister(_sensorAddress, CHIP_ID_REG);
     if (id != BNO055_ID) {
-        usleep(1000 * 1000);
+        usleep(Mega(1));
         id = _i2c->ReadByteFromRegister(_sensorAddress, CHIP_ID_REG);
         if (id != BNO055_ID) {
             return false;
@@ -46,29 +47,29 @@ bool BNO055_I2C::Init(const I2C *i2c) {
 
     /// Reset
     _i2c->WriteByteToRegister(_sensorAddress, SYS_TRIGGER_REG, 0x20);
-    usleep(30 * 1000);
+    usleep(Kilo(30));
     while (_i2c->ReadByteFromRegister(_sensorAddress, CHIP_ID_REG) != BNO055_ID) {
-        usleep(10 * 1000);
+        usleep(Kilo(30));
     }
-    usleep(50 * 1000);
+    usleep(Kilo(50));
 
     /// Set to normal power mode
     _i2c->WriteByteToRegister(_sensorAddress, PWR_MODE_REG, POWER_MODE_NORMAL);
-    usleep(10 * 1000);
+    usleep(Kilo(10));
     _i2c->WriteByteToRegister(_sensorAddress, PAGE_ID_REG, 0);
 
     /// Set the requested operation mode
     _i2c->WriteByteToRegister(_sensorAddress, SYS_TRIGGER_REG, 0x0);
-    usleep(10 * 1000);
+    usleep(Kilo(30));
     SendOperationMode(this->_operationMode);
-    usleep(20 * 1000);
+    usleep(Kilo(20));
 
     return true;
 }
 
-void BNO055_I2C::SendOperationMode(OperationMode mode) {
+void BNO055_I2C::SendOperationMode(OperationMode mode) const{
     _i2c->WriteByteToRegister(_sensorAddress, OPR_MODE_REG, mode);
-    usleep(30 * 1000);
+    usleep(Kilo(20));
 }
 
 void BNO055_I2C::UseExternalCrystal(bool useExtCrl) {
@@ -128,7 +129,7 @@ bool BNO055_I2C::ReadData() {
             ->Filter(data.EulerAngle[Y] * M_PIf64 / 180)) * 180 / M_PIf64;
 
     data.EulerAngle[Z] = (this->_dataFilters[FilterAxis::EulerAngleZ]
-            ->Filter((data.EulerAngle[Z] + 90) * M_PIf64 / 180)) * 180 / M_PIf64;
+            ->Filter((data.EulerAngle[Z]) * M_PIf64 / 180)) * 180 / M_PIf64;
 
     data.LinearAcceleration[X] = this->_dataFilters[FilterAxis::LinearAccelerationX]
             ->Filter(data.LinearAcceleration[X]);

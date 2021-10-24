@@ -1,9 +1,13 @@
 #include "./CommandsProtocol/CommandsProtocol.hpp"
 #include "../Peripheral/Peripheral.hpp"
+yj#include "../Math/Math.hpp"
 
 using namespace DataProtocols;
 
-CommandsProtocol::CommandsProtocol(const char *SPIDevice, uint32_t speed) : _spi(SPIDevice, speed),  _commandsSocket(1999) {
+CommandsProtocol::CommandsProtocol(const char *SPIDevice, uint32_t speed_hz, size_t peripheralTimeout_us) :
+        _spi(SPIDevice, speed_hz),
+        _commandsSocket(1999),
+        _peripheralTimeout_us(peripheralTimeout_us){
 }
 
 
@@ -56,7 +60,7 @@ void CommandsProtocol::Start() {
     BNO055_I2C bno055(BNO055_ADDRESS);
     MS5837_I2C ms5837(MS5837_ADDRESS);
 
-    PeripheralHandler peripheralHandler("/dev/i2c-1");
+    PeripheralHandler peripheralHandler("/dev/i2c-1", _peripheralTimeout_us);
 
     peripheralHandler.AddI2CSensor(&bno055);
     peripheralHandler.AddI2CSensor(&ms5837);
@@ -69,12 +73,12 @@ void CommandsProtocol::Start() {
 
         RobotSettingsStruct settingsStruct = RobotSettingsProtocol::GetSettings();
 
-        FloatMatrixClass coefficientMatrix(settingsStruct.ThrusterNumber(), 6);
+        Matrix<float> coefficientMatrix(settingsStruct.ThrusterNumber(), 6);
         coefficientMatrix = settingsStruct.ThrusterCoefficientArray();
         coefficientMatrix *= 10;
 
-        FloatVectorClass moveVector(6);
-        FloatVectorClass handVector(settingsStruct.HandFreedom());
+        Vector<float> moveVector(6);
+        Vector<float> handVector(settingsStruct.HandFreedom());
         handVector = settingsStruct.HandCoefficientArray();
         handVector *= 10;
 
@@ -89,26 +93,26 @@ void CommandsProtocol::Start() {
 
                 moveVector = commandsStruct.VectorArray;
 
-                FloatVectorClass motorsCommands = coefficientMatrix * moveVector;
+                Vector<float> motorsCommands = coefficientMatrix * moveVector;
                 motorsCommands.Normalize(1000);
                 motorsCommands += 1000;
 
-                FloatVectorClass handCommands(settingsStruct.HandFreedom());
+                Vector<float> handCommands(settingsStruct.HandFreedom());
                 for (size_t i = 0; i < settingsStruct.HandFreedom(); i++) {
                     handCommands[i] = handVector[i] * commandsStruct.TheHand[i] + 1000;
                 }
 
-                FloatVectorClass camera(2);
+                Vector<float> camera(2);
                 camera = commandsStruct.Camera;
-                camera*=1000;
-                camera+=1000;
+                camera *= 1000;
+                camera += 1000;
 
                 std::array<uint16_t, 12> moveArray{};
                 moveArray.fill(1000);
 
                 motorsCommands.FillArray(&moveArray);
-                handCommands.FillArray(&moveArray, motorsCommands.Length());
-                camera.FillArray(&moveArray, motorsCommands.Length() + handCommands.Length());
+                handCommands.FillArray(&moveArray, motorsCommands.Size());
+                camera.FillArray(&moveArray, motorsCommands.Size() + handCommands.Size());
 
                 MotorsStruct motorsStruct;
                 std::memcpy(motorsStruct.PacketArray, moveArray.begin(), moveArray.size() * 2);
@@ -119,10 +123,10 @@ void CommandsProtocol::Start() {
 
 #ifdef DEBUG
 
-                //std::cout<<telemetryStruct<<std::endl;
+                std::cout<<telemetryStruct<<std::endl;
                 //std::cout << settingsStruct << std::endl;
-                std::cout << commandsStruct << std::endl;
-                std::cout << motorsStruct << std::endl;
+                //std::cout << commandsStruct << std::endl;
+                //std::cout << motorsStruct << std::endl;
 
 
 /*                for (size_t j = 0; j < MotorsStructLenMessage * 2; j++) {

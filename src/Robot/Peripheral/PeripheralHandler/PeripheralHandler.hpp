@@ -37,7 +37,7 @@ private:
     const size_t _delay_us;
 public:
 
-    explicit PeripheralHandler(const char *i2c, size_t delay_us = 30000);
+    explicit PeripheralHandler(const char *i2c, size_t delay_us);
 
     bool AddI2CSensor(II2CPeripheral *newSensor);
 

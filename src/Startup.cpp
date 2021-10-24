@@ -1,4 +1,5 @@
 ﻿#include "./Startup.hpp"
+#include "./Robot/Math/Math.hpp."
 
 
 int main() {
@@ -16,7 +17,7 @@ int main() {
     robotVideoProtocol.StartAsync();
 
     ///Start CommandsProtocol in synchronous mode
-    DataProtocols::CommandsProtocol commands("/dev/spidev0.0", Mega(35));
+    DataProtocols::CommandsProtocol commands("/dev/spidev0.0", Mega(35), Kilo(10));
     commands.Start();
 
 

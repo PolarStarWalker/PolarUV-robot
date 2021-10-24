@@ -1,7 +1,7 @@
 #include "./RobotSettingsStruct/RobotSettingsStruct.hpp"
 
 RobotSettingsStruct::RobotSettingsStruct() {
-    this->_size = BaseRobotSettingsStructAllocatedSize + 7 * sizeof(double);
+    this->_size = BaseRobotSettingsStructAllocatedSize + 7 * sizeof(float);
 
     this->_data = new char[this->_size]{};
 
@@ -10,7 +10,7 @@ RobotSettingsStruct::RobotSettingsStruct() {
     ((BaseRobotSettingsStruct *) this->_data)->ThrusterNumber = 1;
     ((BaseRobotSettingsStruct *) this->_data)->HandFreedom = 1;
 
-    this->_thrusterCoefficientArrayPtr = (double *) (this->_data + BaseRobotSettingsStructAllocatedSize);
+    this->_thrusterCoefficientArrayPtr = (float *) (this->_data + BaseRobotSettingsStructAllocatedSize);
     this->_handCoefficientArrayPtr = this->_thrusterCoefficientArrayPtr + 6;
 }
 
@@ -19,8 +19,8 @@ RobotSettingsStruct::RobotSettingsStruct(const BaseRobotSettingsStruct &robotSta
     size_t thrusterNumber = robotStatic.ThrusterNumber == 0 ? 1 : robotStatic.ThrusterNumber;
 
     this->_size = BaseRobotSettingsStructAllocatedSize +
-                  thrusterNumber * 6 * sizeof(double) +
-                  handFreedom * sizeof(double);
+                  thrusterNumber * 6 * sizeof(float) +
+                  handFreedom * sizeof(float);
 
     this->_data = new char[this->_size]{};
 
@@ -29,7 +29,7 @@ RobotSettingsStruct::RobotSettingsStruct(const BaseRobotSettingsStruct &robotSta
     ((BaseRobotSettingsStruct *) this->_data)->ThrusterNumber = thrusterNumber;
     ((BaseRobotSettingsStruct *) this->_data)->HandFreedom = handFreedom;
 
-    this->_thrusterCoefficientArrayPtr = (double *) (this->_data + BaseRobotSettingsStructAllocatedSize);
+    this->_thrusterCoefficientArrayPtr = (float *) (this->_data + BaseRobotSettingsStructAllocatedSize);
     this->_handCoefficientArrayPtr = _thrusterCoefficientArrayPtr + 6 * robotStatic.ThrusterNumber;
 }
 
@@ -41,11 +41,11 @@ RobotSettingsStruct::RobotSettingsStruct(const RobotSettingsStruct &robotSetting
         ((uint64_t *) this->_data)[i] = ((uint64_t *) robotSettingsStruct._data)[i];
 
     size_t deltaThrusterCoefficientArray =
-            robotSettingsStruct._thrusterCoefficientArrayPtr - (double *) robotSettingsStruct._data;
-    this->_thrusterCoefficientArrayPtr = ((double *) this->_data) + deltaThrusterCoefficientArray;
+            robotSettingsStruct._thrusterCoefficientArrayPtr - (float *) robotSettingsStruct._data;
+    this->_thrusterCoefficientArrayPtr = ((float *) this->_data) + deltaThrusterCoefficientArray;
 
     size_t deltaHandCoefficientArray =
-            robotSettingsStruct._thrusterCoefficientArrayPtr - (double *) robotSettingsStruct._data;
+            robotSettingsStruct._thrusterCoefficientArrayPtr - (float *) robotSettingsStruct._data;
 
     this->_thrusterCoefficientArrayPtr = _thrusterCoefficientArrayPtr + deltaHandCoefficientArray;
 }
@@ -73,11 +73,11 @@ RobotSettingsStruct &RobotSettingsStruct::operator=(const RobotSettingsStruct &r
         ((uint64_t *) this->_data)[i] = ((uint64_t *) robotSettingsStruct._data)[i];
 
     size_t deltaThrusterCoefficientArray =
-            robotSettingsStruct._thrusterCoefficientArrayPtr - (double *) robotSettingsStruct._data;
-    this->_thrusterCoefficientArrayPtr = ((double *) this->_data) + deltaThrusterCoefficientArray;
+            robotSettingsStruct._thrusterCoefficientArrayPtr - (float *) robotSettingsStruct._data;
+    this->_thrusterCoefficientArrayPtr = ((float *) this->_data) + deltaThrusterCoefficientArray;
 
     size_t deltaHandCoefficientArray =
-            robotSettingsStruct._thrusterCoefficientArrayPtr - (double *) robotSettingsStruct._data;
+            robotSettingsStruct._thrusterCoefficientArrayPtr - (float *) robotSettingsStruct._data;
 
     this->_thrusterCoefficientArrayPtr = _thrusterCoefficientArrayPtr + deltaHandCoefficientArray;
 
@@ -109,11 +109,11 @@ size_t RobotSettingsStruct::Size() {
     return this->_size;
 }
 
-double *RobotSettingsStruct::ThrusterCoefficientArray() {
+float *RobotSettingsStruct::ThrusterCoefficientArray() {
     return this->_thrusterCoefficientArrayPtr;
 }
 
-double *RobotSettingsStruct::HandCoefficientArray() {
+float *RobotSettingsStruct::HandCoefficientArray() {
     return this->_handCoefficientArrayPtr;
 }
 
@@ -140,7 +140,7 @@ std::ostream &operator<<(std::ostream &ostream, const RobotSettingsStruct &robot
     uint16_t thrusterNumber = ((BaseRobotSettingsStruct *) robotSettingStruct._data)->ThrusterNumber;
     ostream << "ThrustersNumber: " << thrusterNumber << std::endl;
 
-    double *thrusterCoefficientArray = robotSettingStruct._thrusterCoefficientArrayPtr;
+    float *thrusterCoefficientArray = robotSettingStruct._thrusterCoefficientArrayPtr;
     ostream << "MoveCoefficientMatrix:" << std::endl;
     for (size_t i = 0; i < thrusterNumber; i++) {
         ostream << "[ ";
@@ -153,7 +153,7 @@ std::ostream &operator<<(std::ostream &ostream, const RobotSettingsStruct &robot
     uint16_t handFreedom = ((BaseRobotSettingsStruct *) robotSettingStruct._data)->HandFreedom;
     ostream << "HandFreedom: " << handFreedom << std::endl;
 
-    double *handArray = robotSettingStruct._handCoefficientArrayPtr;
+    float *handArray = robotSettingStruct._handCoefficientArrayPtr;
     ostream << "HandCoefficientArray: [";
     for (size_t i = 0; i < handFreedom - 1; i++) {
         ostream << handArray[i] << ", ";

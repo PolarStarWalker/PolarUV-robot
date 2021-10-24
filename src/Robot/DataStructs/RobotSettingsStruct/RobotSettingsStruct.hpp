@@ -41,11 +41,11 @@ public:
 
     size_t Size();
 
-    double *ThrusterCoefficientArray();
+    float *ThrusterCoefficientArray();
 
     uint16_t ThrusterNumber();
 
-    double *HandCoefficientArray();
+    float *HandCoefficientArray();
 
     uint16_t HandFreedom();
 
@@ -57,8 +57,8 @@ private:
     char *_data;
     size_t _size;
 
-    double *_handCoefficientArrayPtr;
-    double *_thrusterCoefficientArrayPtr;
+    float *_handCoefficientArrayPtr;
+    float *_thrusterCoefficientArrayPtr;
 
     friend std::ostream &operator<<(std::ostream &ostream, const RobotSettingsStruct &robotSettingsStruct);
 };

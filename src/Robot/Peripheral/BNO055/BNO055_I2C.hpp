@@ -17,7 +17,7 @@ public:
 
     bool Init(const I2C *i2c) final;
 
-    void SendOperationMode(BNO055::OperationMode mode);
+    void SendOperationMode(BNO055::OperationMode mode) const;
 
     void UseExternalCrystal(bool useExtCrl);
 
@@ -30,7 +30,6 @@ private:
     const I2C *_i2c;
     uint16_t _sensorAddress;
     BNO055::OperationMode _operationMode;
-
 
     bool ReadData() final;
 

@@ -6,7 +6,6 @@
 #include <cstring>
 
 #include "../RobotSettingsProtocol/RobotSettingsProtocol.hpp"
-#include "../../Math/Math.hpp"
 #include "../../DataTransmissions/DataTransmissions.hpp"
 #include "../../DataStructs/DataStructs.hpp"
 
@@ -14,7 +13,7 @@ namespace DataProtocols {
 
     class CommandsProtocol {
     public:
-        explicit CommandsProtocol(const char *SPIDevice, uint32_t speed);
+        explicit CommandsProtocol(const char *SPIDevice, uint32_t speed_hz, size_t peripheralTimeout_us);
 
         [[noreturn]]
         void Start();
@@ -22,7 +21,7 @@ namespace DataProtocols {
     private:
         Socket _commandsSocket;
         SPI _spi;
-        std::fstream file;
+        const size_t _peripheralTimeout_us;
     };
 }
 
