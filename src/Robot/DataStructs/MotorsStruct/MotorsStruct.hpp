@@ -10,12 +10,9 @@ enum DShotMode : int8_t {
 };
 
 struct MotorsStruct {
-    /// Array prototype
-    ///{T1CH1, T1CH2, T1CH3, T1CH4, T2CH1, T2CH2, T3CH3, T4CH1, T4CH2, T5CH1, T5CH2, T5CH4}
-    ///or
-    ///{PA8,   PA9,   PA10,  PA11,  PA15,  PB3,   PB0,   PB6,   PB7,   PA0,   PA1,   PA3}
+    uint16_t PacketArray[12]{};
 
-    uint16_t PacketArray[12] = {};
+    uint16_t PWM[4]{};
 
     ///DShotMode applies to the entire timer,
     ///it changes the operation of all channels of one timer

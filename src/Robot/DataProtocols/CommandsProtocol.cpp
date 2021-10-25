@@ -7,31 +7,12 @@ using namespace DataProtocols;
 CommandsProtocol::CommandsProtocol(const char *SPIDevice, uint32_t speed_hz, size_t peripheralTimeout_us) :
         _spi(SPIDevice, speed_hz),
         _commandsSocket(1999),
-        _peripheralTimeout_us(peripheralTimeout_us){
+        _peripheralTimeout_us(peripheralTimeout_us) {
 }
 
 
-inline std::array<char, 2 * MotorsStructLenMessage> FormMessage(const MotorsStruct &motorsStruct) {
-    std::array<char, 2 * MotorsStructLenMessage> motorsMessage{};
 
-    std::memcpy(motorsMessage.data() + 2, &motorsStruct, MotorsStructLen);
-    std::memcpy(motorsMessage.data() + MotorsStructLenMessage + 2, &motorsStruct, MotorsStructLen);
-    motorsMessage[0] = 's';
-    motorsMessage[1] = 's';
-
-    motorsMessage[MotorsStructLenMessage - 2] = 's';
-    motorsMessage[MotorsStructLenMessage - 1] = 's';
-    motorsMessage[MotorsStructLenMessage] = 's';
-    motorsMessage[MotorsStructLenMessage + 1] = 's';
-
-    motorsMessage[MotorsStructLenMessage * 2 - 2] = 's';
-    motorsMessage[MotorsStructLenMessage * 2 - 1] = 's';
-
-    return motorsMessage;
-}
-
-
-inline TelemetryStruct GetTelemetryStruct(const BNO055_I2C &bno055, const MS5837_I2C &ms5837) {
+inline TelemetryStruct FormTelemetryStruct(const BNO055_I2C &bno055, const MS5837_I2C &ms5837) {
     BNO055::Data bnoData = bno055.GetData();
 
     MS5837::Data msData = ms5837.GetData();
@@ -55,6 +36,27 @@ inline TelemetryStruct GetTelemetryStruct(const BNO055_I2C &bno055, const MS5837
     return telemetryStruct;
 }
 
+
+inline std::array<char, 2 * MotorsStructLenMessage> FormMessage(const MotorsStruct &motorsStruct) {
+    std::array<char, 2 * MotorsStructLenMessage> motorsMessage{};
+
+    std::memcpy(motorsMessage.data() + 2, &motorsStruct, MotorsStructLen);
+    std::memcpy(motorsMessage.data() + MotorsStructLenMessage + 2, &motorsStruct, MotorsStructLen);
+    motorsMessage[0] = 's';
+    motorsMessage[1] = 's';
+
+    motorsMessage[MotorsStructLenMessage - 2] = 's';
+    motorsMessage[MotorsStructLenMessage - 1] = 's';
+    motorsMessage[MotorsStructLenMessage] = 's';
+    motorsMessage[MotorsStructLenMessage + 1] = 's';
+
+    motorsMessage[MotorsStructLenMessage * 2 - 2] = 's';
+    motorsMessage[MotorsStructLenMessage * 2 - 1] = 's';
+
+    return motorsMessage;
+}
+
+
 void CommandsProtocol::Start() {
 
     BNO055_I2C bno055(BNO055_ADDRESS);
@@ -73,7 +75,7 @@ void CommandsProtocol::Start() {
 
         RobotSettingsStruct settingsStruct = RobotSettingsProtocol::GetSettings();
 
-        Matrix<float> coefficientMatrix(settingsStruct.ThrusterNumber(), 6);
+        Matrix<floazt> coefficientMatrix(settingsStruct.ThrusterNumber(), 6);
         coefficientMatrix = settingsStruct.ThrusterCoefficientArray();
         coefficientMatrix *= 10;
 
@@ -88,7 +90,7 @@ void CommandsProtocol::Start() {
 
             if (_commandsSocket.RecvDataLen((char *) &commandsStruct, CommandsStructLen) != 0) {
 
-                TelemetryStruct telemetryStruct = GetTelemetryStruct(bno055, ms5837);
+                TelemetryStruct telemetryStruct = FormTelemetryStruct(bno055, ms5837);
                 _commandsSocket.SendDataLen((char *) &telemetryStruct, TelemetryStructLen);
 
                 moveVector = commandsStruct.VectorArray;
@@ -123,7 +125,7 @@ void CommandsProtocol::Start() {
 
 #ifdef DEBUG
 
-                std::cout<<telemetryStruct<<std::endl;
+                //std::cout<<telemetryStruct<<std::endl;
                 //std::cout << settingsStruct << std::endl;
                 //std::cout << commandsStruct << std::endl;
                 //std::cout << motorsStruct << std::endl;
@@ -132,7 +134,8 @@ void CommandsProtocol::Start() {
 /*                for (size_t j = 0; j < MotorsStructLenMessage * 2; j++) {
                     std::cout << motorsMessage[j] << '|';
                 }
-                std::cout << std::endl;*/
+                std::cout << std::endl;
+*/
 #endif
 
 
