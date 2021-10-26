@@ -1,5 +1,6 @@
 #ifndef ROBOT_STATICMATRIX_HPP
 #define ROBOT_STATICMATRIX_HPP
+
 #include <cstdint>
 #include <cstddef>
 #include <type_traits>
@@ -27,14 +28,15 @@ public:
 
     ~StaticMatrix() = default;
 
-    Type* operator[](size_t index){ return &(_elements[Rows * index]);}
-    const Type* operator[](size_t index) const{return &(_elements[Rows * index]);}
+    Type *operator[](size_t index) { return &(_elements[Rows * index]); }
+
+    const Type *operator[](size_t index) const { return &(_elements[Rows * index]); }
 
     inline size_t GetRow() const { return Rows; }
 
     inline size_t GetColumn() const { return Columns; }
 
-    StaticMatrix<Type, Rows, Columns> &operator=(const StaticMatrix<Type, Rows, Columns> &matrix)    noexcept {
+    StaticMatrix<Type, Rows, Columns> &operator=(const StaticMatrix<Type, Rows, Columns> &matrix) noexcept {
         if (&matrix == this)
             return *this;
 
@@ -44,7 +46,7 @@ public:
         return *this;
     }
 
-    StaticMatrix<Type, Rows, Columns> &operator=(Type *array)  noexcept {
+    StaticMatrix<Type, Rows, Columns> &operator=(Type *array) noexcept {
 
         for (size_t i = 0; i < Rows * Columns; i++) {
             _elements[i] = array[i];
@@ -66,7 +68,7 @@ public:
     };
 
     template<size_t secondColumn>
-    StaticMatrix<Type, Rows, secondColumn> operator*(const StaticMatrix<Type, Columns, secondColumn> &matrix) noexcept{
+    StaticMatrix<Type, Rows, secondColumn> operator*(const StaticMatrix<Type, Columns, secondColumn> &matrix) noexcept {
         StaticMatrix<Type, Rows, secondColumn> newMatrix;
 
         for (size_t i = 0; i < Rows; i++) {
@@ -80,17 +82,22 @@ public:
         return newMatrix;
     }
 
-    StaticVector<Type, Rows> operator*(const StaticVector<Type, Columns>& vector) noexcept{
+    StaticVector<Type, Rows> operator*(const StaticVector<Type, Columns> &vector) const noexcept {
 
         StaticVector<Type, Rows> newVector;
 
-        for(size_t i = 0; i < Rows; ++i){
-            for(size_t j = 0; j < Columns; ++j){
-                newVector[i] += operator[](i)[j] + vector._elements[j];
+        for (size_t i = 0; i < Rows; ++i) {
+            for (size_t j = 0; j < Columns; ++j) {
+                newVector[i] += operator[](i)[j] + vector[j];
             }
         }
 
         return newVector;
+    }
+
+    StaticMatrix(const Type * array, size_t rows) {
+        for (size_t i = 0; i < Columns * rows; ++i)
+            _elements[i] = array[i];
     }
 
     friend std::ostream &operator<<(std::ostream &stream, const StaticMatrix<Type, Columns, Rows> &matrix) {
@@ -99,7 +106,7 @@ public:
             for (ssize_t j = 0; j < Columns - 1; j++) {
                 stream << matrix[i][j] << ", ";
             }
-            stream << matrix[i][Columns- 1];
+            stream << matrix[i][Columns - 1];
             stream << "]\n";
         }
 

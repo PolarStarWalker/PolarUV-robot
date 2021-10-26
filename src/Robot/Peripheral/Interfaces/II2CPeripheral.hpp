@@ -3,8 +3,6 @@
 
 #include <shared_mutex>
 #include "../../DataTransmissions/I2C/I2C.hpp"
-#include "../../DataTransmissions/SPI/SPI.hpp"
-#include "../../DataTransmissions/UART/UART.hpp"
 
 class PeripheralHandler;
 

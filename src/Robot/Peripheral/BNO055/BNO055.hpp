@@ -1,6 +1,5 @@
 #ifndef ROBOT_BNO055_HPP
 #define ROBOT_BNO055_HPP
-#include "../Filters/FiltersGroup.hpp"
 
 namespace BNO055 {
     enum Axis : size_t {

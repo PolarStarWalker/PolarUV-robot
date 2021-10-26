@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ROBOT_MS5837_I2C_HPP
+#define ROBOT_MS5837_I2C_HPP
 
 #include "../Interfaces/II2CPeripheral.hpp"
 #include "./MS5837.hpp"
@@ -53,3 +54,5 @@ private:
         this->_dataMutex.unlock();
     }
 };
+
+#endif

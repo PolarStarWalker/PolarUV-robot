@@ -10,9 +10,9 @@ enum DShotMode : int8_t {
 };
 
 struct MotorsStruct {
-    uint16_t HiSpeedPWM[12]{};
+    uint16_t HiPWM[12]{};
 
-    uint16_t PWM[4]{};
+    uint16_t LowPWM[4]{};
 
     ///DShotMode applies to the entire timer,
     ///it changes the operation of all channels of one timer
@@ -23,7 +23,7 @@ struct MotorsStruct {
 };
 
 extern MotorsStruct MotorsStructData;
-constexpr size_t MotorsStructArrayLength = sizeof(MotorsStructData.HiSpeedPWM);
+constexpr size_t MotorsStructArrayLength = sizeof(MotorsStructData.HiPWM);
 constexpr size_t MotorsStructLen = sizeof(MotorsStructData);
 constexpr size_t MotorsStructLenMessage = MotorsStructLen + 4;
 

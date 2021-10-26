@@ -55,21 +55,17 @@ inline std::array<char, 2 * MotorsStructLenMessage> FormMessage(const MotorsStru
     return motorsMessage;
 }
 
-inline MotorsStruct FormMotorsStruct(const Vector<float> &thruster,
-                                     const Vector<float> &hand,
-                                     const Vector<float> &camera) {
+inline MotorsStruct FormMotorsStruct(const StaticVector<float, 12> &hiPwm,
+                                     const StaticVector<float, 4> &lowPwm) {
 
     MotorsStruct motors;
 
-    std::array<uint16_t, 12> hiSpeedPwm{};
-    hiSpeedPwm.fill(1000);
+    for (size_t i = 0; i < 12; ++i)
+        motors.HiPWM[i] = std::ceil(hiPwm[i]);
 
-    thruster.FillArray(&hiSpeedPwm);
-    hand.FillArray(&hiSpeedPwm, thruster.Size());
+    for (size_t i = 0; i < 4; ++i)
+        motors.LowPWM[i] = std::ceil(lowPwm[i]);
 
-    camera.FillArray(&hiSpeedPwm, thruster.Size() + hand.Size());
-
-    std::memcpy(motors.HiSpeedPWM, hiSpeedPwm.begin(), hiSpeedPwm.size() * sizeof(uint16_t));
 
     return motors;
 }
@@ -87,20 +83,17 @@ void CommandsProtocol::Start() {
 
     peripheralHandler.StartAsync();
 
-    Vector<float> moveVector(6);
-
     for (;;) {
 
         _commandsSocket.Listen();
 
         RobotSettingsStruct settingsStruct = RobotSettingsProtocol::GetSettings();
 
-        Matrix<float> coefficientMatrix(settingsStruct.ThrusterNumber(), 6);
-        coefficientMatrix = settingsStruct.ThrusterCoefficientArray();
+        StaticMatrix<float, 12, 6> coefficientMatrix(settingsStruct.ThrusterCoefficientArray(),
+                                                     settingsStruct.ThrusterNumber());
         coefficientMatrix *= 10;
 
-        Vector<float> handVector(settingsStruct.HandFreedom());
-        handVector = settingsStruct.HandCoefficientArray();
+        StaticVector<float, 6> handVector(settingsStruct.HandCoefficientArray(), settingsStruct.HandFreedom());
         handVector *= 10;
 
         while (_commandsSocket.IsOnline()) {
@@ -113,37 +106,33 @@ void CommandsProtocol::Start() {
 
             _commandsSocket.SendDataLen((char *) &telemetry, TelemetryStructLen);
 
-            moveVector = commandsStruct.MoveVector;
+            StaticVector<float, 12> hiPWM = coefficientMatrix * ((StaticVector<float, 6>) commandsStruct.MoveVector);
+            hiPWM.Normalize(1000);
 
-            Vector<float> motorsCommands = coefficientMatrix * moveVector;
-            motorsCommands.Normalize(1000);
-            motorsCommands += 1000;
-
-            Vector<float> handCommands(settingsStruct.HandFreedom());
-            for (size_t i = 0; i < settingsStruct.HandFreedom(); i++) {
-                handCommands[i] = handVector[i] * commandsStruct.TheHand[i] + 1000;
+            for (size_t i = 0; i < settingsStruct.HandFreedom(); ++i) {
+                hiPWM[settingsStruct.ThrusterNumber() + i] = handVector[i] * commandsStruct.TheHand[i];
             }
 
-            Vector<float> camera(2);
-            camera = commandsStruct.Camera;
-            camera *= 1000;
-            camera += 1000;
+            hiPWM += 1000;
 
-            MotorsStruct motorsStruct = FormMotorsStruct(motorsCommands, handCommands, camera);
+            auto *lowPwm = (StaticVector<float, 4>*) &commandsStruct.LowPWM;
+            (*lowPwm)[0] *= 1000;
+            (*lowPwm)[0] += 1500;
+
+            MotorsStruct motorsStruct = FormMotorsStruct(hiPWM, *lowPwm);
 
             std::array<char, 2 * MotorsStructLenMessage> motorsMessage = FormMessage(motorsStruct);
             this->_spi.ReadWrite(motorsMessage.data(), nullptr, MotorsStructLenMessage * 2);
-
 
 #ifdef DEBUG
 
             //std::cout << telemetry << std::endl;
             //std::cout << settingsStruct << std::endl;
             //std::cout << commandsStruct << std::endl;
-            //std::cout << motorsStruct << std::endl;
+            std::cout << motorsStruct << std::endl;
 
 
-/*                for (size_t j = 0; j < MotorsStructLenMessage * 2; j++) {
+            /*for (size_t j = 0; j < MotorsStructLenMessage * 2; j++) {
                 std::cout << motorsMessage[j] << '|';
             }
             std::cout << std::endl;
