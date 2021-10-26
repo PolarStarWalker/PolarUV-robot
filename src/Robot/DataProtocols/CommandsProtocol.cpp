@@ -11,7 +11,6 @@ CommandsProtocol::CommandsProtocol(const char *SPIDevice, uint32_t speed_hz, siz
 }
 
 
-
 inline TelemetryStruct FormTelemetryStruct(const BNO055_I2C &bno055, const MS5837_I2C &ms5837) {
     BNO055::Data bnoData = bno055.GetData();
 
@@ -56,6 +55,25 @@ inline std::array<char, 2 * MotorsStructLenMessage> FormMessage(const MotorsStru
     return motorsMessage;
 }
 
+inline MotorsStruct FormMotorsStruct(const Vector<float> &thruster,
+                                     const Vector<float> &hand,
+                                     const Vector<float> &camera) {
+
+    MotorsStruct motors;
+
+    std::array<uint16_t, 12> hiSpeedPwm{};
+    hiSpeedPwm.fill(1000);
+
+    thruster.FillArray(&hiSpeedPwm);
+    hand.FillArray(&hiSpeedPwm, thruster.Size());
+
+    camera.FillArray(&hiSpeedPwm, thruster.Size() + hand.Size());
+
+    std::memcpy(motors.HiSpeedPWM, hiSpeedPwm.begin(), hiSpeedPwm.size() * sizeof(uint16_t));
+
+    return motors;
+}
+
 
 void CommandsProtocol::Start() {
 
@@ -75,7 +93,7 @@ void CommandsProtocol::Start() {
 
         RobotSettingsStruct settingsStruct = RobotSettingsProtocol::GetSettings();
 
-        Matrix<floazt> coefficientMatrix(settingsStruct.ThrusterNumber(), 6);
+        Matrix<float> coefficientMatrix(settingsStruct.ThrusterNumber(), 6);
         coefficientMatrix = settingsStruct.ThrusterCoefficientArray();
         coefficientMatrix *= 10;
 
@@ -88,58 +106,51 @@ void CommandsProtocol::Start() {
 
             CommandsStruct commandsStruct;
 
-            if (_commandsSocket.RecvDataLen((char *) &commandsStruct, CommandsStructLen) != 0) {
+            if (_commandsSocket.RecvDataLen((char *) &commandsStruct, CommandsStructLen) != CommandsStructLen)
+                break;
 
-                TelemetryStruct telemetryStruct = FormTelemetryStruct(bno055, ms5837);
-                _commandsSocket.SendDataLen((char *) &telemetryStruct, TelemetryStructLen);
+            TelemetryStruct telemetryStruct = FormTelemetryStruct(bno055, ms5837);
+            _commandsSocket.SendDataLen((char *) &telemetryStruct, TelemetryStructLen);
 
-                moveVector = commandsStruct.VectorArray;
+            moveVector = commandsStruct.VectorArray;
 
-                Vector<float> motorsCommands = coefficientMatrix * moveVector;
-                motorsCommands.Normalize(1000);
-                motorsCommands += 1000;
+            Vector<float> motorsCommands = coefficientMatrix * moveVector;
+            motorsCommands.Normalize(1000);
+            motorsCommands += 1000;
 
-                Vector<float> handCommands(settingsStruct.HandFreedom());
-                for (size_t i = 0; i < settingsStruct.HandFreedom(); i++) {
-                    handCommands[i] = handVector[i] * commandsStruct.TheHand[i] + 1000;
-                }
+            Vector<float> handCommands(settingsStruct.HandFreedom());
+            for (size_t i = 0; i < settingsStruct.HandFreedom(); i++) {
+                handCommands[i] = handVector[i] * commandsStruct.TheHand[i] + 1000;
+            }
 
-                Vector<float> camera(2);
-                camera = commandsStruct.Camera;
-                camera *= 1000;
-                camera += 1000;
+            Vector<float> camera(2);
+            camera = commandsStruct.Camera;
+            camera *= 1000;
+            camera += 1000;
 
-                std::array<uint16_t, 12> moveArray{};
-                moveArray.fill(1000);
 
-                motorsCommands.FillArray(&moveArray);
-                handCommands.FillArray(&moveArray, motorsCommands.Size());
-                camera.FillArray(&moveArray, motorsCommands.Size() + handCommands.Size());
+            MotorsStruct motorsStruct = FormMotorsStruct(motorsCommands, handCommands, camera);
 
-                MotorsStruct motorsStruct;
-                std::memcpy(motorsStruct.PacketArray, moveArray.begin(), moveArray.size() * 2);
+            std::array<char, 2 * MotorsStructLenMessage> motorsMessage = FormMessage(motorsStruct);
 
-                std::array<char, 2 * MotorsStructLenMessage> motorsMessage = FormMessage(motorsStruct);
-
-                this->_spi.ReadWrite(motorsMessage.data(), nullptr, MotorsStructLenMessage * 2);
 
 #ifdef DEBUG
 
-                //std::cout<<telemetryStruct<<std::endl;
-                //std::cout << settingsStruct << std::endl;
-                //std::cout << commandsStruct << std::endl;
-                //std::cout << motorsStruct << std::endl;
+            //std::cout << telemetryStruct << std::endl;
+            //std::cout << settingsStruct << std::endl;
+            //std::cout << commandsStruct << std::endl;
+            //std::cout << motorsStruct << std::endl;
 
 
 /*                for (size_t j = 0; j < MotorsStructLenMessage * 2; j++) {
-                    std::cout << motorsMessage[j] << '|';
-                }
-                std::cout << std::endl;
+                std::cout << motorsMessage[j] << '|';
+            }
+            std::cout << std::endl;
 */
 #endif
 
 
-            }
         }
     }
+
 }

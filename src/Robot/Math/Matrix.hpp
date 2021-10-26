@@ -9,11 +9,12 @@
 #include <ostream>
 
 template<typename Type> requires(std::is_arithmetic_v<Type>)
+
 class Matrix {
 private:
     Type *_elements;
-    size_t _row;
-    size_t _column;
+    const size_t _row;
+    const size_t _column;
 
     bool IfThisMultipliableOn(const Matrix<Type> &matrix) const {
         return this->_column == matrix._row;
@@ -22,13 +23,11 @@ private:
 public:
 #pragma region constructors
 
-    Matrix(size_t row, size_t column) {
+    Matrix(size_t row, size_t column) : _row(row), _column(column) {
         _elements = new Type[row * column]{};
-        _row = row;
-        _column = column;
     }
 
-    Matrix(const Matrix<Type> &matrix) {
+    Matrix(const Matrix<Type> &matrix) : _row(matrix._row), _column(matrix._column) {
         _row = matrix._row;
         _column = matrix._column;
         _elements = new Type[_row * _column];
@@ -37,9 +36,7 @@ public:
 
     }
 
-    Matrix(Matrix<Type> &&matrix) noexcept {
-        _row = matrix._row;
-        _column = matrix._column;
+    Matrix(Matrix<Type> &&matrix)  noexcept : _row(matrix._row), _column(matrix._column)  {
         _elements = matrix._elements;
         matrix._elements = nullptr;
     }
@@ -57,7 +54,7 @@ public:
 
     inline Type *operator[](size_t row) { return &(_elements[row * _column]); };
 
-    Matrix<Type> &operator=(const Matrix<Type> &matrix) noexcept {
+    Matrix<Type> &operator=(const Matrix<Type> &matrix)    noexcept {
         if (&matrix == this)
             return *this;
 
@@ -74,7 +71,7 @@ public:
         return *this;
     }
 
-    Matrix<Type> &operator=(Matrix<Type> &&matrix) noexcept {
+    Matrix<Type> &operator=(Matrix<Type> &&matrix)  noexcept {
 
         _row = matrix._row;
         _column = matrix._column;
@@ -84,7 +81,7 @@ public:
         return *this;
     }
 
-    Matrix<Type> &operator=(Type *array) noexcept {
+    Matrix<Type> &operator=(Type *array)   noexcept {
 
         for (size_t i = 0; i < _row * _column; i++) {
             _elements[i] = array[i];
@@ -107,7 +104,7 @@ public:
 
     Matrix<Type> operator*(const Matrix<Type> &matrix) {
         if (!IfThisMultipliableOn(matrix))
-            return Matrix<Type>(0, 0);
+            return Matrix < Type > (0, 0);
 
         Matrix<Type> newMatrix(_row, matrix._column);
 
@@ -124,7 +121,7 @@ public:
 
     Vector<Type> operator*(const Vector<Type> &vector) {
         if (vector._size != _column)
-            return Vector<Type>(0);
+            return Vector < Type > (0);
 
         Vector<Type> newVector(_row);
         for (size_t i = 0; i < _row; i++) {

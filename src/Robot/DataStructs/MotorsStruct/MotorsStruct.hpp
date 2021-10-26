@@ -10,7 +10,7 @@ enum DShotMode : int8_t {
 };
 
 struct MotorsStruct {
-    uint16_t PacketArray[12]{};
+    uint16_t HiSpeedPWM[12]{};
 
     uint16_t PWM[4]{};
 
@@ -23,7 +23,7 @@ struct MotorsStruct {
 };
 
 extern MotorsStruct MotorsStructData;
-constexpr size_t MotorsStructArrayLength = sizeof(MotorsStructData.PacketArray);
+constexpr size_t MotorsStructArrayLength = sizeof(MotorsStructData.HiSpeedPWM);
 constexpr size_t MotorsStructLen = sizeof(MotorsStructData);
 constexpr size_t MotorsStructLenMessage = MotorsStructLen + 4;
 

@@ -11,34 +11,31 @@ class Matrix;
 
 template<typename Type> requires(std::is_arithmetic_v<Type>)
 class Vector {
+
     friend Matrix<Type>;
+
 private:
     Type *_elements;
-    size_t _size;
+    const size_t _size;
 
 public:
-    explicit Vector(size_t size) noexcept {
-        _size = size;
+    explicit Vector(size_t size) noexcept : _size(size)  {
         _elements = new Type[_size]{};
     }
 
-    Vector(const Vector<Type> &vector) noexcept {
-        _size = vector._size;
+    Vector(const Vector<Type> &vector) noexcept : _size(vector._size)  {
         _elements = new Type[_size]{};
         for (size_t i = 0; i < _size; i++) {
             _elements[i] = vector._elements[i];
         }
     }
 
-    Vector(Vector<Type> &&vector) noexcept {
-        _size = vector._size;
+    Vector(Vector<Type> &&vector) noexcept : _size(vector._size)  {
         _elements = vector._elements;
         vector._elements = nullptr;
     }
 
-    ~Vector() {
-        delete[] _elements;
-    }
+    ~Vector() { delete[] _elements; }
 
     inline size_t Size() const { return _size; }
 
