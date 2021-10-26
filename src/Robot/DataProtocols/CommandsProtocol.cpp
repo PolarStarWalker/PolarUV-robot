@@ -87,6 +87,8 @@ void CommandsProtocol::Start() {
 
     peripheralHandler.StartAsync();
 
+    Vector<float> moveVector(6);
+
     for (;;) {
 
         _commandsSocket.Listen();
@@ -97,7 +99,6 @@ void CommandsProtocol::Start() {
         coefficientMatrix = settingsStruct.ThrusterCoefficientArray();
         coefficientMatrix *= 10;
 
-        Vector<float> moveVector(6);
         Vector<float> handVector(settingsStruct.HandFreedom());
         handVector = settingsStruct.HandCoefficientArray();
         handVector *= 10;
@@ -105,14 +106,14 @@ void CommandsProtocol::Start() {
         while (_commandsSocket.IsOnline()) {
 
             CommandsStruct commandsStruct;
+            TelemetryStruct telemetry = FormTelemetryStruct(bno055, ms5837);
 
             if (_commandsSocket.RecvDataLen((char *) &commandsStruct, CommandsStructLen) != CommandsStructLen)
                 break;
 
-            TelemetryStruct telemetryStruct = FormTelemetryStruct(bno055, ms5837);
-            _commandsSocket.SendDataLen((char *) &telemetryStruct, TelemetryStructLen);
+            _commandsSocket.SendDataLen((char *) &telemetry, TelemetryStructLen);
 
-            moveVector = commandsStruct.VectorArray;
+            moveVector = commandsStruct.MoveVector;
 
             Vector<float> motorsCommands = coefficientMatrix * moveVector;
             motorsCommands.Normalize(1000);
@@ -128,15 +129,15 @@ void CommandsProtocol::Start() {
             camera *= 1000;
             camera += 1000;
 
-
             MotorsStruct motorsStruct = FormMotorsStruct(motorsCommands, handCommands, camera);
 
             std::array<char, 2 * MotorsStructLenMessage> motorsMessage = FormMessage(motorsStruct);
+            this->_spi.ReadWrite(motorsMessage.data(), nullptr, MotorsStructLenMessage * 2);
 
 
 #ifdef DEBUG
 
-            //std::cout << telemetryStruct << std::endl;
+            //std::cout << telemetry << std::endl;
             //std::cout << settingsStruct << std::endl;
             //std::cout << commandsStruct << std::endl;
             //std::cout << motorsStruct << std::endl;

@@ -15,7 +15,7 @@ enum MoveVector : uint8_t {
 struct CommandsStruct {
     ///Array prototype
     ///{Fx, Fy, Fz, Mx, My, Mz}
-    float VectorArray[6] = {};
+    float MoveVector[6] = {};
     float TheHand[2] = {};
     float Camera[2] = {};
     bool MotorsLock = true;

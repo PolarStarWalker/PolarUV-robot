@@ -1,13 +1,13 @@
 #include "./CommandsStruct/CommandsStruct.hpp"
 
 std::ostream& operator<<(std::ostream &ostream, const CommandsStruct &commandsStruct) {
-    ostream << "VectorArray: ["
-            << commandsStruct.VectorArray[Fx] << ", "
-            << commandsStruct.VectorArray[Fy] << ", "
-            << commandsStruct.VectorArray[Fz] << ", "
-            << commandsStruct.VectorArray[Mx] << ", "
-            << commandsStruct.VectorArray[My] << ", "
-            << commandsStruct.VectorArray[Mz] << "]"
+    ostream << "MoveVector: ["
+            << commandsStruct.MoveVector[Fx] << ", "
+            << commandsStruct.MoveVector[Fy] << ", "
+            << commandsStruct.MoveVector[Fz] << ", "
+            << commandsStruct.MoveVector[Mx] << ", "
+            << commandsStruct.MoveVector[My] << ", "
+            << commandsStruct.MoveVector[Mz] << "]"
             << std::endl
 
             << "The Hand: ["
