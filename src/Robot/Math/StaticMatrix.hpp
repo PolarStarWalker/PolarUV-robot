@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <type_traits>
 #include <ostream>
+#include <arm_neon.h>
 
 #include "./StaticVector.hpp"
 
@@ -18,19 +19,22 @@ public:
     StaticMatrix() = default;
 
     StaticMatrix(const StaticMatrix<Type, Rows, Columns> &matrix) {
-        StaticMatrix<Type, Rows, Columns> newMatrix;
-
         for (size_t i = 0; i < Rows * Columns; ++i)
             _elements[i] = matrix._elements[i];
 
-        return newMatrix;
+    }
+
+    StaticMatrix(const Type array[ Rows * Columns]) {
+        for (size_t i = 0; i < Rows * Columns; ++i)
+            _elements[i] = array[i];
+
     }
 
     ~StaticMatrix() = default;
 
-    Type *operator[](size_t index) { return &(_elements[Rows * index]); }
+    Type *operator[](size_t index) { return &(_elements[Columns * index]); }
 
-    const Type *operator[](size_t index) const { return &(_elements[Rows * index]); }
+    const Type *operator[](size_t index) const { return &(_elements[Columns * index]); }
 
     inline size_t GetRow() const { return Rows; }
 
@@ -88,7 +92,7 @@ public:
 
         for (size_t i = 0; i < Rows; ++i) {
             for (size_t j = 0; j < Columns; ++j) {
-                newVector[i] += operator[](i)[j] + vector[j];
+                newVector[i] += operator[](i)[j] * vector[j];
             }
         }
 

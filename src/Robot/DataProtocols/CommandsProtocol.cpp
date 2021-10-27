@@ -89,12 +89,12 @@ void CommandsProtocol::Start() {
 
         RobotSettingsStruct settingsStruct = RobotSettingsProtocol::GetSettings();
 
-        StaticMatrix<float, 12, 6> coefficientMatrix(settingsStruct.ThrusterCoefficientArray(),
-                                                     settingsStruct.ThrusterNumber());
-        coefficientMatrix *= 10;
+        StaticMatrix<float, 12, 6> thrusterCoefficients(settingsStruct.ThrusterCoefficientArray(),
+                                                        settingsStruct.ThrusterNumber());
+        thrusterCoefficients *= 10;
 
-        StaticVector<float, 6> handVector(settingsStruct.HandCoefficientArray(), settingsStruct.HandFreedom());
-        handVector *= 10;
+        StaticVector<float, 6> handCoefficients(settingsStruct.HandCoefficientArray(), settingsStruct.HandFreedom());
+        handCoefficients *= 10;
 
         while (_commandsSocket.IsOnline()) {
 
@@ -106,16 +106,17 @@ void CommandsProtocol::Start() {
 
             _commandsSocket.SendDataLen((char *) &telemetry, TelemetryStructLen);
 
-            StaticVector<float, 12> hiPWM = coefficientMatrix * ((StaticVector<float, 6>) commandsStruct.MoveVector);
+            auto *moveVector = (StaticVector<float, 6>*) &commandsStruct.MoveVector;
+            StaticVector<float, 12> hiPWM = thrusterCoefficients * (*moveVector);
             hiPWM.Normalize(1000);
 
             for (size_t i = 0; i < settingsStruct.HandFreedom(); ++i) {
-                hiPWM[settingsStruct.ThrusterNumber() + i] = handVector[i] * commandsStruct.TheHand[i];
+                hiPWM[settingsStruct.ThrusterNumber() + i] = handCoefficients[i] * commandsStruct.TheHand[i];
             }
 
             hiPWM += 1000;
 
-            auto *lowPwm = (StaticVector<float, 4>*) &commandsStruct.LowPWM;
+            auto *lowPwm = (StaticVector<float, 4> *) &commandsStruct.LowPWM;
             (*lowPwm)[0] *= 1000;
             (*lowPwm)[0] += 1500;
 
@@ -129,7 +130,7 @@ void CommandsProtocol::Start() {
             //std::cout << telemetry << std::endl;
             //std::cout << settingsStruct << std::endl;
             //std::cout << commandsStruct << std::endl;
-            std::cout << motorsStruct << std::endl;
+            //std::cout << motorsStruct << std::endl;
 
 
             /*for (size_t j = 0; j < MotorsStructLenMessage * 2; j++) {

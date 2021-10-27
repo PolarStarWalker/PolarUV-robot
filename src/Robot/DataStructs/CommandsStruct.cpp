@@ -12,17 +12,17 @@ std::ostream& operator<<(std::ostream &ostream, const CommandsStruct &commandsSt
 
             << "The Hand: ["
             << commandsStruct.TheHand[0] << ", "
-            << commandsStruct.TheHand[1] << "]"
+            << commandsStruct.TheHand[1] << ", "
             << commandsStruct.TheHand[2] << ", "
-            << commandsStruct.TheHand[3] << "]"
+            << commandsStruct.TheHand[3] << ", "
             << commandsStruct.TheHand[4] << ", "
             << commandsStruct.TheHand[5] << "]"
             << std::endl
 
-            << "Camera: ["
+            << "LowPWM: ["
             << commandsStruct.LowPWM[0] << ", "
-            << commandsStruct.LowPWM[1] << "]"
-            << commandsStruct.LowPWM[2] << "]"
+            << commandsStruct.LowPWM[1] << ", "
+            << commandsStruct.LowPWM[2] << ", "
             << commandsStruct.LowPWM[3] << "]"
             << std::endl
 

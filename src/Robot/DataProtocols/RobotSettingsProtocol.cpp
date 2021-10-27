@@ -22,7 +22,7 @@ void RobotSettingsProtocol::Start() {
 
             RobotSettingsStruct robotSettingsStruct = GetSettings();
 #ifndef DEBUG
-            ssize_t size = _settingSocket.SendDataLen(robotSettingsStruct.Begin(), robotSettingsStruct.VectorSize());
+            ssize_t size = _settingSocket.SendDataLen(robotSettingsStruct.Begin(), robotSettingsStruct.Size());
 #else
             ssize_t size = _settingSocket.SendDataLen(robotSettingsStruct.Begin(), robotSettingsStruct.Size());
             std::cout << size << std::endl;
