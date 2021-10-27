@@ -50,6 +50,31 @@ public:
     }
 
     StaticVector<Type, VectorSize> &operator*=(Type value) {
+
+        const size_t bytesCount = VectorSize * sizeof(Type);
+        const size_t interationCount = bytesCount / 16;
+        const size_t aligment = (bytesCount % 16) / sizeof(Type);
+
+        ///If using float32_t
+        if (std::is_floating_point_v<Type> && sizeof(Type) == 4) {
+
+            for (size_t i = 0; i < interationCount; ++i) {
+                *((float32x4_t *) &(_elements[i * sizeof(Type)])) =
+                        vmulq_n_f32(*((float32x4_t *) &(_elements[i * sizeof(Type)])), value);
+            }
+
+            ///If size is 16 byte aligned
+            if (aligment == 0)
+                return *this;
+
+            for (size_t i = VectorSize - aligment; i < VectorSize; ++i) {
+                _elements[i] *= value;
+            }
+
+            return *this;
+        }
+
+
         for (size_t i = 0; i < VectorSize; ++i) {
             _elements[i] *= value;
         }
@@ -63,7 +88,6 @@ public:
     }
 
     StaticVector<Type, VectorSize> &operator+=(Type value) {
-
 
         const size_t bytesCount = VectorSize * sizeof(Type);
         const size_t interationCount = bytesCount / 16;
@@ -105,11 +129,11 @@ public:
         const size_t interationCount = bytesCount / 16;
         const size_t aligment = (bytesCount % 16) / sizeof(Type);
 
+        ///If using float32_t
         if (std::is_floating_point_v<Type> && sizeof(Type) == 4) {
 
             double maxValue = 0;
 
-            ///If using float32_t
             for (size_t i = 0; i < interationCount; ++i) {
                 ///find ABS
                 float32x4_t abs = vabsq_f32(*((float32x4_t *) &(_elements[i * sizeof(Type)])));
