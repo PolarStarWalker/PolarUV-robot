@@ -11,7 +11,6 @@
 template<typename Type, size_t VectorSize> requires(std::is_arithmetic_v<Type>)
 class StaticVector {
 private:
-    ///Note: array with 16 bytes alligment
     Type _elements[VectorSize]{};
 
 public:
@@ -58,9 +57,9 @@ public:
         ///If using float32_t
         if (std::is_floating_point_v<Type> && sizeof(Type) == 4) {
 
+            auto *array = (float32x4_t *) _elements;
             for (size_t i = 0; i < interationCount; ++i) {
-                *((float32x4_t *) &(_elements[i * sizeof(Type)])) =
-                        vmulq_n_f32(*((float32x4_t *) &(_elements[i * sizeof(Type)])), value);
+                array[i] = vmulq_n_f32(array[i], value);
             }
 
             ///If size is 16 byte aligned
@@ -89,18 +88,19 @@ public:
 
     StaticVector<Type, VectorSize> &operator+=(Type value) {
 
-        const size_t bytesCount = VectorSize * sizeof(Type);
-        const size_t interationCount = bytesCount / 16;
-        const size_t aligment = (bytesCount % 16) / sizeof(Type);
+        constexpr size_t bytesCount = VectorSize * sizeof(Type);
+        constexpr size_t interationCount = bytesCount / 16;
+        constexpr  size_t aligment = (bytesCount % 16) / sizeof(Type);
 
         ///If using float32_t
         if (std::is_floating_point_v<Type> && sizeof(Type) == 4) {
 
-            float values[4] = {value, value, value, value};
+            Type valueArray[4] = {value, value, value, value};
+            auto &values = (float32x4_t &) valueArray;
 
+            auto *array = (float32x4_t *) _elements;
             for (size_t i = 0; i < interationCount; ++i) {
-                *((float32x4_t *) &(_elements[i * sizeof(Type)])) =
-                        vaddq_f32(*((float32x4_t *) &(_elements[i * sizeof(Type)])), *((float32x4_t *) values));
+                array[i] = vaddq_f32(array[i], values);
             }
 
             ///If size is 16 byte aligned
@@ -113,7 +113,6 @@ public:
 
             return *this;
         }
-
         ///other Types
 
         for (size_t i = 0; i < VectorSize; ++i) {
@@ -134,9 +133,10 @@ public:
 
             double maxValue = 0;
 
+            auto *array = (float32x4_t *) _elements;
             for (size_t i = 0; i < interationCount; ++i) {
                 ///find ABS
-                float32x4_t abs = vabsq_f32(*((float32x4_t *) &(_elements[i * sizeof(Type)])));
+                float32x4_t abs = vabsq_f32(array[i]);
 
                 ///find MAX
                 float value = vmaxnmvq_f32(abs);
@@ -161,8 +161,7 @@ public:
                 return;
 
             for (size_t i = 0; i < interationCount; i++)
-                *((float32x4_t *) &(_elements[i * sizeof(Type)])) =
-                        vmulq_n_f32(*((float32x4_t *) &(_elements[i * sizeof(Type)])), coefficient);
+                array[i] = vmulq_n_f32(array[i], coefficient);
 
             ///If size is 16 byte aligned
             if (aligment == 0)

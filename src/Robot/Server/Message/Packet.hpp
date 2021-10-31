@@ -2,10 +2,12 @@
 #define ROBOT_PACKET_HPP
 
 namespace Server {
-    enum RequestType : uint8_t {
-        R = 0,
-        W = 1,
-        RW = 2,
+    enum RequestType : int8_t {
+        Undefined = 0,
+        Connection = -1,
+        R = 2,
+        W = 3,
+        RW = 4,
     };
 
     struct Header {

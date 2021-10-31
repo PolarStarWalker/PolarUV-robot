@@ -20,6 +20,7 @@ namespace DataProtocols {
 
     private:
         Socket _commandsSocket;
+        std::atomic<CommandsStruct> _commandsStruct;
         SPI _spi;
         const size_t _peripheralTimeout_us;
     };

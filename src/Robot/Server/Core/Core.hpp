@@ -3,6 +3,7 @@
 
 #include "../../DataTransmissions/Socket/Socket.hpp"
 #include "../Message/Packet.hpp"
+#include "../IRequest.hpp"
 
 #include <shared_mutex>
 #include <thread>
@@ -49,6 +50,14 @@ namespace Server {
         void Run();
 
         explicit Core(uint16_t port);
+
+        inline size_t GetQueueSize(){
+            _requestQueueMutex.lock_shared();
+            size_t size = _requestQueue.size();
+            _requestQueueMutex.unlock_shared();
+
+            return size;
+        }
 
     public:
 

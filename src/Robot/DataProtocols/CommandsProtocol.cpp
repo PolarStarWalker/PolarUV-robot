@@ -7,9 +7,7 @@ using namespace DataProtocols;
 CommandsProtocol::CommandsProtocol(const char *SPIDevice, uint32_t speed_hz, size_t peripheralTimeout_us) :
         _spi(SPIDevice, speed_hz),
         _commandsSocket(1999),
-        _peripheralTimeout_us(peripheralTimeout_us) {
-}
-
+        _peripheralTimeout_us(peripheralTimeout_us) {}
 
 inline TelemetryStruct FormTelemetryStruct(const BNO055_I2C &bno055, const MS5837_I2C &ms5837) {
     BNO055::Data bnoData = bno055.GetData();
@@ -34,7 +32,6 @@ inline TelemetryStruct FormTelemetryStruct(const BNO055_I2C &bno055, const MS583
 
     return telemetryStruct;
 }
-
 
 inline std::array<char, 2 * MotorsStructLenMessage> FormMessage(const MotorsStruct &motorsStruct) {
     std::array<char, 2 * MotorsStructLenMessage> motorsMessage{};
@@ -65,7 +62,6 @@ inline MotorsStruct FormMotorsStruct(const StaticVector<float, 12> &hiPwm,
 
     for (size_t i = 0; i < 4; ++i)
         motors.LowPWM[i] = std::ceil(lowPwm[i]);
-
 
     return motors;
 }
@@ -106,8 +102,8 @@ void CommandsProtocol::Start() {
 
             _commandsSocket.SendDataLen((char *) &telemetry, TelemetryStructLen);
 
-            auto *moveVector = (StaticVector<float, 6>*) &commandsStruct.MoveVector;
-            StaticVector<float, 12> hiPWM = thrusterCoefficients * (*moveVector);
+            auto &moveVector = (StaticVector<float, 6>&) commandsStruct.MoveVector;
+            StaticVector<float, 12> hiPWM = thrusterCoefficients * moveVector;
             hiPWM.Normalize(1000);
 
             for (size_t i = 0; i < settingsStruct.HandFreedom(); ++i) {
@@ -116,11 +112,11 @@ void CommandsProtocol::Start() {
 
             hiPWM += 1000;
 
-            auto *lowPwm = (StaticVector<float, 4> *) &commandsStruct.LowPWM;
-            (*lowPwm)[0] *= 1000;
-            (*lowPwm)[0] += 1500;
+            auto &lowPwm = (StaticVector<float, 4> &) commandsStruct.LowPWM;
+            lowPwm[0] *= 1000;
+            lowPwm[0] += 1500;
 
-            MotorsStruct motorsStruct = FormMotorsStruct(hiPWM, *lowPwm);
+            MotorsStruct motorsStruct = FormMotorsStruct(hiPWM, lowPwm);
 
             std::array<char, 2 * MotorsStructLenMessage> motorsMessage = FormMessage(motorsStruct);
             this->_spi.ReadWrite(motorsMessage.data(), nullptr, MotorsStructLenMessage * 2);
@@ -130,7 +126,7 @@ void CommandsProtocol::Start() {
             //std::cout << telemetry << std::endl;
             //std::cout << settingsStruct << std::endl;
             //std::cout << commandsStruct << std::endl;
-            //std::cout << motorsStruct << std::endl;
+            std::cout << motorsStruct << std::endl;
 
 
             /*for (size_t j = 0; j < MotorsStructLenMessage * 2; j++) {
@@ -139,9 +135,6 @@ void CommandsProtocol::Start() {
             std::cout << std::endl;
 */
 #endif
-
-
         }
     }
-
 }
