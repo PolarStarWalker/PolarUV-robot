@@ -18,7 +18,7 @@ Socket::~Socket() {
 }
 
 ///function that listen in blocking mode
-int Socket::Listen() {
+int Socket::Listen() const{
 
     std::cout << "Server is listening\n";
 
@@ -26,26 +26,25 @@ int Socket::Listen() {
         return (-1);
     }
 
-    _clientSocketDescriptor = accept(_serverSocketDescriptor,
-                                           (sockaddr *) &(_clientAddress),
-                                           &(_clientAdressLength));
+    _clientSocketDescriptor =
+            accept(_serverSocketDescriptor, (sockaddr *) &(_clientAddress), &(_clientAdressLength));
 
     _isOnline = true;
 
     return (1);
 }
 
-ssize_t Socket::RecvDataLen(char *msg, size_t len) {
+ssize_t Socket::RecvDataLen(char *msg, size_t len) const {
     ssize_t result = recvall(_clientSocketDescriptor, msg, len, 0);
     return (result);
 }
 
-ssize_t Socket::SendDataLen(char *msg, size_t len) {
+ssize_t Socket::SendDataLen(char *msg, size_t len)  const{
     ssize_t result = sendall(_clientSocketDescriptor, msg, len, 0);
     return (result);
 }
 
-ssize_t Socket::recvall(int socketDescriptor, char *buf, size_t len, int flags) {
+ssize_t Socket::recvall(int socketDescriptor, char *buf, size_t len, int flags) const{
 
     //Структура для ожидания
     struct pollfd pfd{};
@@ -65,7 +64,7 @@ ssize_t Socket::recvall(int socketDescriptor, char *buf, size_t len, int flags) 
     return n;
 }
 
-ssize_t Socket::sendall(int socketDescriptor, char *buf, size_t len, int flags) {
+ssize_t Socket::sendall(int socketDescriptor, char *buf, size_t len, int flags) const {
 
     if (!_isOnline)
         return -1;

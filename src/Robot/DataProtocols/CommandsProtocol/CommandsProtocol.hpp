@@ -6,23 +6,30 @@
 #include <cstring>
 
 #include "../RobotSettingsProtocol/RobotSettingsProtocol.hpp"
-#include "../../DataTransmissions/DataTransmissions.hpp"
+#include "../MotorsSender/IMotorsSender.hpp"
+#include "../CommandsSender/ICommandsSender.hpp"
+//#include "../../DataTransmissions/DataTransmissions.hpp"
 #include "../../DataStructs/DataStructs.hpp"
+#include "../../Peripheral/PeripheralHandler/PeripheralHandler.hpp"
+
 
 namespace DataProtocols {
 
     class CommandsProtocol {
     public:
-        explicit CommandsProtocol(const char *SPIDevice, uint32_t speed_hz, size_t peripheralTimeout_us);
+
+        CommandsProtocol(const MotorsSender::IMotorsSender& motorsSender,
+                                  const ICommandsSender& commandsSender,
+                                  const PeripheralHandler& peripheralHandler);
 
         [[noreturn]]
         void Start();
 
     private:
-        Socket _commandsSocket;
-        std::atomic<CommandsStruct> _commandsStruct;
-        SPI _spi;
-        const size_t _peripheralTimeout_us;
+        //Socket _commandsSocket;
+        const ICommandsSender& _commandsSender;
+        const MotorsSender::IMotorsSender& _motorsSender;
+        const PeripheralHandler& _peripheralHandler;
     };
 }
 

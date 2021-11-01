@@ -6,21 +6,23 @@
 #include "./Nothing/Nothing.hpp"
 #include "./CircleMovingAverage/CircleMovingAverage.hpp"
 
-template<ssize_t GroupSize>
+#include <tuple>
+
+template<class ... Filters>
 class FiltersGroup {
 public:
 
     ~FiltersGroup() {
-        for (size_t i = 0; i < GroupSize; i++)
-            delete this->_filters[i];
+        for (size_t i = 0; i < sizeof...(Filters); i++)
+            delete _filters[i];
     }
 
-    inline IFilter *&operator[](ssize_t index) {
-        return (this->_filters)[index];
+    IFilter &operator[](size_t index) {
+        return *(_filters[index]);
     }
 
 private:
-    IFilter *_filters[GroupSize]{};
+    IFilter *_filters[sizeof...(Filters)]{new Filters...};
 };
 
 #endif

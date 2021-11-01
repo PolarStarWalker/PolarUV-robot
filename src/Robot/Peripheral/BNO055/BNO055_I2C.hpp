@@ -12,9 +12,15 @@
 #include "../Filters/FiltersGroup.hpp"
 #include "../../DataTransmissions/I2C/I2C.hpp"
 
-class BNO055_I2C final :  public II2CPeripheral  {
+class BNO055_I2C final : public II2CPeripheral {
 public:
-    explicit BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode = BNO055::OPERATION_MODE_NDOF_FMC_OFF);
+
+    static BNO055_I2C *GetInstance() {
+        static BNO055_I2C bno(BNO055_ADDRESS);
+        return &bno;
+    }
+
+    BNO055_I2C(const BNO055_I2C &bno055) = delete;
 
     bool Init(const I2C *i2c) final;
 
@@ -25,9 +31,28 @@ public:
     BNO055::Data GetData() const;
 
 private:
+
+    explicit BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode = BNO055::OPERATION_MODE_NDOF_FMC_OFF);
+
     BNO055::Data _data{};
+
+    FiltersGroup<
+            CircleMovingAverage<10>,
+            CircleMovingAverage<10>,
+            CircleMovingAverage<10>,
+            MovingAverage<10>,
+            MovingAverage<10>,
+            MovingAverage<10>,
+            MovingAverage<10>,
+            MovingAverage<10>,
+            MovingAverage<10>,
+            MovingAverage<10>,
+            MovingAverage<10>,
+            MovingAverage<10>,
+            MovingAverage<10>,
+            MovingAverage<10>> _filters;
+
     mutable std::shared_mutex _dataMutex;
-    FiltersGroup<14> _dataFilters;
     const I2C *_i2c;
     uint16_t _sensorAddress;
     BNO055::OperationMode _operationMode;

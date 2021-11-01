@@ -2,12 +2,7 @@
 
 using namespace MS5837;
 
-MS5837_I2C::MS5837_I2C(uint16_t sensorAddress) : _sensorAddress(sensorAddress){
-
-    this->_dataFilters[Depth] = new MovingAverage<5>;
-    this->_dataFilters[Pressure] = new MovingAverage<5>;
-    this->_dataFilters[Temperature] = new MovingAverage<5>;
-}
+MS5837_I2C::MS5837_I2C(uint16_t sensorAddress) : _sensorAddress(sensorAddress) {}
 
 MS5837_I2C::~MS5837_I2C() {
     delete this->_i2c;
@@ -41,19 +36,19 @@ bool MS5837_I2C::ReadData() {
 
     usleep(20 * 1000); // Max conversion time per datasheet
 
-    _i2c->WriteByte(this->_sensorAddress, MS5837_ADC_READ);
+    _i2c->WriteByte(_sensorAddress, MS5837_ADC_READ);
 
     uint8_t d1Data[3]{};
-    _i2c->Read(this->_sensorAddress, d1Data, 3);
+    _i2c->Read(_sensorAddress, d1Data, 3);
     _d1Pressure = d1Data[0];
     _d1Pressure = (_d1Pressure << 8) | d1Data[1];
     _d1Pressure = (_d1Pressure << 8) | d1Data[2];
 
-    _i2c->WriteByte(this->_sensorAddress, MS5837_CONVERT_D2_8192);
+    _i2c->WriteByte(_sensorAddress, MS5837_CONVERT_D2_8192);
 
     usleep(20 * 1000);
 
-    _i2c->WriteByte(this->_sensorAddress, MS5837_ADC_READ);
+    _i2c->WriteByte(_sensorAddress, MS5837_ADC_READ);
 
     uint8_t d2Data[3]{};
     _i2c->Read(this->_sensorAddress, d2Data, 3);
@@ -66,14 +61,14 @@ bool MS5837_I2C::ReadData() {
     MS5837::Data data{};
 
     double pressure = _p * 0.001 / 10.0;
-    data.Pressure = pressure;
+    data.Pressure = _dataFilters[Pressure](pressure);
 
-    data.Temperature = (double) _temperature / 100.0;
+    data.Temperature = _dataFilters[Temperature]((double) _temperature / 100.0);
 
     double depth = ((_p * 10.0) - 101300) / (_fluidDensity * 9.80665);
-    data.Depth = depth;
+    data.Depth = _dataFilters[Depth](depth);
 
-    this->SetData(data);
+    SetData(data);
 
     return true;
 }

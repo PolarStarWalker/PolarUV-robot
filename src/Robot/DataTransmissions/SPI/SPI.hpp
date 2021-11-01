@@ -15,11 +15,11 @@
 
 class SPI {
 private:
-    int _spiDescriptor = -1;
+    const int _spiDescriptor = -1;
 
-    u_int32_t _speed;
-    u_int8_t _bits = 8;
-    u_int16_t _delay = 0;
+    const u_int32_t _speed;
+    const u_int8_t _bits = 8;
+    const u_int16_t _delay = 0;
 
 public:
     explicit SPI(const char* address, u_int32_t speedHz = 5000000);

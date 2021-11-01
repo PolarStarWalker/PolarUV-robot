@@ -27,7 +27,7 @@ private:
 
     MS5837::Data _data;
 
-    FiltersGroup<3> _dataFilters;
+    FiltersGroup<MovingAverage<5>, MovingAverage<5>, MovingAverage<5>> _dataFilters;
 
     const I2C *_i2c;
 
@@ -48,7 +48,7 @@ private:
 
     bool Reload() final;
 
-    inline void SetData(const MS5837::Data& data){
+    inline void SetData(const MS5837::Data &data) {
         this->_dataMutex.lock();
         this->_data = data;
         this->_dataMutex.unlock();

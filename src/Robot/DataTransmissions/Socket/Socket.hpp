@@ -21,32 +21,32 @@ public:
     explicit Socket(uint16_t port);
     ~Socket();
 
-	int Listen();
+	int Listen() const;
 
 	//Functions for data transfer
-	ssize_t RecvDataLen(char* msg, size_t len);
-	ssize_t SendDataLen(char* msg, size_t len);
+	ssize_t RecvDataLen(char* msg, size_t len) const;
+	ssize_t SendDataLen(char* msg, size_t len) const;
 
 	bool IsOnline() const;
 
 private:
 	//socket descriptors
-	int _serverSocketDescriptor;
-	int _clientSocketDescriptor;
+	mutable int _serverSocketDescriptor;
+	mutable int _clientSocketDescriptor;
 
 	//connection data
-	sockaddr_in _serverAddress;
-	sockaddr_in _clientAddress;
+    mutable sockaddr_in _serverAddress;
+    mutable sockaddr_in _clientAddress;
 
 	//I don't know what is it, but it needs, chestno
-	socklen_t _serverAddressLength = sizeof(this->_serverAddress);
-	socklen_t _clientAdressLength = sizeof(this->_clientAddress);
+    mutable socklen_t _serverAddressLength = sizeof(sockaddr_in);
+    mutable socklen_t _clientAdressLength = sizeof(sockaddr_in);
 
     //status of connection
-    std::atomic<bool> _isOnline = false;
+    mutable std::atomic<bool> _isOnline = false;
 
 	//Simple function, for transfer data
-	ssize_t recvall(int s, char* buf, size_t len, int flags);
-	ssize_t sendall(int s, char* buf, size_t len, int flags);
+	ssize_t recvall(int s, char* buf, size_t len, int flags) const;
+	ssize_t sendall(int s, char* buf, size_t len, int flags) const;
 };
 

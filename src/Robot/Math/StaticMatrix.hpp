@@ -167,10 +167,10 @@ public:
             const size_t interationCount = bytesCount / 16;
             const size_t aligment = (bytesCount % 16) / sizeof(Type);
 
-            const float32x4_t *inVectorArray = (const float32x4_t *) &inVector[0];
+            const auto *inVectorArray = (const float32x4_t *) &inVector[0];
 
             for (size_t i = 0; i < Rows; ++i) {
-                const float32x4_t *matrixArray = (const float32x4_t *) operator[](i);
+                const auto *matrixArray = (const float32x4_t *) operator[](i);
 
                 for (size_t j = 0; j < interationCount; ++j) {
                     float32x4_t buf = vmulq_f32(matrixArray[j], inVectorArray[j]);

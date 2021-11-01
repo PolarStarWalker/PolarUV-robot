@@ -3,29 +3,13 @@
 
 using namespace BNO055;
 
+constexpr double ToRadians = M_PIf64 / 180;
+
+constexpr double ToDegrees = 180 / M_PIf64;
+
 BNO055_I2C::BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode) {
     _sensorAddress = sensorAddress;
     _operationMode = mode;
-
-    //ToDo: убрать
-    _dataFilters[FilterAxis::EulerAngleX] = new CircleMovingAverage<10>;
-    _dataFilters[FilterAxis::EulerAngleY] = new CircleMovingAverage<10>;
-    _dataFilters[FilterAxis::EulerAngleZ] = new CircleMovingAverage<10>;
-
-    _dataFilters[FilterAxis::QuaternionW] = new MovingAverage<10>;
-    _dataFilters[FilterAxis::QuaternionX] = new MovingAverage<10>;
-    _dataFilters[FilterAxis::QuaternionY] = new MovingAverage<10>;
-    _dataFilters[FilterAxis::QuaternionZ] = new MovingAverage<10>;
-
-    _dataFilters[FilterAxis::LinearAccelerationX] = new MovingAverage<10>;
-    _dataFilters[FilterAxis::LinearAccelerationY] = new MovingAverage<10>;
-    _dataFilters[FilterAxis::LinearAccelerationZ] = new MovingAverage<10>;
-
-    _dataFilters[FilterAxis::MagneticFiledX] = new MovingAverage<10>;
-    _dataFilters[FilterAxis::MagneticFiledY] = new MovingAverage<10>;
-    _dataFilters[FilterAxis::MagneticFiledZ] = new MovingAverage<10>;
-
-    _dataFilters[FilterAxis::Temperature] = new MovingAverage<10>;
 }
 
 bool BNO055_I2C::Init(const I2C *i2c) {
@@ -67,7 +51,7 @@ bool BNO055_I2C::Init(const I2C *i2c) {
     return true;
 }
 
-void BNO055_I2C::SendOperationMode(OperationMode mode) const{
+void BNO055_I2C::SendOperationMode(OperationMode mode) const {
     _i2c->WriteByteToRegister(_sensorAddress, OPR_MODE_REG, mode);
     usleep(Kilo(20));
 }
@@ -103,9 +87,11 @@ bool BNO055_I2C::ReadData() {
     __u8 accelerationBuffer[6] = {};
     __u8 accelerationRegister = LINEAR_ACCEL_DATA_X_LSB_REG;
     _i2c->Read(_sensorAddress, &accelerationRegister, 1, accelerationBuffer, 6);
-    int16_t accelerationX = (int16_t) (accelerationBuffer[0] | (accelerationBuffer[1] << 8));
-    int16_t accelerationY = (int16_t) (accelerationBuffer[2] | (accelerationBuffer[3] << 8));
-    int16_t accelerationZ = (int16_t) (accelerationBuffer[4] | (accelerationBuffer[5] << 8));
+
+    auto accelerationX = (int16_t) (accelerationBuffer[0] | (accelerationBuffer[1] << 8));
+    auto accelerationY = (int16_t) (accelerationBuffer[2] | (accelerationBuffer[3] << 8));
+    auto accelerationZ = (int16_t) (accelerationBuffer[4] | (accelerationBuffer[5] << 8));
+
     data.LinearAcceleration[X] = ((double) accelerationX) / 100.0;
     data.LinearAcceleration[Y] = ((double) accelerationY) / 100.0;
     data.LinearAcceleration[Z] = ((double) accelerationZ) / 100.0;
@@ -113,30 +99,24 @@ bool BNO055_I2C::ReadData() {
     __u8 eulerBuffer[6] = {};
     __u8 eulerRegister = EULER_H_LSB_REG;
     _i2c->Read(_sensorAddress, &eulerRegister, 1, eulerBuffer, 6);
-    int16_t eulerX = (int16_t) (eulerBuffer[0] | (eulerBuffer[1] << 8));
-    int16_t eulerY = (int16_t) (eulerBuffer[2] | (eulerBuffer[3] << 8));
-    int16_t eulerZ = (int16_t) (eulerBuffer[4] | (eulerBuffer[5] << 8));
+
+    auto eulerX = (int16_t) (eulerBuffer[0] | (eulerBuffer[1] << 8));
+    auto eulerY = (int16_t) (eulerBuffer[2] | (eulerBuffer[3] << 8));
+    auto eulerZ = (int16_t) (eulerBuffer[4] | (eulerBuffer[5] << 8));
+
     data.EulerAngle[X] = ((double) eulerZ) / 16.0;
     data.EulerAngle[Y] = ((double) eulerY) / 16.0;
     data.EulerAngle[Z] = ((double) eulerX) / 16.0;
 
     data.Temperature = (int8_t) (_i2c->ReadByteFromRegister(_sensorAddress, TEMP_REG));
 
-    data.EulerAngle[X] = (this->_dataFilters[FilterAxis::EulerAngleX]
-            ->Filter(data.EulerAngle[X] * M_PIf64 / 180)) * 180 / M_PIf64;
+    data.EulerAngle[X] = (_filters[EulerAngleX](data.EulerAngle[X] * ToRadians)) * ToDegrees;
+    data.EulerAngle[Y] = (_filters[EulerAngleY](data.EulerAngle[Y] * ToRadians)) * ToDegrees;
+    data.EulerAngle[Z] = (_filters[EulerAngleZ](data.EulerAngle[Z] * ToRadians)) * ToDegrees;
 
-    data.EulerAngle[Y] = (this->_dataFilters[FilterAxis::EulerAngleY]
-            ->Filter(data.EulerAngle[Y] * M_PIf64 / 180)) * 180 / M_PIf64;
-
-    data.EulerAngle[Z] = (this->_dataFilters[FilterAxis::EulerAngleZ]
-            ->Filter((data.EulerAngle[Z]) * M_PIf64 / 180)) * 180 / M_PIf64;
-
-    data.LinearAcceleration[X] = this->_dataFilters[FilterAxis::LinearAccelerationX]
-            ->Filter(data.LinearAcceleration[X]);
-    data.LinearAcceleration[Y] = this->_dataFilters[FilterAxis::LinearAccelerationY]
-            ->Filter(data.LinearAcceleration[Y]);
-    data.LinearAcceleration[Z] = this->_dataFilters[FilterAxis::LinearAccelerationZ]
-            ->Filter(data.LinearAcceleration[Z]);
+    data.LinearAcceleration[X] = _filters[LinearAccelerationX](data.LinearAcceleration[X]);
+    data.LinearAcceleration[Y] = _filters[LinearAccelerationY](data.LinearAcceleration[Y]);
+    data.LinearAcceleration[Z] = _filters[LinearAccelerationZ](data.LinearAcceleration[Z]);
 
     SetData(data);
 

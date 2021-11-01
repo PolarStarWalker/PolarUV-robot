@@ -169,7 +169,7 @@ namespace BNO055 {
         ///{X, Y, Z}
         std::array<double, 3> MagneticFiled{};
         ///{X, Y, Z}
-        std::array<int8_t, 4> CalibrationArray{};
+        std::array<uint8_t, 4> CalibrationArray{};
         int8_t Temperature = 0;
     };
 
