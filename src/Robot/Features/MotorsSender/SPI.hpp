@@ -3,6 +3,9 @@
 #include "./IMotorsSender.hpp"
 #include "../../DataTransmissions/SPI/SPI.hpp"
 
+#include <array>
+#include <cstring>
+
 namespace MotorsSender {
 
     class SPI final : public IMotorsSender {

@@ -16,16 +16,14 @@ int main() {
     DataProtocols::RobotVideoProtocol robotVideoProtocol;
     robotVideoProtocol.StartAsync();
 
-    ///Create motors sender
-    static const class MotorsSender::SPI motorsSender("/dev/spidev0.0", Mega(35));
-
-    ///Create commandReceiver commands commandReceiver
-    static const class CommandsReceiver::Network commandReceiver(1999);
+    auto settings = StartSettings::Get();
+    auto& motorsSender = settings.GetMotorsSender();
+    auto& commandsReceiver = settings.GetCommandsReceiver();
 
     ///Create peripheralHandler
     static const PeripheralHandler peripheralHandler("/dev/i2c-1", Kilo(20));
 
     ///OldStart CommandsProtocol in synchronous mode
-    DataProtocols::CommandsProtocol commands(motorsSender, commandReceiver, peripheralHandler);
+    DataProtocols::CommandsProtocol commands(motorsSender, commandsReceiver, peripheralHandler);
     commands.Start();
 }

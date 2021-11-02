@@ -7,8 +7,7 @@
 
 #include "../RobotSettingsProtocol/RobotSettingsProtocol.hpp"
 #include "../MotorsSender/IMotorsSender.hpp"
-#include "../CommandsSender/ICommandsSender.hpp"
-//#include "../../DataTransmissions/DataTransmissions.hpp"
+#include "../CommandsReceiver//ICommandsReceiver.hpp"
 #include "../../DataStructs/DataStructs.hpp"
 #include "../../Peripheral/PeripheralHandler/PeripheralHandler.hpp"
 
@@ -22,7 +21,7 @@ namespace DataProtocols {
 
 
         CommandsProtocol(const MotorsSender::IMotorsSender& motorsSender,
-                                  const CommandsReceiver::ICommandsSender& commandsSender,
+                                  const CommandsReceiver::ICommandsReceiver& commandsSender,
                                   const PeripheralHandler& peripheralHandler);
 
         [[noreturn]]
@@ -30,7 +29,7 @@ namespace DataProtocols {
 
     private:
         //Socket _commandsSocket;
-        const CommandsReceiver::ICommandsSender& _commandsSender;
+        const CommandsReceiver::ICommandsReceiver& _commandsSender;
         const MotorsSender::IMotorsSender& _motorsSender;
         const PeripheralHandler& _peripheralHandler;
     };

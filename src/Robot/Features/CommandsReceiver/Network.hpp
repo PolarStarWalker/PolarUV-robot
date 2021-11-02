@@ -1,12 +1,12 @@
 #ifndef ROBOT_NETWORK_HPP
 #define ROBOT_NETWORK_HPP
 
-#include "./ICommandsSender.hpp"
+#include "./ICommandsReceiver.hpp"
 #include "../../DataTransmissions/Socket/Socket.hpp"
 
 namespace CommandsReceiver {
 
-    class Network final : public ICommandsSender {
+    class Network final : public ICommandsReceiver {
     public:
         explicit Network(uint16_t port) : _socket(port) {}
 

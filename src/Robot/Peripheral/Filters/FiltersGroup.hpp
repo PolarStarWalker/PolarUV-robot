@@ -23,6 +23,7 @@ public:
 
 private:
     IFilter *_filters[sizeof...(Filters)]{new Filters...};
+
 };
 
 #endif

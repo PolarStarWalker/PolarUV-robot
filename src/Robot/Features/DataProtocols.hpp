@@ -7,5 +7,5 @@
 
 
 #include "./MotorsSender/SPI.hpp"
-#include "./CommandsSender/Network.hpp"
-
+#include "./CommandsReceiver/Network.hpp"
+#include "./StartSettings/StartSettings.hpp"

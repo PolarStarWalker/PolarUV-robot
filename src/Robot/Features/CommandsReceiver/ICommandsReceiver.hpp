@@ -1,5 +1,5 @@
-#ifndef ROBOT_ICOMMANDSSENDER_HPP
-#define ROBOT_ICOMMANDSSENDER_HPP
+#ifndef ROBOT_ICOMMANDSRECEIVER_HPP
+#define ROBOT_ICOMMANDSRECEIVER_HPP
 
 #include "../../DataStructs/DataStructs.hpp"
 
@@ -9,7 +9,7 @@ namespace CommandsReceiver {
         Net = 0,
     };
 
-    class ICommandsSender {
+    class ICommandsReceiver {
     public:
 
         virtual CommandsStruct GetCommandsStruct() const = 0;
