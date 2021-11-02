@@ -16,10 +16,13 @@
 namespace DataProtocols {
 
     class CommandsProtocol {
+
     public:
 
+
+
         CommandsProtocol(const MotorsSender::IMotorsSender& motorsSender,
-                                  const ICommandsSender& commandsSender,
+                                  const CommandsReceiver::ICommandsSender& commandsSender,
                                   const PeripheralHandler& peripheralHandler);
 
         [[noreturn]]
@@ -27,7 +30,7 @@ namespace DataProtocols {
 
     private:
         //Socket _commandsSocket;
-        const ICommandsSender& _commandsSender;
+        const CommandsReceiver::ICommandsSender& _commandsSender;
         const MotorsSender::IMotorsSender& _motorsSender;
         const PeripheralHandler& _peripheralHandler;
     };

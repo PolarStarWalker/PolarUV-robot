@@ -1,17 +1,17 @@
-#ifndef ROBOT_SPI_MOTORSSENDER_HPP
-#define ROBOT_SPI_MOTORSSENDER_HPP
+#ifndef ROBOT_SPI_HPP
+#define ROBOT_SPI_HPP
 #include "./IMotorsSender.hpp"
 #include "../../DataTransmissions/SPI/SPI.hpp"
 
 namespace MotorsSender {
 
-    class SPI_MotorsSender final : public IMotorsSender {
+    class SPI final : public IMotorsSender {
     private:
-        const SPI _spi;
+        const DataTransmissions::SPI _spi;
 
     public:
 
-        SPI_MotorsSender(const char *path, uint32_t speed_hz) : _spi(path, speed_hz) {}
+        SPI(const char *path, uint32_t speed_hz) : _spi(path, speed_hz) {}
 
         bool SendMotorsStruct(const MotorsStruct &motorsStruct) const final {
             std::array<char, 2 * MotorsStructLenMessage> motorsMessage{};

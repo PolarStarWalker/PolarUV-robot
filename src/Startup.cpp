@@ -17,15 +17,15 @@ int main() {
     robotVideoProtocol.StartAsync();
 
     ///Create motors sender
-    static const MotorsSender::SPI_MotorsSender motorsSender("/dev/spidev0.0", Mega(35));
+    static const class MotorsSender::SPI motorsSender("/dev/spidev0.0", Mega(35));
 
-    ///Create reciever commands receiver
-    static const Network receiver(1999);
+    ///Create commandReceiver commands commandReceiver
+    static const class CommandsReceiver::Network commandReceiver(1999);
 
     ///Create peripheralHandler
     static const PeripheralHandler peripheralHandler("/dev/i2c-1", Kilo(20));
 
     ///OldStart CommandsProtocol in synchronous mode
-    DataProtocols::CommandsProtocol commands(motorsSender, receiver, peripheralHandler);
+    DataProtocols::CommandsProtocol commands(motorsSender, commandReceiver, peripheralHandler);
     commands.Start();
 }

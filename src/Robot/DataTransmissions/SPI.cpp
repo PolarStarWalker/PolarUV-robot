@@ -1,6 +1,8 @@
 #include <iostream>
 #include "./SPI/SPI.hpp"
 
+using namespace DataTransmissions;
+
 SPI::SPI(const char *address, u_int32_t speedHz)
         : _speed(speedHz),
         _spiDescriptor(open(address, O_RDWR)) {}

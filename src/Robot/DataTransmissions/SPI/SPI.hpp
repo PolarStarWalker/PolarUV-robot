@@ -13,17 +13,21 @@
 //spi
 #include <linux/spi/spidev.h>
 
-class SPI {
-private:
-    const int _spiDescriptor = -1;
+namespace DataTransmissions {
 
-    const u_int32_t _speed;
-    const u_int8_t _bits = 8;
-    const u_int16_t _delay = 0;
+    class SPI {
+    private:
+        const int _spiDescriptor = -1;
 
-public:
-    explicit SPI(const char* address, u_int32_t speedHz = 5000000);
-    ~SPI();
+        const u_int32_t _speed;
+        const u_int8_t _bits = 8;
+        const u_int16_t _delay = 0;
 
-    void ReadWrite(const void* tx, void *rx, size_t length) const;
-};
+    public:
+        explicit SPI(const char *address, u_int32_t speedHz = 5000000);
+
+        ~SPI();
+
+        void ReadWrite(const void *tx, void *rx, size_t length) const;
+    };
+}

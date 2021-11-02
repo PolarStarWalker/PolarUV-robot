@@ -5,12 +5,17 @@
 
 namespace MotorsSender {
 
+    enum Id : size_t {
+        SPI = 0
+    };
+
     class IMotorsSender {
     public:
+
         virtual bool SendMotorsStruct(const MotorsStruct &motorsStruct) const = 0;
 
         virtual ~IMotorsSender() = default;
     };
 
-}
+};
 #endif

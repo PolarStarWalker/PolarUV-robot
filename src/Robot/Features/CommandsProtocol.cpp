@@ -4,6 +4,7 @@
 
 using namespace DataProtocols;
 using namespace MotorsSender;
+using namespace CommandsReceiver;
 
 CommandsProtocol::CommandsProtocol(const IMotorsSender &motorsSender,
                                    const ICommandsSender& commandsSender,
