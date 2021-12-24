@@ -1,5 +1,6 @@
 ﻿#include "./Startup.hpp"
 #include "./Robot/Math/Math.hpp"
+#include <boost/stacktrace.hpp>
 
 [[noreturn]]
 int main() {

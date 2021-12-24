@@ -1,0 +1,20 @@
+[requires]
+    protobuf/3.17.1
+    lz4/1.9.3
+    boost/1.77.0
+#    opencv/4.5.0@starwalker/stable
+
+[options]
+    boost:shared = False
+    boost:asio_no_deprecated = True
+    boost:system_no_deprecated = True
+    boost:filesystem_no_deprecated = True
+#    boost:without_fiber = True
+#    boost:extra_b2_flags = "-defines=BOOST_DISABLE_THREADS"
+
+    openssl:shared = False
+
+    opencv:shared = False
+
+[generators]
+    cmake
