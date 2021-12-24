@@ -8,6 +8,10 @@ namespace CommandsReceiver {
 
     class Network final : public ICommandsReceiver {
     public:
+
+        Network(const Network&) = delete;
+        Network(Network&&) = delete;
+
         explicit Network(uint16_t port) : _socket(port) {}
 
         CommandsStruct GetCommandsStruct() const final {

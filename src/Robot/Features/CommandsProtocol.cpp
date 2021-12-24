@@ -6,12 +6,11 @@ using namespace DataProtocols;
 using namespace MotorsSender;
 using namespace CommandsReceiver;
 
-CommandsProtocol::CommandsProtocol(const IMotorsSender &motorsSender,
-                                   const ICommandsReceiver& commandsSender,
-                                   const PeripheralHandler& peripheralHandler)
+CommandsProtocol::CommandsProtocol(const IMotorsSender &motorsSender, const ICommandsReceiver &commandsReceiver,
+                                   const PeripheralHandler &peripheralHandler)
         : _motorsSender(motorsSender),
           _peripheralHandler(peripheralHandler),
-          _commandsSender(commandsSender){}
+          _commandsReceiver(commandsReceiver){}
 
 inline TelemetryStruct FormTelemetryStruct(const BNO055_I2C &bno055, const MS5837_I2C &ms5837) {
     BNO055::Data bnoData = bno055.GetData();
@@ -57,13 +56,13 @@ void CommandsProtocol::Start() {
     MS5837_I2C ms5837(MS5837_ADDRESS);
 
     _peripheralHandler.AddI2CSensor(&bno055);
-    _peripheralHandler.AddI2CSensor(&ms5837);
+    //_peripheralHandler.AddI2CSensor(&ms5837);
 
     _peripheralHandler.StartAsync();
 
     for (;;) {
 
-        _commandsSender.Wait();
+        _commandsReceiver.Wait();
 
         RobotSettingsStruct settingsStruct = RobotSettingsProtocol::GetSettings();
 
@@ -74,13 +73,13 @@ void CommandsProtocol::Start() {
         StaticVector<float, 6> handCoefficients(settingsStruct.HandCoefficientArray(), settingsStruct.HandFreedom());
         handCoefficients *= 10;
 
-        while (_commandsSender.IsOnline()) {
+        while (_commandsReceiver.IsOnline()) {
 
-            auto commandsStruct = _commandsSender.GetCommandsStruct();
+            auto commandsStruct = _commandsReceiver.GetCommandsStruct();
 
             auto telemetry = FormTelemetryStruct(bno055, ms5837);
 
-            _commandsSender.SendTelemetryStruct(telemetry);
+            _commandsReceiver.SendTelemetryStruct(telemetry);
 
             auto &moveVector = (StaticVector<float, 6> &) commandsStruct.MoveVector;
             StaticVector<float, 12> hiPWM = thrusterCoefficients * moveVector;
@@ -102,7 +101,7 @@ void CommandsProtocol::Start() {
 
 #ifdef DEBUG
 
-            std::cout << telemetry << std::endl;
+            //std::cout << telemetry << std::endl;
             //std::cout << settingsStruct << std::endl;
             //std::cout << commandsStruct << std::endl;
             //std::cout << motorsStruct << std::endl;

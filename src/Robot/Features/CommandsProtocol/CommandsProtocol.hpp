@@ -18,18 +18,16 @@ namespace DataProtocols {
 
     public:
 
-
-
-        CommandsProtocol(const MotorsSender::IMotorsSender& motorsSender,
-                                  const CommandsReceiver::ICommandsReceiver& commandsSender,
-                                  const PeripheralHandler& peripheralHandler);
+        CommandsProtocol(const MotorsSender::IMotorsSender &motorsSender,
+                         const CommandsReceiver::ICommandsReceiver &commandsReceiver,
+                         const PeripheralHandler &peripheralHandler);
 
         [[noreturn]]
         void Start();
 
     private:
         //Socket _commandsSocket;
-        const CommandsReceiver::ICommandsReceiver& _commandsSender;
+        const CommandsReceiver::ICommandsReceiver& _commandsReceiver;
         const MotorsSender::IMotorsSender& _motorsSender;
         const PeripheralHandler& _peripheralHandler;
     };
