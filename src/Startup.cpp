@@ -1,9 +1,12 @@
 ﻿#include "./Startup.hpp"
 #include "./Robot/Math/Math.hpp"
-#include <boost/stacktrace.hpp>
 
 [[noreturn]]
 int main() {
+
+    //TcpSession& network = TcpSession::GetInstance();
+    //network.Start();
+
     ///set max sched priority
     struct sched_param process{};
     process.sched_priority = 99;
@@ -18,8 +21,8 @@ int main() {
     robotVideoProtocol.StartAsync();
 
     auto settings = StartSettings::Get();
-    auto& motorsSender = settings.GetMotorsSender();
-    auto& commandsReceiver = settings.GetCommandsReceiver();
+    auto &motorsSender = settings.GetMotorsSender();
+    auto &commandsReceiver = settings.GetCommandsReceiver();
 
     ///Create peripheralHandler
     static const PeripheralHandler peripheralHandler("/dev/i2c-1", Kilo(20));

@@ -1,5 +1,5 @@
-#ifndef ROBOT_NETWORK_HPP
-#define ROBOT_NETWORK_HPP
+#ifndef ROBOT_COMMANDS_RECEIVER_NETWORK_HPP
+#define ROBOT_COMMANDS_RECEIVER_NETWORK_HPP
 
 #include "./ICommandsReceiver.hpp"
 #include "../../DataTransmissions/Socket/Socket.hpp"

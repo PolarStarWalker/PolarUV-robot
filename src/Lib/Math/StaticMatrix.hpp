@@ -8,7 +8,7 @@
 #include <arm_neon.h>
 #include <variant>
 
-#include "./StaticVector.hpp"
+#include "./StaticVector/StaticVector.hpp"
 
 template<typename Type, const size_t Rows, const size_t Columns> requires(std::is_arithmetic_v<Type>)
 class StaticMatrix {

@@ -90,7 +90,7 @@ public:
 
         constexpr size_t bytesCount = VectorSize * sizeof(Type);
         constexpr size_t interationCount = bytesCount / 16;
-        constexpr  size_t aligment = (bytesCount % 16) / sizeof(Type);
+        constexpr size_t aligment = (bytesCount % 16) / sizeof(Type);
 
         ///If using float32_t
         if (std::is_floating_point_v<Type> && sizeof(Type) == 4) {

@@ -7,7 +7,7 @@
 #include "./Vector.hpp"
 
 #include "./StaticMatrix.hpp"
-#include "./StaticVector.hpp"
+#include "StaticVector/StaticVector.hpp"
 
 
 #endif
