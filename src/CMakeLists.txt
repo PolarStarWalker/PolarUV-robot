@@ -1,10 +1,15 @@
 ﻿cmake_minimum_required (VERSION 3.16)
 
-add_executable (robot "Startup.cpp" "Startup.hpp")
-
-add_subdirectory (Robot)
-
 include_directories(Lib)
 
+add_subdirectory (Lib)
+add_subdirectory (Robot)
+
+add_executable (robot "Startup.cpp" "Startup.hpp")
+
 target_precompile_headers(robot REUSE_FROM Robot)
+target_precompile_headers(robot REUSE_FROM Lib)
+
 target_link_libraries(robot Robot)
+target_link_libraries(robot Lib)
+

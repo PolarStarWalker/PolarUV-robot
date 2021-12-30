@@ -9,8 +9,9 @@
 #include <shared_mutex>
 #include "./BNO055.hpp"
 #include "../Interfaces/II2CPeripheral.hpp"
-#include "../Filters/FiltersGroup.hpp"
-#include "../../DataTransmissions/I2C/I2C.hpp"
+
+#include "Filters/FiltersGroup.hpp"
+#include "DataTransmissions/I2C/I2C.hpp"
 
 class BNO055_I2C final : public II2CPeripheral {
 public:

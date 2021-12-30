@@ -2,7 +2,8 @@
 #define ROBOT_COMMANDS_RECEIVER_NETWORK_HPP
 
 #include "./ICommandsReceiver.hpp"
-#include "../../DataTransmissions/Socket/Socket.hpp"
+
+#include <DataTransmissions/Socket/Socket.hpp>
 
 namespace CommandsReceiver {
 

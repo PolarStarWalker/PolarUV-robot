@@ -8,7 +8,7 @@
 #include "../CommandsReceiver/ICommandsReceiver.hpp"
 #include "../CommandsReceiver/Network.hpp"
 
-#include "../../Math/SIPrefix.hpp"
+#include "Math/SIPrefix.hpp"
 
 class StartSettings {
 public:

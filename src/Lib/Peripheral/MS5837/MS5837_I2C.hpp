@@ -3,7 +3,7 @@
 
 #include "../Interfaces/II2CPeripheral.hpp"
 #include "./MS5837.hpp"
-#include "../Filters/FiltersGroup.hpp"
+#include "./Filters/FiltersGroup.hpp"
 
 #define MS5837_ADDRESS 0x76
 

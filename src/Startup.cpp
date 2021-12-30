@@ -1,5 +1,5 @@
 ﻿#include "./Startup.hpp"
-#include "./Robot/Math/Math.hpp"
+#include "./Lib/Math/Math.hpp"
 
 [[noreturn]]
 int main() {

@@ -1,6 +1,7 @@
 #include "./CommandsProtocol/CommandsProtocol.hpp"
-#include "../Peripheral/Peripheral.hpp"
-#include "../Math/Math.hpp"
+
+#include "Peripheral/Peripheral.hpp"
+#include "Math/Math.hpp"
 
 using namespace DataProtocols;
 using namespace MotorsSender;

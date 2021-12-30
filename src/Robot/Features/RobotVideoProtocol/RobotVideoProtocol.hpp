@@ -4,7 +4,9 @@
 
 #include <fstream>
 #include <unistd.h>
-#include "../../DataTransmissions/Socket/Socket.hpp"
+
+#include <DataTransmissions/Socket/Socket.hpp>
+
 namespace DataProtocols {
     class RobotVideoProtocol {
     private:

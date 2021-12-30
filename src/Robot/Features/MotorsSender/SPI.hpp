@@ -1,7 +1,7 @@
 #ifndef ROBOT_SPI_HPP
 #define ROBOT_SPI_HPP
 #include "./IMotorsSender.hpp"
-#include "../../DataTransmissions/SPI/SPI.hpp"
+#include "DataTransmissions/SPI/SPI.hpp"
 
 #include <array>
 #include <cstring>

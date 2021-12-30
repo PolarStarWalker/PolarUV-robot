@@ -7,9 +7,10 @@
 
 #include "../RobotSettingsProtocol/RobotSettingsProtocol.hpp"
 #include "../MotorsSender/IMotorsSender.hpp"
-#include "../CommandsReceiver//ICommandsReceiver.hpp"
+#include "../CommandsReceiver/ICommandsReceiver.hpp"
 #include "../../DataStructs/DataStructs.hpp"
-#include "../../Peripheral/PeripheralHandler/PeripheralHandler.hpp"
+
+#include "Peripheral/PeripheralHandler/PeripheralHandler.hpp"
 
 
 namespace DataProtocols {
