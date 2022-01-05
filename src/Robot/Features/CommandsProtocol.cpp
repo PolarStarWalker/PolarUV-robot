@@ -69,10 +69,8 @@ void CommandsProtocol::Start() {
 
         StaticMatrix<float, 12, 6> thrusterCoefficients(settingsStruct.ThrusterCoefficientArray(),
                                                         settingsStruct.ThrusterNumber());
-        thrusterCoefficients *= 10;
 
         StaticVector<float, 6> handCoefficients(settingsStruct.HandCoefficientArray(), settingsStruct.HandFreedom());
-        handCoefficients *= 10;
 
         while (_commandsReceiver.IsOnline()) {
 
@@ -84,13 +82,14 @@ void CommandsProtocol::Start() {
 
             auto &moveVector = (StaticVector<float, 6> &) commandsStruct.MoveVector;
             StaticVector<float, 12> hiPWM = thrusterCoefficients * moveVector;
-            hiPWM.Normalize(1000);
+            hiPWM.Normalize(100);
 
             for (size_t i = 0; i < settingsStruct.HandFreedom(); ++i) {
                 hiPWM[settingsStruct.ThrusterNumber() + i] = handCoefficients[i] * commandsStruct.TheHand[i];
             }
 
-            hiPWM += 1000;
+            hiPWM += 100;
+            hiPWM *= 10;
 
             auto &lowPwm = (StaticVector<float, 4> &) commandsStruct.LowPWM;
             lowPwm[0] *= 1000;

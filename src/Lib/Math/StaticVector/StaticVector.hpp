@@ -6,193 +6,45 @@
 #include <type_traits>
 #include <ostream>
 
+#include "../TypeTraits.hpp"
+
 #include <arm_neon.h>
 
-template<typename Type, size_t VectorSize> requires(std::is_arithmetic_v<Type>)
+template<typename Type, size_t VectorSize> requires std::is_arithmetic_v<Type>
 class StaticVector {
 private:
     Type _elements[VectorSize]{};
+
+    using StaticVectorType = StaticVector<Type, VectorSize>;
 
 public:
 
     StaticVector() = default;
 
-    explicit StaticVector(const Type array[VectorSize]) noexcept {
-        for (size_t i = 0; i < VectorSize; i++)
-            _elements[i] = array[i];
-    }
+    StaticVector(const StaticVector<Type, VectorSize> &vector) noexcept;
 
-    StaticVector(const StaticVector<Type, VectorSize> &vector) noexcept {
-        for (size_t i = 0; i < VectorSize; i++)
-            _elements[i] = vector._elements[i];
+    explicit StaticVector(const std::array<Type, VectorSize> &array) noexcept;
 
-    }
-
-    StaticVector(const Type *array, size_t rows) noexcept {
-        for (size_t i = 0; i < rows; ++i)
-            _elements[i] = array[i];
-    }
+    explicit StaticVector(const Type *data, size_t size) noexcept;
 
     ~StaticVector() = default;
 
-    size_t Size() const noexcept { return VectorSize; }
+    [[nodiscard]] size_t Size() const noexcept { return VectorSize; }
 
     Type &operator[](size_t index) { return _elements[index]; }
-
     const Type &operator[](size_t index) const { return _elements[index]; }
 
-    StaticVector<Type, VectorSize> &operator=(const Type array[VectorSize]) {
-        for (size_t i = 0; i < VectorSize; i++) {
-            _elements[i] = array[i];
-        }
-        return *this;
-    }
+    StaticVectorType &operator*=(Type value);
+    StaticVectorType &operator*=(Type value) requires IsFloat32<Type>;
 
-    StaticVector<Type, VectorSize> &operator*=(Type value) {
+    StaticVectorType &operator/=(Type value);
 
-        const size_t bytesCount = VectorSize * sizeof(Type);
-        const size_t interationCount = bytesCount / 16;
-        const size_t aligment = (bytesCount % 16) / sizeof(Type);
+    StaticVectorType &operator+=(Type value);
+    StaticVectorType &operator+=(Type value) requires IsFloat32<Type>;
 
-        ///If using float32_t
-        if (std::is_floating_point_v<Type> && sizeof(Type) == 4) {
+    void Normalize(Type amplitude);
 
-            auto *array = (float32x4_t *) _elements;
-            for (size_t i = 0; i < interationCount; ++i) {
-                array[i] = vmulq_n_f32(array[i], value);
-            }
-
-            ///If size is 16 byte aligned
-            if (aligment == 0)
-                return *this;
-
-            for (size_t i = VectorSize - aligment; i < VectorSize; ++i) {
-                _elements[i] *= value;
-            }
-
-            return *this;
-        }
-
-
-        for (size_t i = 0; i < VectorSize; ++i) {
-            _elements[i] *= value;
-        }
-        return *this;
-    }
-
-    StaticVector<Type, VectorSize> &operator/=(Type value) {
-        for (size_t i = 0; i < VectorSize; ++i) {
-            _elements[i] /= value;
-        }
-    }
-
-    StaticVector<Type, VectorSize> &operator+=(Type value) {
-
-        constexpr size_t bytesCount = VectorSize * sizeof(Type);
-        constexpr size_t interationCount = bytesCount / 16;
-        constexpr size_t aligment = (bytesCount % 16) / sizeof(Type);
-
-        ///If using float32_t
-        if (std::is_floating_point_v<Type> && sizeof(Type) == 4) {
-
-            Type valueArray[4] = {value, value, value, value};
-            auto &values = (float32x4_t &) valueArray;
-
-            auto *array = (float32x4_t *) _elements;
-            for (size_t i = 0; i < interationCount; ++i) {
-                array[i] = vaddq_f32(array[i], values);
-            }
-
-            ///If size is 16 byte aligned
-            if (aligment == 0)
-                return *this;
-
-            for (size_t i = VectorSize - aligment; i < VectorSize; ++i) {
-                _elements[i] += value;
-            }
-
-            return *this;
-        }
-        ///other Types
-
-        for (size_t i = 0; i < VectorSize; ++i) {
-            _elements[i] += value;
-        }
-
-        return *this;
-    }
-
-    void Normalize(Type amplitude) {
-
-        const size_t bytesCount = VectorSize * sizeof(Type);
-        const size_t interationCount = bytesCount / 16;
-        const size_t aligment = (bytesCount % 16) / sizeof(Type);
-
-        ///If using float32_t
-        if (std::is_floating_point_v<Type> && sizeof(Type) == 4) {
-
-            double maxValue = 0;
-
-            auto *array = (float32x4_t *) _elements;
-            for (size_t i = 0; i < interationCount; ++i) {
-                ///find ABS
-                float32x4_t abs = vabsq_f32(array[i]);
-
-                ///find MAX
-                float value = vmaxnmvq_f32(abs);
-
-                if (value > maxValue)
-                    maxValue = value;
-            }
-
-            ///If size is not 16 byte aligned
-            if (aligment != 0) {
-                for (size_t i = VectorSize - aligment; i < VectorSize; ++i) {
-                    Type absValue = std::abs(_elements[i]);
-                    if (absValue > maxValue) {
-                        maxValue = absValue;
-                    }
-                }
-            }
-
-            float coefficient = amplitude / maxValue;
-
-            if (coefficient >= 1)
-                return;
-
-            for (size_t i = 0; i < interationCount; i++)
-                array[i] = vmulq_n_f32(array[i], coefficient);
-
-            ///If size is 16 byte aligned
-            if (aligment == 0)
-                return;
-
-            for (size_t i = VectorSize - aligment; i < VectorSize; ++i) {
-                _elements[i] *= coefficient;
-            }
-
-            return;
-        }
-
-        ///if using other types
-
-        double maxValue = 0;
-
-        for (size_t i = 0; i < VectorSize; ++i) {
-            Type absValue = std::abs(_elements[i]);
-            if (absValue > maxValue) {
-                maxValue = absValue;
-            }
-        }
-
-        double coefficient = amplitude / maxValue;
-
-        if (coefficient < 1) {
-            for (size_t i = 0; i < VectorSize; i++) {
-                _elements[i] *= coefficient;
-            }
-        }
-    }
+    void Normalize(Type amplitude) requires IsFloat32<Type>;
 
     friend std::ostream &operator<<(std::ostream &stream, const StaticVector<Type, VectorSize> &vector) {
 
@@ -207,5 +59,178 @@ public:
     };
 
 };
+
+template<typename Type, size_t VectorSize>
+requires std::is_arithmetic_v<Type>
+StaticVector<Type, VectorSize>::StaticVector(const StaticVector<Type, VectorSize> &vector) noexcept {
+    for (size_t i = 0; i < VectorSize; i++)
+        _elements[i] = vector._elements[i];
+}
+
+template<typename Type, size_t VectorSize>
+requires std::is_arithmetic_v<Type>
+StaticVector<Type, VectorSize>::StaticVector(const std::array<Type, VectorSize> &array) noexcept {
+    for (size_t i = 0; i < VectorSize; ++i)
+        _elements[i] = array[i];
+}
+
+
+template<typename Type, size_t VectorSize>
+requires std::is_arithmetic_v<Type>
+StaticVector<Type, VectorSize>::StaticVector(const Type* data, size_t Size) noexcept {
+    for (size_t i = 0; i < Size; ++i)
+        _elements[i] = data[i];
+}
+
+template<typename Type, size_t VectorSize>
+requires std::is_arithmetic_v<Type>
+StaticVector<Type, VectorSize> &StaticVector<Type, VectorSize>::operator*=(Type value) {
+
+    for (size_t i = 0; i < VectorSize; ++i) {
+        _elements[i] *= value;
+    }
+
+    return *this;
+}
+
+template<typename Type, size_t VectorSize>
+requires std::is_arithmetic_v<Type>
+StaticVector<Type, VectorSize> &StaticVector<Type, VectorSize>::operator*=(Type value) requires IsFloat32<Type> {
+
+    constexpr size_t iterationCount = GetIterationCount<Type>(VectorSize);
+    constexpr size_t alignment = GetAlignment<Type>(VectorSize);
+
+    auto *array = (float32x4_t *) _elements;
+    for (size_t i = 0; i < iterationCount; ++i) {
+        array[i] = vmulq_n_f32(array[i], value);
+    }
+
+    ///If size is 16 byte aligned
+    if (alignment == 0)
+        return *this;
+
+    for (size_t i = VectorSize - alignment; i < VectorSize; ++i) {
+        _elements[i] *= value;
+    }
+
+    return *this;
+
+}
+
+template<typename Type, size_t VectorSize>
+requires std::is_arithmetic_v<Type>
+StaticVector<Type, VectorSize> &StaticVector<Type, VectorSize>::operator/=(Type value) {
+    for (size_t i = 0; i < VectorSize; ++i) {
+        _elements[i] /= value;
+    }
+}
+
+template<typename Type, size_t VectorSize>
+requires std::is_arithmetic_v<Type>
+StaticVector<Type, VectorSize> &StaticVector<Type, VectorSize>::operator+=(Type value) {
+
+    for (size_t i = 0; i < VectorSize; ++i) {
+        _elements[i] += value;
+    }
+
+    return *this;
+}
+
+template<typename Type, size_t VectorSize>
+requires std::is_arithmetic_v<Type>
+StaticVector<Type, VectorSize> &StaticVector<Type, VectorSize>::operator+=(Type value) requires IsFloat32<Type> {
+
+    constexpr size_t iterationCount = GetIterationCount<Type>(VectorSize);
+    constexpr size_t alignment = GetAlignment<Type>(VectorSize);
+
+    const Type valueArray[4] = {value, value, value, value};
+    auto &values = (float32x4_t &) valueArray;
+
+    auto *array = (float32x4_t *) _elements;
+    for (size_t i = 0; i < iterationCount; ++i) {
+        array[i] = vaddq_f32(array[i], values);
+    }
+
+    ///If size is 16 byte aligned
+    if (alignment == 0)
+        return *this;
+
+    for (size_t i = VectorSize - alignment; i < VectorSize; ++i) {
+        _elements[i] += value;
+    }
+
+    return *this;
+
+}
+
+template<typename Type, size_t VectorSize>
+requires std::is_arithmetic_v<Type>
+void StaticVector<Type, VectorSize>::Normalize(Type amplitude) {
+    double maxValue = 0;
+
+    for (size_t i = 0; i < VectorSize; ++i) {
+        Type absValue = std::abs(_elements[i]);
+        if (absValue > maxValue) {
+            maxValue = absValue;
+        }
+    }
+
+    double coefficient = amplitude / maxValue;
+
+    if (coefficient < 1) {
+        for (size_t i = 0; i < VectorSize; i++) {
+            _elements[i] *= coefficient;
+        }
+    }
+}
+
+template<typename Type, size_t VectorSize>
+requires std::is_arithmetic_v<Type>
+void StaticVector<Type, VectorSize>::Normalize(Type amplitude) requires IsFloat32<Type> {
+
+    constexpr size_t iterationCount = GetIterationCount<Type>(VectorSize);
+    constexpr size_t alignment = GetAlignment<Type>(VectorSize);
+
+    double maxValue = 0;
+
+    auto *array = (float32x4_t *) _elements;
+    for (size_t i = 0; i < iterationCount; ++i) {
+        ///find ABS
+        float32x4_t abs = vabsq_f32(array[i]);
+
+        ///find MAX
+        float value = vmaxnmvq_f32(abs);
+
+        if (value > maxValue)
+            maxValue = value;
+    }
+
+    ///If size is not 16 byte aligned
+    if (alignment != 0) {
+        for (size_t i = VectorSize - alignment; i < VectorSize; ++i) {
+            Type absValue = std::abs(_elements[i]);
+            if (absValue > maxValue) {
+                maxValue = absValue;
+            }
+        }
+    }
+
+    float coefficient = amplitude / maxValue;
+
+    if (coefficient >= 1)
+        return;
+
+    for (size_t i = 0; i < iterationCount; i++)
+        array[i] = vmulq_n_f32(array[i], coefficient);
+
+    ///If size is 16 byte aligned
+    if (alignment == 0)
+        return;
+
+    for (size_t i = VectorSize - alignment; i < VectorSize; ++i) {
+        _elements[i] *= coefficient;
+    }
+}
+
 
 #endif

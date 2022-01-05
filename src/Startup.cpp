@@ -4,9 +4,6 @@
 [[noreturn]]
 int main() {
 
-    //TcpSession& network = TcpSession::GetInstance();
-    //network.Start();
-
     ///set max sched priority
     struct sched_param process{};
     process.sched_priority = 99;

@@ -16,7 +16,7 @@
 #define INTERNAL_SERVER_IP "0.0.0.0" //Server ip for server
 
 
-class [[deprecated("Заменить на TcpSession")]] Socket {
+class [[deprecated("TcpSession")]] Socket {
 public:
 
     explicit Socket(uint16_t port);
