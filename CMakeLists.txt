@@ -26,7 +26,7 @@ include(${CMAKE_BINARY_DIR}/conan.cmake)
 conan_cmake_autodetect(settings)
 conan_cmake_install(PATH_OR_REFERENCE .
         BUILD missing
-        REMOTE conancenter
+        REMOTE starwalker conancenter
         SETTINGS ${settings})
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
