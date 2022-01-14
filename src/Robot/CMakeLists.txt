@@ -2,8 +2,8 @@ project(Robot)
 
 add_library(Robot Robot.hpp Robot.cpp)
 
-add_subdirectory(Features ${CMAKE_BINARY_DIR}/lib/DataProtocols)
-add_subdirectory(DataStructs ${CMAKE_BINARY_DIR}/lib/DataStructs)
+add_subdirectory(Features)
+add_subdirectory(DataStructs)
 
 target_link_libraries(Robot Features)
 target_link_libraries(Robot DataStructs)

@@ -26,6 +26,7 @@ public:
                 const static class MotorsSender::SPI spi( "/dev/spidev0.0", Mega(35));
                 return spi;
         }
+        std::terminate();
     }
 
     const CommandsReceiver::ICommandsReceiver &GetCommandsReceiver() {
@@ -34,6 +35,7 @@ public:
                 const static class CommandsReceiver::Network net(1999);
                 return net;
         }
+        std::terminate();
     }
 
 private:

@@ -1,0 +1,4 @@
+#ifndef ROBOT_I2CPERIPHERAL_HPP
+#define ROBOT_I2CPERIPHERAL_HPP
+
+#endif

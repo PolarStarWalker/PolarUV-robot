@@ -196,8 +196,8 @@ StaticMatrix<Type, Rows, Columns> &StaticMatrix<Type, Rows, Columns>::operator+=
 
 template<typename Type, size_t Rows, size_t Columns>
 requires std::is_arithmetic_v<Type>
-StaticVector<Type, Rows> StaticMatrix<Type, Rows, Columns>::operator*(
-        const StaticVector<Type, Columns> &inVector) const noexcept requires IsFloat32<Type> {
+StaticVector<Type, Rows> StaticMatrix<Type, Rows, Columns>::operator*(const StaticVector<Type, Columns> &inVector)
+        const noexcept requires IsFloat32<Type> {
 
     StaticVector<Type, Rows> outVector;
 

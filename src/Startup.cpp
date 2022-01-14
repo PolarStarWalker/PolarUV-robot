@@ -1,5 +1,4 @@
 ﻿#include "./Startup.hpp"
-#include "./Lib/Math/Math.hpp"
 
 [[noreturn]]
 int main() {

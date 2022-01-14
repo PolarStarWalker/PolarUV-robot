@@ -6,6 +6,8 @@ cmake_minimum_required(VERSION 3.16)
 set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
 set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CMAKE_COMMAND} -E time")
 
+set(CMAKE_CXX_FLAGS "-fcoroutines")
+
 # build options
 set(CMAKE_CXX_STANDARD 20)
 
@@ -18,15 +20,16 @@ endif ()
 
 project("robot")
 
-file(COPY conanfile.txt DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY conan.cmake DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ./Conan/conanfile.txt DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ./Conan/conan.cmake DESTINATION ${CMAKE_BINARY_DIR})
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 conan_cmake_autodetect(settings)
 conan_cmake_install(PATH_OR_REFERENCE .
         BUILD missing
-        REMOTE starwalker conancenter
+        REMOTE starwalker
+        REMOTE conancenter
         SETTINGS ${settings})
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)

@@ -4,6 +4,18 @@
 #include <boost/asio.hpp>
 #include <unordered_map>
 
+#include "../../ThreadPool/ThreadPool.hpp"
+
+struct RequestHeader{
+    enum RequestType{
+        Read,
+        Write,
+        ReadWrite
+    };
+
+
+};
+
 struct Request {
     Request(size_t serviceId, const char* data, size_t length): _serviceId(serviceId), _data(data), _length(length){}
 
@@ -25,7 +37,7 @@ class IService{
 public:
     explicit IService(size_t serviceId) : _serviceId(serviceId){};
 
-    virtual Responce Handle(const Request& request) const = 0;
+    virtual Responce operator()(const Request& request) const = 0;
 
     const size_t _serviceId;
 };

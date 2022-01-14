@@ -6,7 +6,12 @@
 
 class Robot {
 public:
+    void SetUp();
+
+    void Start();
+
 private:
+
 };
 
 

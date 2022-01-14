@@ -3,6 +3,7 @@
 
 #include "./Math/Math.hpp"
 #include "./Peripheral/Peripheral.hpp"
+#include "./Coroutine/All.hpp"
 
 void dummy();
 
