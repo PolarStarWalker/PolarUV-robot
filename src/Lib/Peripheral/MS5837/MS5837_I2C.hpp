@@ -18,27 +18,29 @@ public:
 
     MS5837::Data GetData() const;
 
+    size_t DelayUs() const final;
+
     //from sensor
     bool Init(const I2C *i2c) final;
 
 private:
 
-    mutable std::shared_mutex _dataMutex;
+    mutable std::shared_mutex dataMutex_;
 
-    MS5837::Data _data;
+    MS5837::Data data_;
 
-    FiltersGroup<3> _dataFilters;
+    FiltersGroup<3> filters_;
 
-    const I2C *_i2c;
+    const I2C *i2c_;
 
-    uint16_t C[8]{};
-    uint32_t _d1Pressure{};
-    uint32_t _d2Temperature{};
+    uint16_t C_[8]{};
+    uint32_t d1Pressure_{};
+    uint32_t d2Temperature_{};
     int32_t _temperature{};
     int32_t _p{};
-    uint16_t _sensorAddress;
+    uint16_t sensorAddress_;
 
-    double _fluidDensity = 997.0; // Freshwater
+    double fluidDensity_ = 997.0; // Freshwater
 
     static uint8_t CRC4(uint16_t *n_prom);
 
@@ -49,9 +51,8 @@ private:
     bool Reload() final;
 
     inline void SetData(const MS5837::Data &data) {
-        this->_dataMutex.lock();
-        this->_data = data;
-        this->_dataMutex.unlock();
+        std::lock_guard guard(dataMutex_);
+        data_ = data;
     }
 };
 

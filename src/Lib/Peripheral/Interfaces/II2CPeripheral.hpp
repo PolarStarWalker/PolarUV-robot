@@ -15,6 +15,7 @@ protected:
     virtual bool Init(const I2C* i2c) = 0;
 
     virtual bool Reload() = 0;
+    virtual size_t DelayUs() const = 0;
 };
 
 #endif

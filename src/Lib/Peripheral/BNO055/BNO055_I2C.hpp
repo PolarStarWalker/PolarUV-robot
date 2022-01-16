@@ -29,6 +29,8 @@ public:
 
     void UseExternalCrystal(bool useExtCrl);
 
+    size_t DelayUs() const final;
+
     BNO055::Data GetData() const;
 
 private:

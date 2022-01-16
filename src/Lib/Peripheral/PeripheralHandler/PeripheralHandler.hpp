@@ -27,14 +27,14 @@ struct I2CSensorsContext {
 class PeripheralHandler {
 private:
 
-    mutable std::shared_mutex _i2cMutex;
-    mutable std::shared_mutex _i2cSensorsMutex;
+    mutable std::shared_mutex i2cMutex_;
+    mutable std::shared_mutex i2cPeripipheralMutex_;
 
-    mutable std::list<I2CSensorsContext> _i2cPeripherals;
+    mutable std::list<I2CSensorsContext> i2cPeripherals_;
 
     const I2C _i2c;
 
-    const size_t _delay_us;
+    size_t delay_us_;
 public:
 
     explicit PeripheralHandler(const char *i2c, size_t delay_us);

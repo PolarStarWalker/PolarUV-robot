@@ -147,3 +147,7 @@ Data BNO055_I2C::GetData() const {
 bool BNO055_I2C::Reload() {
     return false;
 }
+
+size_t BNO055_I2C::DelayUs() const {
+    return Kilo(10);
+}
