@@ -9,18 +9,20 @@
 
 template<typename Type>
 requires std::is_function_v<Type>
-class ThreadPool{
+class ThreadPool {
 public:
 
     explicit ThreadPool(size_t threads);
+
     ~ThreadPool();
 
-    void AddTask(const Type& task);
+    void AddTask(const Type &task);
 
 private:
 
     [[noreturn]]
     void WorkerThread();
+
     Type PopTask();
 
     std::vector<std::thread> _threads;
@@ -36,7 +38,7 @@ template<typename Type>
 requires std::is_function_v<Type>
 ThreadPool<Type>::ThreadPool(size_t threads) : _threads(threads), _queue() {
 
-    for(auto&& thread: _threads) {
+    for (auto &&thread: _threads) {
         thread = std::thread(&ThreadPool<Type>::WorkerThread, this);
         thread.detach();
     }
@@ -46,7 +48,7 @@ ThreadPool<Type>::ThreadPool(size_t threads) : _threads(threads), _queue() {
 template<typename Type>
 requires std::is_function_v<Type>
 void ThreadPool<Type>::WorkerThread() {
-    while(_isOnline){
+    while (_isOnline) {
         auto task = PopTask();
         task();
     }
@@ -54,7 +56,7 @@ void ThreadPool<Type>::WorkerThread() {
 
 template<typename Type>
 requires std::is_function_v<Type>
-void ThreadPool<Type>::AddTask(const Type& task) {
+void ThreadPool<Type>::AddTask(const Type &task) {
     std::lock_guard guard(_queueMutex);
     _queue.template emplace(task);
     _queueIsNotEmpty.notify_one();
@@ -64,11 +66,7 @@ template<typename Type>
 requires std::is_function_v<Type>
 Type ThreadPool<Type>::PopTask() {
     std::unique_lock guard(_queueMutex);
-
-    while ( _queue.empty()){
-        _queueIsNotEmpty.wait(guard);
-    }
-
+    _queueIsNotEmpty.wait(guard, [&]() { return _queue.empty(); });
     return _queue.pop();
 }
 
@@ -78,7 +76,7 @@ ThreadPool<Type>::~ThreadPool() {
 
     _isOnline.exchange(false);
 
-    for(auto& thread : _threads)
+    for (auto &thread: _threads)
         thread.join();
 
 }

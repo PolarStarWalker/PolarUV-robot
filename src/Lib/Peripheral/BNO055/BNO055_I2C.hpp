@@ -37,21 +37,7 @@ private:
 
     BNO055::Data _data{};
 
-    FiltersGroup<
-            CircleMovingAverage<10>,
-            CircleMovingAverage<10>,
-            CircleMovingAverage<10>,
-            MovingAverage<10>,
-            MovingAverage<10>,
-            MovingAverage<10>,
-            MovingAverage<10>,
-            MovingAverage<10>,
-            MovingAverage<10>,
-            MovingAverage<10>,
-            MovingAverage<10>,
-            MovingAverage<10>,
-            MovingAverage<10>,
-            MovingAverage<10>> _filters;
+    FiltersGroup<14> _filters;
 
     mutable std::shared_mutex _dataMutex;
     const I2C *_i2c;

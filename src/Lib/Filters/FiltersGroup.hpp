@@ -6,15 +6,19 @@
 #include "./Nothing/Nothing.hpp"
 #include "./CircleMovingAverage/CircleMovingAverage.hpp"
 
-#include <tuple>
-
-template<class ... Filters>
+template<size_t Size>
 class FiltersGroup {
 public:
 
+    FiltersGroup() = default;
+
+    FiltersGroup(std::initializer_list<IFilter*> filters){
+        for(size_t i = 0; i < Size; ++i)
+            _filters[i] = filters.begin()[i];
+    }
+
     ~FiltersGroup() {
-        for (size_t i = 0; i < sizeof...(Filters); i++)
-            delete _filters[i];
+        for(auto&& filter: _filters) delete filter;
     }
 
     IFilter &operator[](size_t index) {
@@ -22,8 +26,11 @@ public:
     }
 
 private:
-    IFilter *_filters[sizeof...(Filters)]{new Filters...};
-
+    IFilter *_filters[Size]{};
 };
+
+template<class ... Filters>
+requires(std::same_as<IFilter*, Filters> && ...)
+FiltersGroup(Filters...) -> FiltersGroup<1+ sizeof...(Filters)>;
 
 #endif

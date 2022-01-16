@@ -27,7 +27,7 @@ private:
 
     MS5837::Data _data;
 
-    FiltersGroup<MovingAverage<5>, MovingAverage<5>, MovingAverage<5>> _dataFilters;
+    FiltersGroup<3> _dataFilters;
 
     const I2C *_i2c;
 

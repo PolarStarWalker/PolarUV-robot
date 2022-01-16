@@ -7,7 +7,21 @@ constexpr double ToRadians = M_PIf64 / 180;
 
 constexpr double ToDegrees = 180 / M_PIf64;
 
-BNO055_I2C::BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode) {
+BNO055_I2C::BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode) :
+_filters({new CircleMovingAverage<10>(),
+          new CircleMovingAverage<10>(),
+          new CircleMovingAverage<10>(),
+          new MovingAverage<10>(),
+          new MovingAverage<10>(),
+          new MovingAverage<10>(),
+          new MovingAverage<10>(),
+          new MovingAverage<10>(),
+          new MovingAverage<10>(),
+          new MovingAverage<10>(),
+          new MovingAverage<10>(),
+          new MovingAverage<10>(),
+          new MovingAverage<10>(),
+          new MovingAverage<10>()}){
     _sensorAddress = sensorAddress;
     _operationMode = mode;
 }

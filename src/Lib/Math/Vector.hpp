@@ -35,6 +35,15 @@ public:
         vector._elements = nullptr;
     }
 
+
+    Vector(std::initializer_list<Type> initializerList) :_size(initializerList.size())
+    {
+        _elements = new Type[_size]{};
+        for (size_t i = 0; i < _size; i++) {
+            _elements[i] = begin(initializerList)[i];
+        }
+    }
+
     ~Vector() { delete[] _elements; }
 
     inline size_t Size() const { return _size; }
@@ -109,5 +118,7 @@ public:
     };
 
 };
+
+
 
 #endif

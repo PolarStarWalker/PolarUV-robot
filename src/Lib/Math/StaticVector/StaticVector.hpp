@@ -13,17 +13,19 @@
 template<typename Type, size_t VectorSize> requires std::is_arithmetic_v<Type>
 class StaticVector {
 private:
-    Type _elements[VectorSize]{};
+    Type _elements[VectorSize];
 
     using StaticVectorType = StaticVector<Type, VectorSize>;
 
 public:
 
-    StaticVector() = default;
+    StaticVector() : _elements{} {};
 
     StaticVector(const StaticVector<Type, VectorSize> &vector) noexcept;
 
     explicit StaticVector(const std::array<Type, VectorSize> &array) noexcept;
+
+    StaticVector(std::initializer_list<Type> list);
 
     explicit StaticVector(const Type *data, size_t size) noexcept;
 
@@ -32,15 +34,22 @@ public:
     [[nodiscard]] size_t Size() const noexcept { return VectorSize; }
 
     Type &operator[](size_t index) { return _elements[index]; }
+
     const Type &operator[](size_t index) const { return _elements[index]; }
 
     StaticVectorType &operator*=(Type value);
+
     StaticVectorType &operator*=(Type value) requires IsFloat32<Type>;
 
     StaticVectorType &operator/=(Type value);
 
     StaticVectorType &operator+=(Type value);
+
     StaticVectorType &operator+=(Type value) requires IsFloat32<Type>;
+
+    Type *begin() { return _elements; }
+
+    Type *end() { return _elements + VectorSize; }
 
     void Normalize(Type amplitude);
 
@@ -60,6 +69,17 @@ public:
 
 };
 
+template<typename TypeArg, typename... Arguments>
+StaticVector(TypeArg, Arguments... ) ->
+StaticVector<std::enable_if_t<(std::is_same_v<TypeArg, Arguments> && ...), TypeArg>, 1 + sizeof...(Arguments)>;
+
+template<typename Type, size_t VectorSize>
+requires std::is_arithmetic_v<Type>
+StaticVector<Type, VectorSize>::StaticVector(const std::initializer_list<Type> list) {
+    for (size_t i = 0; i < VectorSize; i++)
+        _elements[i] = list.begin()[i];
+}
+
 template<typename Type, size_t VectorSize>
 requires std::is_arithmetic_v<Type>
 StaticVector<Type, VectorSize>::StaticVector(const StaticVector<Type, VectorSize> &vector) noexcept {
@@ -77,7 +97,7 @@ StaticVector<Type, VectorSize>::StaticVector(const std::array<Type, VectorSize> 
 
 template<typename Type, size_t VectorSize>
 requires std::is_arithmetic_v<Type>
-StaticVector<Type, VectorSize>::StaticVector(const Type* data, size_t Size) noexcept {
+StaticVector<Type, VectorSize>::StaticVector(const Type *data, size_t Size) noexcept {
     for (size_t i = 0; i < Size; ++i)
         _elements[i] = data[i];
 }
@@ -231,6 +251,8 @@ void StaticVector<Type, VectorSize>::Normalize(Type amplitude) requires IsFloat3
         _elements[i] *= coefficient;
     }
 }
+
+
 
 
 #endif

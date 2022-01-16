@@ -1,0 +1,4 @@
+#ifndef ROBOT_ROBOTSETTINGS_HPP
+#define ROBOT_ROBOTSETTINGS_HPP
+
+#endif

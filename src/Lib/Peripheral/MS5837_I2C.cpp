@@ -2,7 +2,9 @@
 
 using namespace MS5837;
 
-MS5837_I2C::MS5837_I2C(uint16_t sensorAddress) : _sensorAddress(sensorAddress) {}
+MS5837_I2C::MS5837_I2C(uint16_t sensorAddress) :
+_sensorAddress(sensorAddress),
+_dataFilters({new MovingAverage<5>(), new MovingAverage<5>(), new MovingAverage<5>()}){}
 
 MS5837_I2C::~MS5837_I2C() {
     delete this->_i2c;
