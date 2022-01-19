@@ -4,7 +4,11 @@
 #include "./Math/Math.hpp"
 #include "./Peripheral/Peripheral.hpp"
 #include "./Coroutine/All.hpp"
+#include "./DataTransmissions/DataTransmissions.hpp"
 
-void dummy();
-
+namespace lib {
+    static void Initialize() {
+        auto& network = network::TcpSession::GetInstance();
+    }
+}
 #endif

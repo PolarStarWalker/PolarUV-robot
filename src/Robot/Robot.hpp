@@ -3,16 +3,16 @@
 
 #include "./Features/Features.hpp"
 #include "./Peripheral/Peripheral.hpp"
+namespace Application {
+    class Robot {
+    public:
+        void SetUp();
 
-class Robot {
-public:
-    void SetUp();
+        void Start();
 
-    void Start();
+    private:
 
-private:
-
-};
-
+    };
+}
 
 #endif

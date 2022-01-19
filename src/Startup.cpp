@@ -2,10 +2,10 @@
 
 [[noreturn]]
 int main() {
-    ///set max sched priority
-    struct sched_param process{};
-    process.sched_priority = 99;
-    sched_setscheduler(0, SCHED_RR, &process);
+
+    Application::Robot robot;
+    robot.SetUp();
+    robot.Start();
 
     ///OldStart SettingsProtocol in background
     DataProtocols::RobotSettingsProtocol settingsProtocol;

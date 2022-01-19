@@ -3,76 +3,66 @@
 
 #include <boost/asio.hpp>
 #include <unordered_map>
+#include "./Packet.hpp"
 
 #include "../../ThreadPool/ThreadPool.hpp"
 
-struct RequestHeader{
-    enum RequestType{
-        Read,
-        Write,
-        ReadWrite
+
+namespace lib::network {
+
+    class IService;
+
+    class TcpSession {
+        friend IService;
+    public:
+        TcpSession(const TcpSession &) = delete;
+
+        TcpSession(TcpSession &&) = delete;
+
+        static TcpSession &GetInstance();
+
+        [[noreturn]]
+        void Start();
+
+        constexpr static const size_t PORT = 2022;
+        constexpr static size_t BUFFER_SIZE = 1024;
+    private:
+        TcpSession();
+
+        ~TcpSession();
+
+        void AddService(std::shared_ptr<IService>&&);
+
+        std::unordered_map<size_t, std::shared_ptr<IService>> services_;
+
+        boost::asio::io_context _ioContext;
+
+        std::thread _thread;
     };
 
+    struct IService : std::enable_shared_from_this<IService>{
+        using Response = lib::network::Response;
 
-};
+        explicit IService(size_t serviceId) :
+                _serviceId(serviceId) {}
 
-struct Request {
-    Request(size_t serviceId, const char* data, size_t length): _serviceId(serviceId), _data(data), _length(length){}
+        virtual void Validate() = 0;
 
-    const char* _data;
-    const size_t _length;
-    const size_t _serviceId;
-};
+        virtual Response Read(std::string_view data);
 
-struct Responce {
-    enum StatusCode{
-        Ok,
-        SomeTrouble
+        virtual Response Write(std::string_view data);
+
+        virtual Response ReadWrite(std::string_view data);
+
+        const size_t _serviceId;
+
+        template <class Service, typename... Args>
+        static void RegisterService(Args&&...args){
+
+            auto service = std::make_shared<Service>(args...);
+
+            TcpSession::GetInstance().AddService(service);
+        };
     };
-
-    std::string data;
-};
-
-class IService{
-public:
-    explicit IService(size_t serviceId) : _serviceId(serviceId){};
-
-    virtual Responce operator()(const Request& request) const = 0;
-
-    const size_t _serviceId;
-};
-
-class TcpSession {
-private:
-    const static size_t PORT = 2022;
-    constexpr static size_t MAX_BUFFER_SIZE = 512;
-
-public:
-    TcpSession(const TcpSession &) = delete;
-
-    TcpSession(TcpSession &&) = delete;
-
-    static TcpSession &GetInstance();
-
-    [[noreturn]]
-    void Start();
-
-    [[noreturn]]
-    [[deprecated("Test")]]
-    void TcpPrint();
-
-    void AddService(const IService* service);
-
-private:
-    TcpSession();
-    ~TcpSession();
-
-    std::unordered_map<size_t, const IService *> _workers;
-
-    boost::asio::io_context _ioContext;
-    boost::asio::ip::tcp::socket _socket;
-
-    std::thread _thread;
-};
-
+}
 #endif

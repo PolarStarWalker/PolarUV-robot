@@ -4,6 +4,7 @@
 #include "./RobotVideoProtocol/RobotVideoProtocol.hpp"
 #include "./MotorsSender/IMotorsSender.hpp"
 #include "./StartSettings/StartSettings.hpp"
+#include "./RobotSettings/RobotSettings.hpp"
 
 
 #include "./MotorsSender/SPI.hpp"

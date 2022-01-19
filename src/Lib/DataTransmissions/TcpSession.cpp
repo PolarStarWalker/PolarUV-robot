@@ -2,12 +2,17 @@
 
 #include <iostream>
 
+using namespace boost::asio;
 using namespace boost::asio::ip;
+using namespace lib::network;
+constexpr size_t HEADER_SIZE = sizeof(HeaderType);
+
+HeaderType HEADER;
+std::array<char, TcpSession::BUFFER_SIZE> BUFFER;
+
 
 TcpSession::TcpSession() :
-        _ioContext(),
-        _socket(_ioContext){
-}
+        _ioContext() {}
 
 TcpSession::~TcpSession() {
     _ioContext.stop();
@@ -18,90 +23,81 @@ TcpSession &TcpSession::GetInstance() {
     return network;
 }
 
+tcp::socket Listen(io_context &ioContext) {
+
+    tcp::socket socket(ioContext);
+
+    std::clog << "listening" << std::endl;
+
+    tcp::acceptor acceptor(ioContext, tcp::endpoint(tcp::v4(), TcpSession::PORT));
+    acceptor.accept(socket);
+
+    std::clog << "accept" << std::endl;
+
+    return socket;
+}
+
+size_t ReadData(tcp::socket &socket) {
+    std::size_t length = read(socket,
+                              buffer((char *) &HEADER, HEADER_SIZE),
+                              transfer_exactly(HEADER_SIZE));
+
+    std::cout << "Длинна заголовочника " << HEADER_SIZE << std::endl;
+
+    std::clog << "Тип запроса: " << (size_t) HEADER.Type
+              << "\nЭендпоинт: " << HEADER.EndpointId
+              << "\nДлина сообщения: " << HEADER.Length << std::endl;
+
+    if (HEADER.Length > BUFFER.size()) {
+        //ToDo экзепшен как бэ тут не помешал бы
+        std::clog << "Sempai, I'm full" << std::endl;
+    }
+
+    std::size_t readed = read(socket,
+                  buffer(BUFFER, HEADER.Length),
+                  transfer_exactly(HEADER.Length));
+
+    BUFFER[readed] = 0;
+
+    return length + readed;
+}
+
+void TcpSession::AddService(std::shared_ptr<IService> &&service) {
+    services_[service->_serviceId] = service;
+}
+
+
 void TcpSession::Start() {
-    char buffer[MAX_BUFFER_SIZE]{};
-
-    boost::asio::io_context *ioContext = &_ioContext;
-
-    auto work = boost::asio::require(_ioContext.get_executor(),
-                                     boost::asio::execution::outstanding_work.tracked);
-
-    _thread = std::thread([ioContext]() { ioContext->run(); });
-    _thread.detach();
-
     for (;;) {
-        tcp::acceptor acceptor(_ioContext, tcp::endpoint(tcp::v4(), PORT));
-        acceptor.accept(_socket);
 
-        while (_socket.is_open()) {
-            size_t length = 0;
+        tcp::socket socket = Listen(_ioContext);
+
+        while (socket.is_open()) {
 
             try {
 
-                auto foo =
-                        _socket.async_read_some(boost::asio::buffer(buffer, MAX_BUFFER_SIZE),
-                                                boost::asio::use_future);
+                auto length = ReadData(socket);
 
-                length = foo.get();
+                std::cout << "Байт Получено" << length << '\n' << std::endl;
 
-                std::cout << buffer << std::endl;
+                auto &service = *services_.find(HEADER.EndpointId)->second;
+                service.Write(std::string_view(BUFFER.data(), HEADER.Length));
 
-                std::memset(buffer, 0, sizeof(buffer));
+                std::clog << "[ACTIONS DONE]" << std::endl;
 
             } catch (std::exception &e) {
-                _socket.close();
+                socket.close();
+                std::clog << "[CONNECTION LOST]" << std::endl;
             }
-
-            if (!length)
-                _socket.close();
         }
     }
 }
 
-void TcpSession::TcpPrint() {
+Response IService::Read(std::string_view data) { return {"", Response::BadRequest}; }
 
-    char buffer[MAX_BUFFER_SIZE]{};
+Response IService::Write(std::string_view data) { return {"", Response::BadRequest}; }
 
-    boost::asio::io_context *ioContext = &_ioContext;
-
-    auto work = boost::asio::require(_ioContext.get_executor(),
-                                     boost::asio::execution::outstanding_work.tracked);
-
-    _thread = std::thread([ioContext]() { ioContext->run(); });
-    _thread.detach();
-
-    for (;;) {
-        tcp::acceptor acceptor(_ioContext, tcp::endpoint(tcp::v4(), PORT));
-        acceptor.accept(_socket);
-
-        while (_socket.is_open()) {
-            size_t length = 0;
-
-            try {
-
-                auto foo =
-                        _socket.async_read_some(boost::asio::buffer(buffer, MAX_BUFFER_SIZE),
-                                                boost::asio::use_future);
-
-                length = foo.get();
-
-                std::cout << buffer << std::endl;
-
-                std::memset(buffer, 0, sizeof(buffer));
-
-            } catch (std::exception &e) {
-                _socket.close();
-            }
-
-            if (!length)
-                _socket.close();
-        }
-    }
-}
-
-void TcpSession::AddService(const IService * service) {
-    _workers[service->_serviceId] = service;
-}
+Response IService::ReadWrite(std::string_view data) { return {"", Response::BadRequest}; }
 
 
 

@@ -9,6 +9,7 @@
 #include "../TypeTraits.hpp"
 
 #include <arm_neon.h>
+#include <array>
 
 template<typename Type, size_t VectorSize> requires std::is_arithmetic_v<Type>
 class StaticVector {

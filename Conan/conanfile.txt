@@ -3,7 +3,7 @@
     lz4/1.9.3
     boost/1.77.0
     xsimd/8.0.3 #for crossplatform simd instructions
-#    tensorflow-lite/2.6.0
+#   tensorflow-lite/2.6.0
 #   andreasbuhr-cppcoro/cci.20210113
 #   opencv/4.5.0@starwalker/stable
 

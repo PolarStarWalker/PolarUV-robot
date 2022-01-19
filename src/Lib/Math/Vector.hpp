@@ -6,6 +6,8 @@
 #include <type_traits>
 #include <ostream>
 
+#include <array>
+
 template<typename Type> requires(std::is_arithmetic_v<Type>)
 class Matrix;
 

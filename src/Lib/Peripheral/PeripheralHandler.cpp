@@ -15,7 +15,7 @@ bool PeripheralHandler::AddI2CSensor(II2CPeripheral *newSensor) const {
 
     }
 
-    std::lock_guard guard(i2cPeripipheralMutex_);
+    std::lock_guard guard(i2cPeripheralMutex_);
     i2cPeripherals_.emplace_back(newSensor);
 
     return true;
@@ -34,7 +34,7 @@ void PeripheralHandler::Start() const{
         std::list<I2CSensorsContext> buffer;
 
         {
-            std::lock_guard guard(i2cPeripipheralMutex_);
+            std::lock_guard guard(i2cPeripheralMutex_);
             buffer.splice(buffer.begin(), i2cPeripherals_);
             delay_us = delay_us_;
         }
@@ -45,7 +45,7 @@ void PeripheralHandler::Start() const{
         }
 
         {
-            std::lock_guard guard(i2cPeripipheralMutex_);
+            std::lock_guard guard(i2cPeripheralMutex_);
             i2cPeripherals_.splice(i2cPeripherals_.end(), buffer);
         }
 

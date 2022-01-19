@@ -1,0 +1,19 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+message RobotSettingsMessage{
+
+  enum DShotMode {
+    DSHOT150 = 1;
+    DSHOT300 = 2;
+    DSHOT600 = 4;
+    DSHOT1200 = 8;
+  };
+
+  repeated float thrusters_coefficient = 1 [packed = true];
+  repeated float hand_coefficient = 2 [packed = true];
+  required int32 maximum_motor_speed = 3;
+  required DShotMode motors_protocol = 4;
+
+}
