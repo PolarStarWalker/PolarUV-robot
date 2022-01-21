@@ -8,7 +8,7 @@ namespace lib::exceptions {
     class TransferError : public BaseException {
     public:
         explicit TransferError(std::string_view message) :
-                BaseException("считанные данные не соответствую", message) {}
+                BaseException( message, network::Response::ConnectionError) {}
     };
 
 }

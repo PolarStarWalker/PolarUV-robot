@@ -8,7 +8,7 @@ namespace lib::exceptions {
     class InvalidOperation : public BaseException {
     public:
         explicit InvalidOperation(std::string_view message) :
-                BaseException("Неправильная операция", message) {}
+                BaseException(message, network::Response::BadRequest) {}
     };
 
 }

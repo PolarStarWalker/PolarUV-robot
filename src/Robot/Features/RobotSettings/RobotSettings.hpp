@@ -21,6 +21,8 @@ namespace app {
         lib::network::Response Write(std::string_view &robotSettings) final;
         lib::network::Response Read(std::string_view &request) final;
 
+        RobotSettingsData GetSettings();
+
     private:
         const std::string_view filename_;
     };

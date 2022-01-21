@@ -64,4 +64,16 @@ lib::network::Response RobotSettings::Read(std::string_view &request) {
     return {std::move(out), lib::network::Response::Ok, serviceId_};
 }
 
+RobotSettingsData RobotSettings::GetSettings() {
+    std::fstream file(filename_.data(), std::ios::in | std::ios::binary);
+    RobotSettingsMessage message;
+    message.ParseFromIstream(&file);
+
+    for(auto value : message.hand_coefficient()){
+
+    }
+
+    return {};
+}
+
 

@@ -53,10 +53,9 @@ inline std::pair<RequestHeaderType, size_t> ReadData(BoostSocket &socket, Buffer
               << "\n[DATA LENGTH]: " << header.Length << std::endl;
 
     ///если посылка входящих данных больше чем буфер
-    if (header.Length > buffer_size) {
-        //ToDo экзепшен как бэ тут не помешал бы
-        std::clog << "Sempai, I'm full" << std::endl;
-    }
+    if (header.Length > buffer_size)
+        throw lib::exceptions::BufferOverflow("Переполнение буфера");
+
 
     std::size_t readBytes = boost::asio::read(socket,
                                               MakeBuffer(buffer.data(), header.Length),
@@ -80,7 +79,8 @@ inline Response DoAction(IService &service, const RequestHeaderType &header, con
 
     std::string_view data(dataBuffer.data(), header.Length);
 
-    auto run = [&](Response(IService::*action)(std::string_view &data), bool(IService::*validate)(std::string_view &data)) {
+    auto run = [&](Response(IService::*action)(std::string_view &data),
+                   bool(IService::*validate)(std::string_view &data)) {
 
         std::clog << "\n[VALIDATE]" << '\n' << std::endl;
         //ToDo: валидация
@@ -97,7 +97,7 @@ inline Response DoAction(IService &service, const RequestHeaderType &header, con
             return run(&IService::Read, &IService::ReadValidate);
 
         case TypeEnum::W:
-            return run(&IService::Write,&IService::WriteValidate);
+            return run(&IService::Write, &IService::WriteValidate);
 
         case TypeEnum::RW:
             return run(&IService::ReadWrite, &IService::ReadWriteValidate);
@@ -144,7 +144,7 @@ void TcpSession::Start() {
                 auto[requestHeader, requestLength] = ReadData(socket, buffer);
 
                 if (requestLength != requestHeader.Length + REQUEST_HEADER_SIZE)
-                    throw exceptions::NotFount("Проблемы с передачей данных");
+                    throw exceptions::TransferError("Проблемы с передачей данных");
 
                 auto &service = FindService(requestHeader);
                 auto response = DoAction(service, requestHeader, buffer);
@@ -152,15 +152,22 @@ void TcpSession::Start() {
                 auto[responseHeader, responseLength] = SendResponse(socket, response);
 
                 if (responseLength != responseHeader.Length + RESPONSE_HEADER_SIZE)
-                    throw exceptions::NotFount("Проблемы с передачей данных");
+                    throw exceptions::TransferError("Проблемы с передачей данных");
 
-            } ///ToDo: бработка экзепшенов
-            catch (...) {
+            } catch (lib::exceptions::BufferOverflow &e) {
+                Response response(std::string(e.Message), e.Code, -1);
+                SendResponse(socket, response);
+                throw;
+            } catch (lib::exceptions::BaseException &e) {
+                Response response(std::string(e.Message), e.Code, -1);
+                SendResponse(socket, response);
+            } catch (...) {
                 socket.close();
                 std::clog << "[CONNECTION LOST]" << std::endl;
             }
         }
     }
+
 }
 
 TcpSession &TcpSession::GetInstance() {
@@ -189,7 +196,7 @@ bool IService::ReadValidate(std::string_view &data) { return true; }
 
 bool IService::WriteValidate(std::string_view &data) { return true; }
 
-bool IService::ReadWriteValidate(std::string_view &data) {return false;}
+bool IService::ReadWriteValidate(std::string_view &data) { return false; }
 
 
 

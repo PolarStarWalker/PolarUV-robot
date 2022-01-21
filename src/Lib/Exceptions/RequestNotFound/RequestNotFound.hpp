@@ -8,7 +8,7 @@ namespace lib::exceptions {
     class NotFount : public BaseException {
     public:
         explicit NotFount(std::string_view message) :
-                BaseException("Такой запрос не найден", message) {}
+                BaseException(message, network::Response::NotFound) {}
     };
 
 }
