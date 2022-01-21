@@ -3,9 +3,9 @@
 
 #include <boost/asio.hpp>
 #include <unordered_map>
-#include "./Packet.hpp"
+#include "Packet.hpp"
 
-#include "../../ThreadPool/ThreadPool.hpp"
+//#include "../../ThreadPool/ThreadPool.hpp"
 
 
 namespace lib::network {
@@ -14,6 +14,8 @@ namespace lib::network {
 
     class TcpSession {
         friend IService;
+        using Map = std::unordered_map<size_t, std::unique_ptr<IService>>;
+
     public:
         TcpSession(const TcpSession &) = delete;
 
@@ -24,8 +26,9 @@ namespace lib::network {
         [[noreturn]]
         void Start();
 
-        constexpr static const size_t PORT = 2022;
-        constexpr static size_t BUFFER_SIZE = 1024;
+        constexpr static const size_t BUFFER_SIZE = 1024;
+        constexpr static const uint16_t PORT = 2022;
+
     private:
 
         TcpSession()= default;
@@ -33,9 +36,8 @@ namespace lib::network {
         ~TcpSession() = default;
 
         IService& FindService(const RequestHeaderType&);
-        void AddService(std::unique_ptr<IService>&&);
 
-        std::unordered_map<size_t, std::unique_ptr<IService>> services_;
+        Map services_;
 
         std::thread thread_;
     };
@@ -46,7 +48,8 @@ namespace lib::network {
         explicit IService(ssize_t serviceId) :
                 serviceId_(serviceId) {}
 
-        virtual void Validate() = 0;
+        virtual bool ReadValidate(std::string_view &data);
+        virtual bool WriteValidate(std::string_view &data);
 
         virtual Response Read(std::string_view &data);
 
@@ -54,6 +57,7 @@ namespace lib::network {
 
         virtual Response ReadWrite(std::string_view &data);
 
+        ///ToDo: когда-нибудь переехать на строки
         const ssize_t serviceId_;
 
         template <class Service, typename... Args>
@@ -61,7 +65,7 @@ namespace lib::network {
 
             auto service = std::make_unique<Service>(args...);
 
-            TcpSession::GetInstance().AddService(std::move(service));
+            TcpSession::GetInstance().services_[service->serviceId_] = std::move(service);
         };
     };
 }

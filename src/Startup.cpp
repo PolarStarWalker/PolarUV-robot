@@ -7,7 +7,7 @@ int main() {
 
     Robot robot;
     robot.SetUp();
-    ///robot.Start();
+    robot.Start();
 
     ///OldStart SettingsProtocol in background
     DataProtocols::RobotSettingsProtocol settingsProtocol;

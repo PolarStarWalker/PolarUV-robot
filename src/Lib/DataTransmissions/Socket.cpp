@@ -20,11 +20,12 @@ Socket::~Socket() {
 ///function that listen in blocking mode
 int Socket::Listen() const{
 
-    std::cout << "Server is listening, PORT: " << htons(_serverAddress.sin_port) << std::endl;
 
-    if (listen(_serverSocketDescriptor, SOMAXCONN) == -1) {
+    uint16_t  port = htons(_serverAddress.sin_port);
+    std::cout << "Server is listening, PORT: " << port << std::endl;
+
+    if (listen(_serverSocketDescriptor, SOMAXCONN) == -1)
         return (-1);
-    }
 
     _clientSocketDescriptor =
             accept(_serverSocketDescriptor, (sockaddr *) &(_clientAddress), &(_clientAdressLength));

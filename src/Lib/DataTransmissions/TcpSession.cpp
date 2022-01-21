@@ -3,21 +3,29 @@
 #include "Exceptions/Exceptions.hpp"
 #include "TcpSession/TcpSession.hpp"
 
-using namespace boost::asio;
-using namespace boost::asio::ip;
 using namespace lib::network;
+
+using IOContext = boost::asio::io_context;
+using BoostSocket = boost::asio::ip::tcp::socket;
+using Acceptor = boost::asio::ip::tcp::acceptor;
+using Endpoint = boost::asio::ip::tcp::endpoint;
+template<size_t buffer_size>
+using Buffer = std::array<char, buffer_size>;
 
 constexpr size_t REQUEST_HEADER_SIZE = sizeof(RequestHeaderType);
 constexpr size_t RESPONSE_HEADER_SIZE = sizeof(Response::HeaderType);
 constexpr size_t BUFFER_SIZE = TcpSession::BUFFER_SIZE;
+constexpr uint16_t PORT = TcpSession::PORT;
 
-tcp::socket Listen(io_context &ioContext) {
+inline BoostSocket GetConnection(IOContext &ioContext) {
 
-    tcp::socket socket(ioContext);
+    boost::asio::ip::tcp (*V4)() = boost::asio::ip::tcp::v4;
+
+    BoostSocket socket(ioContext);
 
     std::clog << "[LISTENING]" << std::endl;
 
-    tcp::acceptor acceptor(ioContext, tcp::endpoint(tcp::v4(), TcpSession::PORT));
+    Acceptor acceptor(ioContext, Endpoint(V4(), PORT));
     acceptor.accept(socket);
 
     std::clog << "[CONNECTION ACCEPT]" << std::endl;
@@ -25,14 +33,18 @@ tcp::socket Listen(io_context &ioContext) {
     return socket;
 }
 
-template<size_t bufferSize>
-std::pair<RequestHeaderType, size_t> ReadData(tcp::socket &socket, std::array<char, bufferSize> &dataBuffer) {
+template<size_t buffer_size>
+inline std::pair<RequestHeaderType, size_t> ReadData(BoostSocket &socket, Buffer<buffer_size> &buffer) {
+    //using namespace boost::asio;
+
+    boost::asio::mutable_buffer (*MakeBuffer)(void *, size_t) = boost::asio::buffer;
+    boost::asio::detail::transfer_exactly_t (*TransferExactly)(size_t) = boost::asio::transfer_exactly;
 
     RequestHeaderType header;
 
-    std::size_t length = read(socket,
-                              buffer((char *) &header, REQUEST_HEADER_SIZE),
-                              transfer_exactly(REQUEST_HEADER_SIZE));
+    std::size_t length = boost::asio::read(socket,
+                                           MakeBuffer((char *) &header, REQUEST_HEADER_SIZE),
+                                           TransferExactly(REQUEST_HEADER_SIZE));
 
     std::clog << "[HEADER SIZE]: " << REQUEST_HEADER_SIZE << std::endl;
 
@@ -41,21 +53,21 @@ std::pair<RequestHeaderType, size_t> ReadData(tcp::socket &socket, std::array<ch
               << "\n[DATA LENGTH]: " << header.Length << std::endl;
 
     ///если посылка входящих данных больше чем буфер
-    if (header.Length > bufferSize) {
+    if (header.Length > buffer_size) {
         //ToDo экзепшен как бэ тут не помешал бы
         std::clog << "Sempai, I'm full" << std::endl;
     }
 
-    std::size_t readBytes = read(socket,
-                                 buffer(dataBuffer.data(), header.Length),
-                                 transfer_exactly(header.Length));
+    std::size_t readBytes = boost::asio::read(socket,
+                                              MakeBuffer(buffer.data(), header.Length),
+                                              TransferExactly(header.Length));
 
     length += readBytes;
     std::cout << "[BYTES RECEIVE]: " << length << '\0' << std::endl;
 
     std::clog << "[DATA RECEIVED]: " << '|';
     for (size_t i = 0; i < header.Length; ++i) {
-        std::clog << (int32_t) dataBuffer[i] << '|';
+        std::clog << (int32_t) buffer[i] << '|';
     }
 
     std::clog << std::endl;
@@ -63,12 +75,12 @@ std::pair<RequestHeaderType, size_t> ReadData(tcp::socket &socket, std::array<ch
     return {header, length};
 }
 
-template<size_t bufferSize>
-Response DoAction(IService &service, const RequestHeaderType &header, const std::array<char, bufferSize> &dataBuffer) {
+template<size_t buffer_size>
+inline Response DoAction(IService &service, const RequestHeaderType &header, const Buffer<buffer_size> &dataBuffer) {
 
     std::string_view data(dataBuffer.data(), header.Length);
 
-    auto run = [&](Response(IService::*function)(std::string_view& data)) {
+    auto run = [&](Response(IService::*function)(std::string_view &data)) {
 
         std::clog << "\n[START ACTION]" << '\n' << std::endl;
         Response response = (service.*function)(data);
@@ -92,42 +104,52 @@ Response DoAction(IService &service, const RequestHeaderType &header, const std:
     }
 }
 
-void SendResponse(tcp::socket &socket, const Response &response) {
+inline std::pair<Response::HeaderType, size_t> SendResponse(BoostSocket &socket, const Response &response) {
+
+    boost::asio::mutable_buffer (*MakeBuffer)(void *, size_t) = boost::asio::buffer;
+    boost::asio::detail::transfer_exactly_t (*TransferExactly)(size_t) = boost::asio::transfer_exactly;
+
     auto &header = response.Header;
 
-    write(socket,
-          buffer((char *) &header, RESPONSE_HEADER_SIZE),
-          transfer_exactly(RESPONSE_HEADER_SIZE));
+    size_t length = boost::asio::write(socket,
+                                       MakeBuffer((char *) &header, RESPONSE_HEADER_SIZE),
+                                       TransferExactly(RESPONSE_HEADER_SIZE));
 
-    write(socket,
-          buffer(response.Data.c_str(), header.Length),
-          transfer_exactly(header.Length));
+    if (header.Length > 0)
+        length += boost::asio::write(socket,
+                                     boost::asio::buffer(response.Data.c_str(), header.Length),
+                                     TransferExactly(header.Length));
+
+    return {response.Header, length};
 }
 
 /*****************TcpSession member functions*************************/
 void TcpSession::Start() {
 
-    std::array<char, BUFFER_SIZE> buffer{};
+    Buffer<BUFFER_SIZE> buffer{};
 
-    io_context ioContext;
+    IOContext ioContext;
 
     for (;;) {
 
-        tcp::socket socket = Listen(ioContext);
+        BoostSocket socket = GetConnection(ioContext);
 
         while (socket.is_open()) {
 
             try {
 
-                auto[requestHeader, length] = ReadData(socket, buffer);
+                auto[requestHeader, requestLength] = ReadData(socket, buffer);
 
-                if (length != requestHeader.Length + REQUEST_HEADER_SIZE)
+                if (requestLength != requestHeader.Length + REQUEST_HEADER_SIZE)
                     throw exceptions::NotFount("Проблемы с передачей данных");
 
                 auto &service = FindService(requestHeader);
                 auto response = DoAction(service, requestHeader, buffer);
 
-                SendResponse(socket, response);
+                auto[responseHeader, responseLength] = SendResponse(socket, response);
+
+                if (responseLength != responseHeader.Length + RESPONSE_HEADER_SIZE)
+                    throw exceptions::NotFount("Проблемы с передачей данных");
 
             } ///ToDo: бработка экзепшенов
             catch (...) {
@@ -143,11 +165,7 @@ TcpSession &TcpSession::GetInstance() {
     return network;
 }
 
-void TcpSession::AddService(std::unique_ptr<IService> &&service) {
-    services_[service->serviceId_] = std::move(service);
-}
-
-IService &TcpSession::FindService(const RequestHeaderType &header) {
+inline IService &TcpSession::FindService(const RequestHeaderType &header) {
     auto item = services_.find(header.EndpointId);
 
     if (item == services_.end())
@@ -158,11 +176,15 @@ IService &TcpSession::FindService(const RequestHeaderType &header) {
 
 
 /*****************IService member functions*************************/
-Response IService::Read(string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+Response IService::Read(std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
 
-Response IService::Write(string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+Response IService::Write(std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
 
-Response IService::ReadWrite(string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+Response IService::ReadWrite(std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+
+bool IService::ReadValidate(std::string_view &data) { return true; }
+
+bool IService::WriteValidate(std::string_view &data) { return true; }
 
 
 

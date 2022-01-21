@@ -14,11 +14,10 @@ namespace app {
     class RobotSettings final : public lib::network::IService {
     public:
 
-        explicit RobotSettings(ssize_t id, std::string_view filename);
+        RobotSettings(ssize_t id, std::string_view filename);
 
-        void Validate() final;
-
-        lib::network::Response Write(std::string_view &data) final;
+        lib::network::Response Write(std::string_view &robotSettings) final;
+        lib::network::Response Read(std::string_view &request) final;
 
     private:
         const std::string_view filename_;

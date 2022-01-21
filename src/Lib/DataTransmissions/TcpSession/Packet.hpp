@@ -41,8 +41,6 @@ namespace lib::network {
             HeaderType() = default;
         };
 
-    private:
-
     public:
 
         const HeaderType Header;
@@ -52,7 +50,7 @@ namespace lib::network {
                 Data(std::move(data)),
                 Header(code, endpointId, data.size()) {};
 
-        Response(Response &&response)  noexcept :
+        Response(Response &&response) noexcept:
                 Data(std::move(response.Data)),
                 Header(response.Header) {}
 
