@@ -1,7 +1,9 @@
 #ifndef ROBOT_PACKET_HPP
 #define ROBOT_PACKET_HPP
 
-#include <variant>
+#include <cstddef>
+#include <sys/types.h>
+#include <string>
 
 namespace lib::network {
 
