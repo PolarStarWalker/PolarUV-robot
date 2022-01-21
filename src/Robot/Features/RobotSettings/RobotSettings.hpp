@@ -16,6 +16,8 @@ namespace app {
 
         RobotSettings(ssize_t id, std::string_view filename);
 
+        bool WriteValidate(std::string_view &robotSettings) final;
+
         lib::network::Response Write(std::string_view &robotSettings) final;
         lib::network::Response Read(std::string_view &request) final;
 

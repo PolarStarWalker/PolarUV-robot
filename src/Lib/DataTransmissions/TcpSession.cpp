@@ -80,10 +80,13 @@ inline Response DoAction(IService &service, const RequestHeaderType &header, con
 
     std::string_view data(dataBuffer.data(), header.Length);
 
-    auto run = [&](Response(IService::*function)(std::string_view &data)) {
+    auto run = [&](Response(IService::*action)(std::string_view &data), bool(IService::*validate)(std::string_view &data)) {
 
+        std::clog << "\n[VALIDATE]" << '\n' << std::endl;
+        //ToDo: валидация
+        (service.*validate)(data);
         std::clog << "\n[START ACTION]" << '\n' << std::endl;
-        Response response = (service.*function)(data);
+        Response response = (service.*action)(data);
         std::clog << "\n[ACTIONS DONE]" << '\n' << std::endl;
 
         return response;
@@ -91,13 +94,13 @@ inline Response DoAction(IService &service, const RequestHeaderType &header, con
 
     switch (header.Type) {
         case TypeEnum::R:
-            return run(&IService::Read);
+            return run(&IService::Read, &IService::ReadValidate);
 
         case TypeEnum::W:
-            return run(&IService::Write);
+            return run(&IService::Write,&IService::WriteValidate);
 
         case TypeEnum::RW:
-            return run(&IService::Read);
+            return run(&IService::ReadWrite, &IService::ReadWriteValidate);
 
         default:
             throw lib::exceptions::NotFount("Такой типа запроса не определён библиотекой");
@@ -185,6 +188,8 @@ Response IService::ReadWrite(std::string_view &data) { throw exceptions::NotFoun
 bool IService::ReadValidate(std::string_view &data) { return true; }
 
 bool IService::WriteValidate(std::string_view &data) { return true; }
+
+bool IService::ReadWriteValidate(std::string_view &data) {return false;}
 
 
 

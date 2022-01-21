@@ -50,11 +50,10 @@ namespace lib::network {
 
         virtual bool ReadValidate(std::string_view &data);
         virtual bool WriteValidate(std::string_view &data);
+        virtual bool ReadWriteValidate(std::string_view &data);
 
         virtual Response Read(std::string_view &data);
-
         virtual Response Write(std::string_view &data);
-
         virtual Response ReadWrite(std::string_view &data);
 
         ///ToDo: когда-нибудь переехать на строки

@@ -10,7 +10,7 @@ RobotSettings::RobotSettings(ssize_t id, std::string_view filename) :
         lib::network::IService(id),
         filename_(filename) {}
 
-void WriteValidate(std::string_view &robotSettings) {
+bool RobotSettings::WriteValidate(std::string_view &robotSettings) {
 
     using InvalidOperation = lib::exceptions::InvalidOperation;
 
@@ -37,6 +37,7 @@ void WriteValidate(std::string_view &robotSettings) {
         if(std::abs(value) > 100)
             throw InvalidOperation("Неверное значение коэффициента");
 
+    return true;
 }
 
 lib::network::Response RobotSettings::Write(std::string_view &robotSettings) {
@@ -62,3 +63,5 @@ lib::network::Response RobotSettings::Read(std::string_view &request) {
 
     return {std::move(out), lib::network::Response::Ok, serviceId_};
 }
+
+

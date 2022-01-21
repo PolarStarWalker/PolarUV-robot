@@ -17,6 +17,7 @@ void Robot::SetUp() {
     SetProcessMaxPriority();
 
     lib::Initialize();
+
     lib::network::IService::RegisterService<RobotSettings>(0, "robot-settings.json");
 }
 
