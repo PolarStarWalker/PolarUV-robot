@@ -27,41 +27,41 @@ namespace lib::network {
         constexpr static const size_t PORT = 2022;
         constexpr static size_t BUFFER_SIZE = 1024;
     private:
-        TcpSession();
 
-        ~TcpSession();
+        TcpSession()= default;
 
-        void AddService(std::shared_ptr<IService>&&);
+        ~TcpSession() = default;
 
-        std::unordered_map<size_t, std::shared_ptr<IService>> services_;
+        IService& FindService(const RequestHeaderType&);
+        void AddService(std::unique_ptr<IService>&&);
 
-        boost::asio::io_context _ioContext;
+        std::unordered_map<size_t, std::unique_ptr<IService>> services_;
 
-        std::thread _thread;
+        std::thread thread_;
     };
 
     struct IService : std::enable_shared_from_this<IService>{
         using Response = lib::network::Response;
 
-        explicit IService(size_t serviceId) :
-                _serviceId(serviceId) {}
+        explicit IService(ssize_t serviceId) :
+                serviceId_(serviceId) {}
 
         virtual void Validate() = 0;
 
-        virtual Response Read(std::string_view data);
+        virtual Response Read(std::string_view &data);
 
-        virtual Response Write(std::string_view data);
+        virtual Response Write(std::string_view &data);
 
-        virtual Response ReadWrite(std::string_view data);
+        virtual Response ReadWrite(std::string_view &data);
 
-        const size_t _serviceId;
+        const ssize_t serviceId_;
 
         template <class Service, typename... Args>
         static void RegisterService(Args&&...args){
 
-            auto service = std::make_shared<Service>(args...);
+            auto service = std::make_unique<Service>(args...);
 
-            TcpSession::GetInstance().AddService(service);
+            TcpSession::GetInstance().AddService(std::move(service));
         };
     };
 }

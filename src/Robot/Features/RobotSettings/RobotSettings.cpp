@@ -1,24 +1,25 @@
 #include "RobotSettings.hpp"
 #include "./RobotSettingsMessage.pb.h"
 
-using namespace Application;
+using namespace app;
 
-RobotSettings::RobotSettings(size_t id) :
-        lib::network::IService(id) {}
+RobotSettings::RobotSettings(ssize_t id, std::string_view filename) :
+        lib::network::IService(id),
+        filename_(filename){}
 
 
 void RobotSettings::Validate() {
 
 }
 
-lib::network::Response RobotSettings::Write(std::string_view data) {
+lib::network::Response RobotSettings::Write(std::string_view &data) {
     RobotSettingsMessage message;
-    message.ParseFromString(data.begin());
+    message.ParseFromArray(data.data(), data.size());
 
-    std::cout << "Thrusters number: " << message.thrusters_coefficient().size() << std::endl;
-    std::cout << "Hand freedom number: " << message.hand_coefficient().size() << std::endl;
-    std::cout << "Max motors speed: " << message.maximum_motor_speed() <<std::endl;
-    std::cout << "Motors protocol: " << message.motors_protocol() <<std::endl;
+    std::clog << "Thrusters number: " << message.thrusters_coefficient().size()/6 << std::endl;
+    std::clog << "Hand freedom number: " << message.hand_coefficient().size() << std::endl;
+    std::clog << "Max motors speed: " << message.maximum_motor_speed() << std::endl;
+    std::clog << "Motors protocol: " << message.motors_protocol() << std::endl;
 
-    return {std::string(), lib::network::Response::Ok};
+    return {std::string(), lib::network::Response::Ok, serviceId_};
 }

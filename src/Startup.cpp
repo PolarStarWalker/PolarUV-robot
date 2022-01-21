@@ -1,11 +1,13 @@
 ﻿#include "./Startup.hpp"
 
+using namespace app;
+
 [[noreturn]]
 int main() {
 
-    Application::Robot robot;
+    Robot robot;
     robot.SetUp();
-    robot.Start();
+    ///robot.Start();
 
     ///OldStart SettingsProtocol in background
     DataProtocols::RobotSettingsProtocol settingsProtocol;

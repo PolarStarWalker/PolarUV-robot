@@ -3,7 +3,7 @@
 #include "./Features/RobotSettings/RobotSettings.hpp"
 #include "Lib.hpp"
 
-using namespace Application;
+using namespace app;
 
 ///set max sched priority
 inline void SetProcessMaxPriority(){
@@ -17,7 +17,7 @@ void Robot::SetUp() {
     SetProcessMaxPriority();
 
     lib::Initialize();
-    lib::network::IService::RegisterService<RobotSettings>(0);
+    lib::network::IService::RegisterService<RobotSettings>(0, "robot-settings.json");
 }
 
 

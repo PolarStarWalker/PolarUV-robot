@@ -3,7 +3,7 @@
 
 #include "./Features/Features.hpp"
 #include "./Peripheral/Peripheral.hpp"
-namespace Application {
+namespace app {
     class Robot {
     public:
         void SetUp();

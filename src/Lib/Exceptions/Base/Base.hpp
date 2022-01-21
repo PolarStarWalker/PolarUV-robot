@@ -5,7 +5,7 @@
 
 namespace lib::exceptions {
 
-    class BaseException {
+    class BaseException : std::exception {
     public:
         BaseException(std::string_view header, std::string_view& message) :
                 Header(header),
