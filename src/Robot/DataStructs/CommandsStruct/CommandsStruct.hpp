@@ -1,6 +1,7 @@
 #ifndef ROBOT_COMMANDSSTRUCT_HPP
 #define ROBOT_COMMANDSSTRUCT_HPP
 
+#include "./Math/StaticVector/StaticVector.hpp"
 #include <iostream>
 
 enum MoveVector : uint8_t {
@@ -15,16 +16,14 @@ enum MoveVector : uint8_t {
 struct CommandsStruct {
     ///Array prototype
     ///{Fx, Fy, Fz, Mx, My, Mz}
-    float MoveVector[6] = {};
-    float TheHand[6] = {};
-    float LowPWM[4] = {};
+    StaticVector<float, 6> MoveVector;
+    StaticVector<float, 6> TheHand;
+    StaticVector<float, 4> LowPWM;
     bool MotorsLock = true;
     bool Stabilization = false;
 };
 
-extern CommandsStruct CommandsStructData;
-constexpr size_t CommandsStructLen = sizeof(CommandsStructData);
-
+constexpr size_t CommandsStructLen = sizeof(CommandsStruct);
 std::ostream &operator<<(std::ostream &ostream, const CommandsStruct &commandsStruct);
 
 #endif

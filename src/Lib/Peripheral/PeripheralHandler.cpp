@@ -1,7 +1,7 @@
 #include "./PeripheralHandler/PeripheralHandler.hpp"
 
-PeripheralHandler::PeripheralHandler(const char *i2c, size_t delay_us) :
-        _i2c(i2c),
+PeripheralHandler::PeripheralHandler(std::string_view i2c_path, size_t delay_us) :
+        _i2c(i2c_path),
         delay_us_(delay_us) {}
 
 bool PeripheralHandler::AddI2CSensor(II2CPeripheral *newSensor) const {
@@ -26,7 +26,6 @@ void PeripheralHandler::StartAsync() const{
     peripheralThread.detach();
 }
 
-[[noreturn]]
 void PeripheralHandler::Start() const{
     for (;;) {
 

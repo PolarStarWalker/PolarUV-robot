@@ -16,9 +16,9 @@
 class BNO055_I2C final : public II2CPeripheral {
 public:
 
-    static BNO055_I2C *GetInstance() {
+    static BNO055_I2C &GetInstance() {
         static BNO055_I2C bno(BNO055_ADDRESS);
-        return &bno;
+        return bno;
     }
 
     BNO055_I2C(const BNO055_I2C &bno055) = delete;

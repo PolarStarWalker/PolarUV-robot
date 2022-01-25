@@ -1,4 +1,5 @@
 #include "./CommandsProtocol/CommandsProtocol.hpp"
+#include "./RobotSettings/RobotSettings.hpp"
 
 #include "Peripheral/Peripheral.hpp"
 #include "Math/Math.hpp"
@@ -52,7 +53,7 @@ inline MotorsStruct FormMotorsStruct(const StaticVector<float, 12> &hiPwm,
 }
 
 void CommandsProtocol::Start() {
-    BNO055_I2C &bno055 = *BNO055_I2C::GetInstance();
+    BNO055_I2C &bno055 = BNO055_I2C::GetInstance();
 
     MS5837_I2C ms5837(MS5837_ADDRESS);
 
@@ -65,37 +66,30 @@ void CommandsProtocol::Start() {
 
         _commandsReceiver.Wait();
 
-        RobotSettingsStruct settingsStruct = RobotSettingsProtocol::GetSettings();
-
-        StaticMatrix<float, 12, 6> thrusterCoefficients(settingsStruct.ThrusterCoefficientArray(),
-                                                        settingsStruct.ThrusterNumber());
-
-        StaticVector<float, 6> handCoefficients(settingsStruct.HandCoefficientArray(), settingsStruct.HandFreedom());
+        const auto settings = app::RobotSettings::GetSettings();
 
         while (_commandsReceiver.IsOnline()) {
 
-            auto commandsStruct = _commandsReceiver.GetCommandsStruct();
+            const auto commands = _commandsReceiver.GetCommandsStruct();
 
             auto telemetry = FormTelemetryStruct(bno055, ms5837);
 
             _commandsReceiver.SendTelemetryStruct(telemetry);
 
-            auto &moveVector = (StaticVector<float, 6> &) commandsStruct.MoveVector;
-            StaticVector<float, 12> hiPWM = thrusterCoefficients * moveVector;
+            auto hiPWM = settings.ThrustersCoefficientArray * commands.MoveVector;
             hiPWM.Normalize(100);
 
-            for (size_t i = 0; i < settingsStruct.HandFreedom(); ++i) {
-                hiPWM[settingsStruct.ThrusterNumber() + i] = handCoefficients[i] * commandsStruct.TheHand[i];
-            }
+            for (size_t i = 0; i < settings.HandFreedom; ++i)
+                hiPWM[settings.ThrustersNumber + i] = settings.HandCoefficientArray[i] * commands.TheHand[i];
 
-            hiPWM += 100;
-            hiPWM *= 10;
+            hiPWM += static_cast<float>(100);
+            hiPWM *= static_cast<float>(10);
 
-            auto &lowPwm = (StaticVector<float, 4> &) commandsStruct.LowPWM;
-            lowPwm[0] *= 1000;
-            lowPwm[0] += 1500;
+            auto lowPWM = commands.LowPWM;
+            lowPWM[0] *= 1000;
+            lowPWM[0] += 1500;
 
-            MotorsStruct motorsStruct = FormMotorsStruct(hiPWM, lowPwm);
+            MotorsStruct motorsStruct = FormMotorsStruct(hiPWM, lowPWM);
 
             _motorsSender.SendMotorsStruct(motorsStruct);
 
@@ -103,7 +97,7 @@ void CommandsProtocol::Start() {
 
             //std::cout << telemetry << std::endl;
             //std::cout << settingsStruct << std::endl;
-            //std::cout << commandsStruct << std::endl;
+            //std::cout << commands << std::endl;
             //std::cout << motorsStruct << std::endl;
 
 

@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+message SensorsMessage{
+
+  enum FILTER {
+    NOTHING = 0;
+    MOVING_AVERAGE = 1;
+    CIRCLE_MOVING_AVERAGE = 2;
+  };
+
+
+}

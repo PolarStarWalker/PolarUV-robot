@@ -82,12 +82,12 @@ inline Response DoAction(IService &service, const RequestHeaderType &header, con
     auto run = [&](Response(IService::*action)(std::string_view &data),
                    bool(IService::*validate)(std::string_view &data)) {
 
-        std::clog << "\n[VALIDATE]" << '\n' << std::endl;
+        std::clog << "\n[VALIDATE]\n" << std::endl;
         //ToDo: валидация
         (service.*validate)(data);
-        std::clog << "\n[START ACTION]" << '\n' << std::endl;
+        std::clog << "\n[START ACTION]\n"  << std::endl;
         Response response = (service.*action)(data);
-        std::clog << "\n[ACTIONS DONE]" << '\n' << std::endl;
+        std::clog << "\n[ACTIONS DONE]\n" << std::endl;
 
         return response;
     };
@@ -146,7 +146,7 @@ void TcpSession::Start() {
                 if (requestLength != requestHeader.Length + REQUEST_HEADER_SIZE)
                     throw exceptions::TransferError("Проблемы с передачей данных");
 
-                auto &service = FindService(requestHeader);
+                auto &service = FindService(requestHeader.EndpointId);
                 auto response = DoAction(service, requestHeader, buffer);
 
                 auto[responseHeader, responseLength] = SendResponse(socket, response);
@@ -175,8 +175,8 @@ TcpSession &TcpSession::GetInstance() {
     return network;
 }
 
-inline IService &TcpSession::FindService(const RequestHeaderType &header) {
-    auto item = services_.find(header.EndpointId);
+inline IService &TcpSession::FindService(ssize_t key) {
+    auto item = services_.find(key);
 
     if (item == services_.end())
         throw lib::exceptions::NotFount("Эндпоинт не найден");

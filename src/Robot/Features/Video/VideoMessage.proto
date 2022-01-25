@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+message VideoMessage{
+
+  enum Action {
+    START = 0;
+    STOP = 1;
+  };
+
+  required Action action = 1;
+  required string pipeline = 2;
+
+}

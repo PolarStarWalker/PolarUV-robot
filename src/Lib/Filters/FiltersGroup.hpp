@@ -33,6 +33,6 @@ private:
 };
 
 template<std::same_as<IFilter *> ... Filters>
-FiltersGroup(Filters...) -> FiltersGroup<1 + sizeof...(Filters)>;
+FiltersGroup(Filters...) -> FiltersGroup<sizeof...(Filters)>;
 
 #endif

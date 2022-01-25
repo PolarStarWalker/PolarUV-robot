@@ -15,14 +15,15 @@
 
 #include <linux/i2c.h>
 #include <linux/i2c-dev.h>
+#include <string_view>
 
 class I2C {
 
 private:
-    int _i2CDescriptor = -1;
+    int i2CDescriptor_ = -1;
 
 public:
-    explicit I2C(const char *address);
+    explicit I2C(std::string_view &i2c_path);
 
     ~I2C();
 

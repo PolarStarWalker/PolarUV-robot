@@ -37,13 +37,15 @@ private:
     size_t delay_us_;
 public:
 
-    explicit PeripheralHandler(const char *i2c, size_t delay_us);
+    explicit PeripheralHandler(std::string_view i2c_path, size_t delay_us);
 
     bool AddI2CSensor(II2CPeripheral *newSensor) const;
 
     [[noreturn]] void Start() const;
 
     void StartAsync() const;
+
+
 
 };
 

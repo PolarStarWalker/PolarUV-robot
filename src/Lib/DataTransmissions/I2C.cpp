@@ -2,13 +2,13 @@
 #include <iostream>
 #include "I2C/I2C.hpp"
 
-I2C::I2C(const char *address) {
-    int descriptor = open(address, O_RDWR);
-    this->_i2CDescriptor = descriptor;
+I2C::I2C(std::string_view &i2c_path) {
+    int descriptor = open(i2c_path.data(), O_RDWR);
+    i2CDescriptor_ = descriptor;
 }
 
 I2C::~I2C() {
-    close(this->_i2CDescriptor);
+    close(i2CDescriptor_);
 }
 
 void I2C::Read(__u16 slaveAddress,
@@ -34,7 +34,7 @@ const {
     data.msgs = messages;
     data.nmsgs = 2;
 
-    if (ioctl(this->_i2CDescriptor, I2C_RDWR, &data) < 0) {
+    if (ioctl(i2CDescriptor_, I2C_RDWR, &data) < 0) {
         std::cout << "Ошибка при чтении данных" << std::endl;
     }
 }
@@ -54,7 +54,7 @@ const {
     data.msgs = &messages;
     data.nmsgs = 1;
 
-    if (ioctl(this->_i2CDescriptor, I2C_RDWR, &data) < 0) {
+    if (ioctl(i2CDescriptor_, I2C_RDWR, &data) < 0) {
         std::cout << "Ошибка при чтении данных" << std::endl;
     }
 }
@@ -81,7 +81,7 @@ uint8_t I2C::ReadByteFromRegister(__u16 slaveAddress, __u8 slaveRegister) const 
 
     inbuf[0] = 0;
 
-    if (ioctl(this->_i2CDescriptor, I2C_RDWR, &msgset) < 0) {
+    if (ioctl(i2CDescriptor_, I2C_RDWR, &msgset) < 0) {
 #ifdef DEBUG
         std::cout << "Ошибка при чтении данных" << std::endl;
 #endif
@@ -114,7 +114,7 @@ const {
     data.msgs = messages;
     data.nmsgs = 2;
 
-    if (ioctl(this->_i2CDescriptor, I2C_RDWR, &data) < 0) {
+    if (ioctl(i2CDescriptor_, I2C_RDWR, &data) < 0) {
         std::cout << "Ошибка при записи данных" << std::endl;
         return false;
     }
@@ -137,7 +137,7 @@ const {
     data.msgs = &messages;
     data.nmsgs = 2;
 
-    if (ioctl(this->_i2CDescriptor, I2C_RDWR, &data) < 0) {
+    if (ioctl(i2CDescriptor_, I2C_RDWR, &data) < 0) {
         std::cout << "Ошибка при записи данных" << std::endl;
         return false;
     }
@@ -160,7 +160,7 @@ bool I2C::WriteByteToRegister(__u16 slaveAddress, __u8 slaveRegister, __u8 byte)
     msgset[0].msgs = msgs;
     msgset[0].nmsgs = 1;
 
-    if (ioctl(this->_i2CDescriptor, I2C_RDWR, &msgset) < 0) {
+    if (ioctl(i2CDescriptor_, I2C_RDWR, &msgset) < 0) {
         std::cout << "Ошибка при записи данных" << std::endl;
         return false;
     }
@@ -182,7 +182,7 @@ bool I2C::WriteByte(__u16 slaveAddress, __u8 byte) const {
     msgset[0].msgs = msgs;
     msgset[0].nmsgs = 1;
 
-    if (ioctl(this->_i2CDescriptor, I2C_RDWR, &msgset) < 0) {
+    if (ioctl(i2CDescriptor_, I2C_RDWR, &msgset) < 0) {
         std::cout << "Ошибка при записи данных" << std::endl;
         return false;
     }
