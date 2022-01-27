@@ -13,7 +13,7 @@ namespace lib::network {
 
     class TcpSession {
         friend IService;
-        using Map = std::unordered_map<size_t, std::unique_ptr<IService>>;
+        using Map = std::unordered_map<size_t, std::shared_ptr<IService>>;
 
     public:
         TcpSession(const TcpSession &) = delete;
@@ -59,26 +59,25 @@ namespace lib::network {
 
         virtual bool WriteValidate(std::string_view &data);
 
-        virtual bool ReadWriteValidate(std::string_view &data);
+        virtual bool WriteReadValidate(std::string_view &data);
 
         virtual Response Read(std::string_view &data);
 
         virtual Response Write(std::string_view &data);
 
-        virtual Response ReadWrite(std::string_view &data);
+        virtual Response WriteRead(std::string_view &data);
 
         ///ToDo: когда-нибудь переехать на строки
         const ssize_t serviceId_;
 
         template<is_service Service, typename... Args>
-        static Service &RegisterService(Args &&...args) {
+        static std::shared_ptr<Service> &RegisterService(Args &&...args) {
 
-            auto service = std::make_unique<Service>(args...);
-            auto &raw_ptr = *service;
+            auto service = std::make_shared<Service>(args...);
 
-            TcpSession::GetInstance().services_[service->serviceId_] = std::move(service);
+            TcpSession::GetInstance().services_[service->serviceId_] = service;
 
-            return raw_ptr;
+            return service;
         };
     };
 }

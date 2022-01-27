@@ -7,12 +7,14 @@
 namespace app {
     class Robot {
     public:
+        Robot();
+
         void SetUp();
 
         void Start();
 
-    private:
-
+        std::shared_ptr<Service> sensors_;
+        std::shared_ptr<RobotSettings> robotSettings_;
     };
 }
 

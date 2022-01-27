@@ -11,7 +11,7 @@
 #include "../../DataStructs/DataStructs.hpp"
 
 #include "Peripheral/PeripheralHandler/PeripheralHandler.hpp"
-
+#include "../Sensors/Sensors.hpp"
 
 namespace DataProtocols {
 
@@ -21,7 +21,7 @@ namespace DataProtocols {
 
         CommandsProtocol(const MotorsSender::IMotorsSender &motorsSender,
                          const CommandsReceiver::ICommandsReceiver &commandsReceiver,
-                         const PeripheralHandler &peripheralHandler);
+                         std::shared_ptr<app::Sensors> sensors);
 
         [[noreturn]]
         void Start();
@@ -30,7 +30,7 @@ namespace DataProtocols {
         //Socket _commandsSocket;
         const CommandsReceiver::ICommandsReceiver& _commandsReceiver;
         const MotorsSender::IMotorsSender& _motorsSender;
-        const PeripheralHandler& _peripheralHandler;
+        const std::shared_ptr<app::Sensors> sensors_;
     };
 }
 

@@ -4,11 +4,11 @@ PeripheralHandler::PeripheralHandler(std::string_view i2c_path, size_t delay_us)
         _i2c(i2c_path),
         delay_us_(delay_us) {}
 
-bool PeripheralHandler::AddI2CSensor(II2CPeripheral *newSensor) const {
+bool PeripheralHandler::AddI2CSensor(II2CPeripheral &newSensor) const {
 
     {
         std::lock_guard guard (i2cMutex_);
-        bool isInit = newSensor->Init(&_i2c);
+        bool isInit = newSensor.Init(&_i2c);
 
         if (!isInit)
             return false;
@@ -16,7 +16,7 @@ bool PeripheralHandler::AddI2CSensor(II2CPeripheral *newSensor) const {
     }
 
     std::lock_guard guard(i2cPeripheralMutex_);
-    i2cPeripherals_.emplace_back(newSensor);
+    i2cPeripherals_.emplace_back(&newSensor);
 
     return true;
 }

@@ -127,7 +127,7 @@ StaticVector<Type, VectorSize> &StaticVector<Type, VectorSize>::operator*=(Type 
     }
 
     ///If size is 16 byte aligned
-    if (alignment == 0)
+    if constexpr (alignment == 0)
         return *this;
 
     for (size_t i = VectorSize - alignment; i < VectorSize; ++i) {
@@ -173,7 +173,7 @@ StaticVector<Type, VectorSize> &StaticVector<Type, VectorSize>::operator+=(Type 
     }
 
     ///If size is 16 byte aligned
-    if (alignment == 0)
+    if constexpr (alignment == 0)
         return *this;
 
     for (size_t i = VectorSize - alignment; i < VectorSize; ++i) {

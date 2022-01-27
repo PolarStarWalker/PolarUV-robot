@@ -2,6 +2,7 @@
 #define ROBOT_ICOMMANDSRECEIVER_HPP
 
 #include "../../DataStructs/DataStructs.hpp"
+#include "../Sensors/Sensors.hpp"
 
 namespace CommandsReceiver {
 
@@ -14,7 +15,7 @@ namespace CommandsReceiver {
 
         virtual CommandsStruct GetCommandsStruct() const = 0;
 
-        virtual void SendTelemetryStruct(const TelemetryStruct &telemetry) const = 0;
+        virtual void SendTelemetryStruct(const app::SensorsStruct &telemetry) const = 0;
 
         virtual bool IsOnline() const = 0;
 

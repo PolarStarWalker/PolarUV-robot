@@ -3,6 +3,14 @@
 #include "Lib.hpp"
 
 using namespace app;
+using IService = lib::network::IService;
+
+Robot::Robot() :
+        robotSettings_(IService::RegisterService<RobotSettings>(0, "robot-settings.json")),
+        sensors_(IService::RegisterService<Sensors>(2, "/dev/i2c-1")) {
+
+    IService::RegisterService<Video>(1);
+}
 
 ///set max sched priority
 inline void SetProcessMaxPriority() {
@@ -12,12 +20,7 @@ inline void SetProcessMaxPriority() {
 }
 
 inline void InitService() {
-    using IService = lib::network::IService;
 
-    IService::RegisterService<Video>(1);
-
-    auto& settings = IService::RegisterService<RobotSettings>(0, "robot-settings.json");
-    auto& sensors = IService::RegisterService<Sensors>(2, "/dev/i2c-1");
 
 }
 
@@ -35,3 +38,4 @@ void Robot::Start() {
     auto &network = lib::network::TcpSession::GetInstance();
     network.Start();
 }
+

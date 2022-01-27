@@ -7,11 +7,8 @@ int main() {
 
     Robot robot;
     robot.SetUp();
-    robot.Start();
-
-    ///OldStart SettingsProtocol in background
-    DataProtocols::RobotSettingsProtocol settingsProtocol;
-    settingsProtocol.StartAsync();
+    std::thread thread(&Robot::Start, std::ref(robot));
+    thread.detach();
 
     ///OldStart VideoProtocol in background
     DataProtocols::RobotVideoProtocol robotVideoProtocol;
@@ -21,10 +18,7 @@ int main() {
     auto &motorsSender = settings.GetMotorsSender();
     auto &commandsReceiver = settings.GetCommandsReceiver();
 
-    ///Create peripheralHandler
-    static const PeripheralHandler peripheralHandler("/dev/i2c-1", Kilo(20));
-
     ///OldStart CommandsProtocol in synchronous mode
-    DataProtocols::CommandsProtocol commands(motorsSender, commandsReceiver, peripheralHandler);
+    DataProtocols::CommandsProtocol commands(motorsSender, commandsReceiver, robot.sensors_);
     commands.Start();
 }

@@ -100,7 +100,7 @@ inline Response DoAction(IService &service, const RequestHeaderType &header, con
             return run(&IService::Write, &IService::WriteValidate);
 
         case TypeEnum::RW:
-            return run(&IService::ReadWrite, &IService::ReadWriteValidate);
+            return run(&IService::WriteRead, &IService::WriteReadValidate);
 
         default:
             throw lib::exceptions::NotFount("Такой типа запроса не определён библиотекой");
@@ -190,13 +190,13 @@ Response IService::Read(std::string_view &data) { throw exceptions::NotFount("Д
 
 Response IService::Write(std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
 
-Response IService::ReadWrite(std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+Response IService::WriteRead(std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
 
 bool IService::ReadValidate(std::string_view &data) { return true; }
 
 bool IService::WriteValidate(std::string_view &data) { return true; }
 
-bool IService::ReadWriteValidate(std::string_view &data) { return false; }
+bool IService::WriteReadValidate(std::string_view &data) { return false; }
 
 
 
