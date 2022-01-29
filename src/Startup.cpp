@@ -19,6 +19,6 @@ int main() {
     auto &commandsReceiver = settings.GetCommandsReceiver();
 
     ///OldStart CommandsProtocol in synchronous mode
-    DataProtocols::CommandsProtocol commands(motorsSender, commandsReceiver, robot.sensors_);
+    DataProtocols::CommandsProtocol commands(motorsSender, commandsReceiver, robot.sensors_, robot.robotSettings_);
     commands.Start();
 }

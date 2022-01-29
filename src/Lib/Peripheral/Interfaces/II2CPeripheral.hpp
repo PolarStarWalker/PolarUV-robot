@@ -10,12 +10,16 @@ class II2CPeripheral {
     friend PeripheralHandler;
 protected:
 
+    explicit II2CPeripheral(ssize_t period_us) : period_us_(period_us){}
+
     virtual bool ReadData() = 0;
 
     virtual bool Init(const I2C* i2c) = 0;
 
     virtual bool Reload() = 0;
     virtual size_t DelayUs() const = 0;
+
+    const ssize_t period_us_;
 };
 
 #endif

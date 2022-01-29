@@ -7,9 +7,10 @@ using IService = lib::network::IService;
 
 Robot::Robot() :
         robotSettings_(IService::RegisterService<RobotSettings>(0, "robot-settings.json")),
-        sensors_(IService::RegisterService<Sensors>(2, "/dev/i2c-1")) {
+        sensors_(IService::RegisterService<Sensors>(1, "/dev/i2c-1")) {
 
-    IService::RegisterService<Video>(1);
+    IService::RegisterService<Video>(2);
+    IService::RegisterService<CommandsService>(3, sensors_, robotSettings_);
 }
 
 ///set max sched priority

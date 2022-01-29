@@ -13,7 +13,7 @@ namespace app {
 
         void Start();
 
-        std::shared_ptr<Service> sensors_;
+        std::shared_ptr<Sensors> sensors_;
         std::shared_ptr<RobotSettings> robotSettings_;
     };
 }

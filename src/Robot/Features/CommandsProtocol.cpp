@@ -10,10 +10,12 @@ using namespace CommandsReceiver;
 
 CommandsProtocol::CommandsProtocol(const IMotorsSender &motorsSender,
                                    const ICommandsReceiver &commandsReceiver,
-                                   std::shared_ptr<app::Sensors> sensors)
+                                   std::shared_ptr<app::Sensors> sensors,
+                                   std::shared_ptr<app::RobotSettings> settings)
         : _motorsSender(motorsSender),
           _commandsReceiver(commandsReceiver),
-          sensors_(std::move(sensors)){}
+          sensors_(std::move(sensors)),
+          settings_(std::move(settings)){}
 
 inline MotorsStruct FormMotorsStruct(const StaticVector<float, 12> &hiPwm,
                                      const StaticVector<float, 4> &lowPwm) {
@@ -35,7 +37,7 @@ void CommandsProtocol::Start() {
 
         _commandsReceiver.Wait();
 
-        const auto settings = app::RobotSettings::GetSettings();
+        const auto& settings = settings_->GetSettings();
 
         while (_commandsReceiver.IsOnline()) {
 

@@ -4,6 +4,7 @@
 #include "./DataTransmissions/TcpSession/TcpSession.hpp"
 #include "./Peripheral/PeripheralHandler/PeripheralHandler.hpp"
 #include "./Peripheral/Peripheral.hpp"
+#include "./Math/SIPrefix.hpp"
 
 namespace app {
 
@@ -61,13 +62,13 @@ namespace app {
             SensorsStruct sensorsStruct;
 
             sensorsStruct.Depth = msData.Depth;
-            sensorsStruct.Rotation[TelemetryStruct::X] = bnoData.EulerAngle[BNO055::X];
-            sensorsStruct.Rotation[TelemetryStruct::Y] = bnoData.EulerAngle[BNO055::Y];
-            sensorsStruct.Rotation[TelemetryStruct::Z] = bnoData.EulerAngle[BNO055::Z];
+            sensorsStruct.Rotation[SensorsStruct::X] = bnoData.EulerAngle[BNO055::X];
+            sensorsStruct.Rotation[SensorsStruct::Y] = bnoData.EulerAngle[BNO055::Y];
+            sensorsStruct.Rotation[SensorsStruct::Z] = bnoData.EulerAngle[BNO055::Z];
 
-            sensorsStruct.Acceleration[TelemetryStruct::X] = bnoData.LinearAcceleration[BNO055::X];
-            sensorsStruct.Acceleration[TelemetryStruct::Y] = bnoData.LinearAcceleration[BNO055::Y];
-            sensorsStruct.Acceleration[TelemetryStruct::Z] = bnoData.LinearAcceleration[BNO055::Z];
+            sensorsStruct.Acceleration[SensorsStruct::X] = bnoData.LinearAcceleration[BNO055::X];
+            sensorsStruct.Acceleration[SensorsStruct::Y] = bnoData.LinearAcceleration[BNO055::Y];
+            sensorsStruct.Acceleration[SensorsStruct::Z] = bnoData.LinearAcceleration[BNO055::Z];
 
             sensorsStruct.MotionCalibration[0] = bnoData.CalibrationArray[0];
             sensorsStruct.MotionCalibration[1] = bnoData.CalibrationArray[1];

@@ -1,8 +1,8 @@
 #include "./ADS1115/ADS1115_I2C.hpp"
-
+#include "./Math/SIPrefix.hpp"
 using namespace ADS1115;
 
-ADS1115_I2C::ADS1115_I2C(uint16_t address, ADS1115::Gain gain, ADS1115::DataRate dataRate) {
+ADS1115_I2C::ADS1115_I2C(uint16_t address, ADS1115::Gain gain, ADS1115::DataRate dataRate) : II2CPeripheral(Kilo(50)){
     _i2c = nullptr;
     _gain = gain;
     _dataRate = dataRate;

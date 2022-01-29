@@ -29,8 +29,14 @@ namespace app {
         Response Write(std::string_view &robotSettings) final;
         Response Read(std::string_view &request) final;
 
-        static RobotSettingsData GetSettings();
+        inline const RobotSettingsData& GetSettings() {
+            return settings_;
+        };
 
+    private:
+        RobotSettingsData settings_;
+        std::string_view filename_;
+        RobotSettingsData GetSettingsFromDisk();
     };
 
 }

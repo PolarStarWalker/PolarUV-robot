@@ -31,7 +31,7 @@ private:
 
     FiltersGroup<3> filters_;
 
-    const I2C *i2c_;
+    const I2C *i2c_{};
 
     uint16_t C_[8]{};
     uint32_t d1Pressure_{};

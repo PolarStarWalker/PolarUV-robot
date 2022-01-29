@@ -4,6 +4,7 @@
 using namespace MS5837;
 
 MS5837_I2C::MS5837_I2C(uint16_t sensorAddress) :
+        II2CPeripheral(Kilo(20)),
         sensorAddress_(sensorAddress),
         filters_({new MovingAverage<5>(), new MovingAverage<5>(), new MovingAverage<5>()}){}
 

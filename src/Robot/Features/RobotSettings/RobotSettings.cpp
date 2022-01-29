@@ -6,10 +6,29 @@
 
 using namespace app;
 using Response = lib::network::Response;
-static std::string_view FILENAME;
 
-RobotSettings::RobotSettings(ssize_t id, std::string_view filename) : lib::network::IService(id) {
-    FILENAME = filename;
+inline RobotSettingsData ParseSettings(const RobotSettingsMessage &message) {
+
+    RobotSettingsData settings{};
+
+    settings.HandFreedom = message.hand_coefficient_size();
+    auto &hand_coefficient = message.hand_coefficient();
+    for (size_t i = 0; i < settings.HandFreedom; ++i)
+        settings.HandCoefficientArray[i] = hand_coefficient[i];
+
+    settings.ThrustersNumber = message.thrusters_coefficient_size() / 6;
+    auto &thrusters_coefficient = message.thrusters_coefficient();
+    for (size_t i = 0; i < settings.ThrustersNumber; ++i)
+        settings.ThrustersCoefficientArray.begin()[i] = thrusters_coefficient[i];
+
+    return settings;
+}
+
+
+RobotSettings::RobotSettings(ssize_t id, std::string_view filename) :
+        lib::network::IService(id),
+        filename_(filename) {
+    settings_ = GetSettingsFromDisk();
 }
 
 bool RobotSettings::WriteValidate(std::string_view &robotSettings) {
@@ -44,16 +63,20 @@ bool RobotSettings::WriteValidate(std::string_view &robotSettings) {
 
 Response RobotSettings::Write(std::string_view &robotSettings) {
 
-    WriteValidate(robotSettings);
+    {
+        std::fstream file(filename_.data(), std::ios::trunc | std::ios::out | std::ios::binary);
+        file.write(robotSettings.data(), robotSettings.size());
+    }
 
-    std::fstream file(FILENAME.data(), std::ios::trunc | std::ios::out | std::ios::binary);
-    file.write(robotSettings.data(), robotSettings.size());
+    RobotSettingsMessage message;
+    message.ParseFromArray(robotSettings.data(), robotSettings.size());
+    settings_ = ParseSettings(message);
 
     return {std::string(), lib::network::Response::NoContent, serviceId_};
 }
 
 Response RobotSettings::Read(std::string_view &request) {
-    std::fstream file(FILENAME.data(), std::ios::in | std::ios::binary);
+    std::fstream file(filename_.data(), std::ios::in | std::ios::binary);
 
     file.seekg(0, std::fstream::end);
     ssize_t length = file.tellg();
@@ -66,26 +89,15 @@ Response RobotSettings::Read(std::string_view &request) {
     return {std::move(out), lib::network::Response::Ok, serviceId_};
 }
 
-RobotSettingsData RobotSettings::GetSettings() {
-
-    std::fstream file(FILENAME.data(), std::ios::in | std::ios::binary);
+RobotSettingsData RobotSettings::GetSettingsFromDisk() {
     RobotSettingsMessage message;
-    message.ParseFromIstream(&file);
 
-    RobotSettingsData settings{};
+    {
+        std::fstream file(filename_.data(), std::ios::in | std::ios::binary);
+        message.ParseFromIstream(&file);
+    }
 
-    settings.HandFreedom = message.hand_coefficient_size();
-    auto &hand_coefficient = message.hand_coefficient();
-    for (size_t i = 0; i < settings.HandFreedom; ++i)
-        settings.HandCoefficientArray[i] = hand_coefficient[i];
-
-    settings.ThrustersNumber = message.thrusters_coefficient_size() / 6;
-    auto &thrusters_coefficient = message.thrusters_coefficient();
-    for (size_t i = 0; i < settings.ThrustersNumber; ++i)
-        settings.ThrustersCoefficientArray.begin()[i] = thrusters_coefficient[i];
-
-
-    return settings;
+    return ParseSettings(message);
 }
 
 

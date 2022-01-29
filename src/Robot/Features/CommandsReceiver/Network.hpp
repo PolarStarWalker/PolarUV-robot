@@ -21,7 +21,7 @@ namespace CommandsReceiver {
             return commandsStruct;
         }
 
-        void SendTelemetryStruct(const TelemetryStruct &telemetry) const final {
+        void SendTelemetryStruct(const app::SensorsStruct &telemetry) const final {
             _socket.SendDataLen((char *) &telemetry, TelemetryStructLen);
         }
 
