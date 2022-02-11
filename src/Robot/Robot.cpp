@@ -22,10 +22,7 @@ inline void SetProcessMaxPriority() {
     sched_setscheduler(0, SCHED_RR, &process);
 }
 
-inline void InitService() {
-
-
-}
+inline void InitService() {}
 
 
 void Robot::SetUp() {

@@ -24,6 +24,7 @@ inline void Video::StartVideo(const std::string &pipeline) {
     pid_t pid = fork();
 
     if (pid == 0) {
+        ///Create group for child process and his childs
         setpgid(0, 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         execlp("bash", "bash", "pipeline", nullptr);
@@ -50,9 +51,8 @@ lib::network::Response Video::Write(std::string_view &action) {
 
 void Video::KillStream() {
     if (childPid_ != 0) {
-        kill(childPid_, SIGTERM);
-        usleep(50 * 1000);
-        kill(childPid_, SIGKILL);
+        ///Kill child group
+        killpg(childPid_, SIGKILL);
         waitpid(childPid_, nullptr, 0);
     }
 
