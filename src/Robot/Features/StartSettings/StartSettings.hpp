@@ -20,19 +20,19 @@ public:
         return settings;
     }
 
-    const MotorsSender::IMotorsSender &GetMotorsSender() {
+    MotorsSender::IMotorsSender &GetMotorsSender() {
         switch (_motorsSenderId) {
             case MotorsSender::SPI:
-                const static class MotorsSender::SPI spi( "/dev/spidev0.0", Mega(35));
+                static class MotorsSender::SPI spi( "/dev/spidev0.0", Mega(35));
                 return spi;
         }
         std::terminate();
     }
 
-    const CommandsReceiver::ICommandsReceiver &GetCommandsReceiver() {
+    CommandsReceiver::ICommandsReceiver &GetCommandsReceiver() {
         switch (_commandsReceiverId) {
             case CommandsReceiver::Net:
-                const static class CommandsReceiver::Network net(1999);
+                static class CommandsReceiver::Network net(1999);
                 return net;
         }
         std::terminate();

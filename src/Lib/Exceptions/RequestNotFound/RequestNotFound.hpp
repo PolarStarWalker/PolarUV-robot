@@ -5,7 +5,7 @@
 
 namespace lib::exceptions {
 
-    class NotFount : public BaseException {
+    struct NotFount : public BaseException {
     public:
         explicit NotFount(std::string_view message) :
                 BaseException(message, network::Response::NotFound) {}

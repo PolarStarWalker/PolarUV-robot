@@ -7,8 +7,9 @@ int main() {
 
     Robot robot;
     robot.SetUp();
-    std::thread thread(&Robot::Start, std::ref(robot));
-    thread.detach();
+    robot.Start();
+//    std::thread thread(&Robot::Start, std::ref(robot));
+//    thread.join();
 
     ///OldStart VideoProtocol in background
     DataProtocols::RobotVideoProtocol robotVideoProtocol;

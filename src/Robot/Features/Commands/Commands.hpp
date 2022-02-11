@@ -5,6 +5,7 @@
 #include <Math/Math.hpp>
 #include "../Sensors/Sensors.hpp"
 #include "../RobotSettings/RobotSettings.hpp"
+#include "../MotorsSender/IMotorsSender.hpp"
 
 namespace app {
 
@@ -16,7 +17,7 @@ namespace app {
 
     class CommandsService final : public lib::network::IService {
     public:
-        CommandsService(ssize_t id, std::shared_ptr<Sensors> sensors, std::shared_ptr<RobotSettings> settings);
+        CommandsService(ssize_t id, MotorsSender::IMotorsSender* motorsSender, std::shared_ptr<Sensors> sensors, std::shared_ptr<RobotSettings> settings);
 
         Response WriteRead(std::string_view &data) final;
 
@@ -30,6 +31,7 @@ namespace app {
 
         std::shared_ptr<Sensors> sensors_;
         std::shared_ptr<RobotSettings> settings_;
+        MotorsSender::IMotorsSender* motorsSender_;
     };
 
 }

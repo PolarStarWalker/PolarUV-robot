@@ -5,7 +5,7 @@
 
 namespace lib::exceptions {
 
-    class InvalidOperation : public BaseException {
+    struct InvalidOperation : public BaseException {
     public:
         explicit InvalidOperation(std::string_view message) :
                 BaseException(message, network::Response::BadRequest) {}

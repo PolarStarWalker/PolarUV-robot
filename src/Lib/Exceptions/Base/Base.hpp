@@ -6,7 +6,7 @@
 
 namespace lib::exceptions {
 
-    class BaseException : std::exception {
+    struct BaseException : std::exception {
     public:
         BaseException(std::string_view& message, network::Response::CodeEnum code) :
                 Message(message),

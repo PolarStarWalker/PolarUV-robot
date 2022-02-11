@@ -71,7 +71,7 @@ namespace lib::network {
         const ssize_t serviceId_;
 
         template<is_service Service, typename... Args>
-        static std::shared_ptr<Service> &RegisterService(Args &&...args) {
+        static std::shared_ptr<Service> RegisterService(Args &&...args) {
 
             auto service = std::make_shared<Service>(args...);
 

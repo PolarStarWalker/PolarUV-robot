@@ -42,7 +42,7 @@ namespace app {
 
             peripheralHandler_.AddI2CSensor(bno055_);
             peripheralHandler_.AddI2CSensor(ms5837_);
-            peripheralHandler_.Start();
+            peripheralHandler_.StartAsync();
 
         };
 

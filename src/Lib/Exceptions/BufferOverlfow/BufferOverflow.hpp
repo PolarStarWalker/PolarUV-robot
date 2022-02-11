@@ -5,7 +5,7 @@
 
 
 namespace lib::exceptions {
-    class BufferOverflow : public BaseException {
+    struct BufferOverflow : public BaseException {
     public:
         explicit BufferOverflow(std::string_view message) :
                 BaseException(message, network::Response::BufferOverflow) {}

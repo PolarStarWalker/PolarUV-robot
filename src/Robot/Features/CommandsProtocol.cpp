@@ -17,10 +17,10 @@ CommandsProtocol::CommandsProtocol(const IMotorsSender &motorsSender,
           sensors_(std::move(sensors)),
           settings_(std::move(settings)){}
 
-inline MotorsStruct FormMotorsStruct(const StaticVector<float, 12> &hiPwm,
+inline MotorsSender::MotorsStruct FormMotorsStruct(const StaticVector<float, 12> &hiPwm,
                                      const StaticVector<float, 4> &lowPwm) {
 
-    MotorsStruct motors;
+    MotorsSender::MotorsStruct motors;
 
     for (size_t i = 0; i < 12; ++i)
         motors.HiPWM[i] = std::ceil(hiPwm[i]);
@@ -60,7 +60,7 @@ void CommandsProtocol::Start() {
             lowPWM[0] *= 1000;
             lowPWM[0] += 1500;
 
-            MotorsStruct motorsStruct = FormMotorsStruct(hiPWM, lowPWM);
+            MotorsSender::MotorsStruct motorsStruct = FormMotorsStruct(hiPWM, lowPWM);
 
             _motorsSender.SendMotorsStruct(motorsStruct);
 

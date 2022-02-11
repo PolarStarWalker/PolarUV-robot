@@ -1,11 +1,15 @@
 #ifndef ROBOT_CIRCLE_MOVING_AVERAGE_HPP
 #define ROBOT_CIRCLE_MOVING_AVERAGE_HPP
 
+#include <numbers>
 #include <cmath>
 #include <arm_neon.h>
 
 template<ssize_t BuffSize>
 class CircleMovingAverage final : public IFilter {
+
+    static constexpr double PI = std::numbers::pi_v<double>;
+
 public:
     double Filter(double value) final {
         if (_index == 2 * BuffSize)
@@ -27,12 +31,12 @@ public:
         cosSin = vdivq_f64(cosSin, (float64x2_t &) div);
 
         ///First half
-        if (cosSin[1] > 0)
-            return std::acos(cosSin[0]);
+        if (values[1] > 0)
+            return std::acos(values[0]);
 
         ///Second half
-        if (cosSin[1] < 0)
-            return 2 * M_PIf64 - std::acos(cosSin[0]);
+        if (values[1] < 0)
+            return 2 * PI - std::acos(values[0]);
 
         return 0;
     }

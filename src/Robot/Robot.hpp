@@ -15,6 +15,8 @@ namespace app {
 
         std::shared_ptr<Sensors> sensors_;
         std::shared_ptr<RobotSettings> robotSettings_;
+        StartSettings startSettings_;
+        MotorsSender::IMotorsSender& motorsSender_;
     };
 }
 

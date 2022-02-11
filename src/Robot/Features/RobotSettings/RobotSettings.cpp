@@ -44,7 +44,7 @@ bool RobotSettings::WriteValidate(std::string_view &robotSettings) {
     if (message.thrusters_coefficient_size() % 6 != 0)
         throw InvalidOperation("Неправильно задана матрица");
 
-    if (message.thrusters_coefficient_size() < 0 || message.thrusters_coefficient_size() > 8)
+    if (message.thrusters_coefficient_size() / 6 < 0 || message.thrusters_coefficient_size() / 6 > 8)
         throw InvalidOperation("Неверное количество трастеров");
 
     if (message.hand_coefficient_size() + message.thrusters_coefficient_size() / 6 > 12)

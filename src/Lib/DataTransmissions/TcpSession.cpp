@@ -14,11 +14,9 @@ using Buffer = std::array<char, buffer_size>;
 
 constexpr size_t REQUEST_HEADER_SIZE = sizeof(RequestHeaderType);
 constexpr size_t RESPONSE_HEADER_SIZE = sizeof(Response::HeaderType);
-constexpr size_t BUFFER_SIZE = TcpSession::BUFFER_SIZE;
 constexpr uint16_t PORT = TcpSession::PORT;
 
 inline BoostSocket GetConnection(IOContext &ioContext) {
-
     boost::asio::ip::tcp (*V4)() = boost::asio::ip::tcp::v4;
 
     BoostSocket socket(ioContext);
@@ -83,9 +81,8 @@ inline Response DoAction(IService &service, const RequestHeaderType &header, con
                    bool(IService::*validate)(std::string_view &data)) {
 
         std::clog << "\n[VALIDATE]\n" << std::endl;
-        //ToDo: валидация
         (service.*validate)(data);
-        std::clog << "\n[START ACTION]\n"  << std::endl;
+        std::clog << "\n[START ACTION]\n" << std::endl;
         Response response = (service.*action)(data);
         std::clog << "\n[ACTIONS DONE]\n" << std::endl;
 
@@ -115,12 +112,12 @@ inline std::pair<Response::HeaderType, size_t> SendResponse(BoostSocket &socket,
     auto &header = response.Header;
 
     size_t length = boost::asio::write(socket,
-                                       MakeBuffer((char *) &header, RESPONSE_HEADER_SIZE),
+                                       MakeBuffer((void *) &header, RESPONSE_HEADER_SIZE),
                                        TransferExactly(RESPONSE_HEADER_SIZE));
 
     if (header.Length > 0)
         length += boost::asio::write(socket,
-                                     boost::asio::buffer(response.Data.c_str(), header.Length),
+                                     boost::asio::buffer(response.Data.data(), header.Length),
                                      TransferExactly(header.Length));
 
     return {response.Header, length};
@@ -157,13 +154,16 @@ void TcpSession::Start() {
             } catch (lib::exceptions::BufferOverflow &e) {
                 Response response(std::string(e.Message), e.Code, -1);
                 SendResponse(socket, response);
-                throw;
             } catch (lib::exceptions::BaseException &e) {
                 Response response(std::string(e.Message), e.Code, -1);
                 SendResponse(socket, response);
-            } catch (...) {
+            } catch (const std::exception &e) {
                 socket.close();
-                std::clog << "[CONNECTION LOST]" << std::endl;
+                std::clog << "[UNKNOW ERROR]" << std::endl;
+            }
+            catch (...) {
+                socket.close();
+                std::clog << "[UNKNOW ERROR]" << std::endl;
             }
         }
     }

@@ -5,7 +5,7 @@
 
 namespace lib::exceptions {
 
-    class TransferError : public BaseException {
+    struct TransferError : public BaseException {
     public:
         explicit TransferError(std::string_view message) :
                 BaseException( message, network::Response::ConnectionError) {}
