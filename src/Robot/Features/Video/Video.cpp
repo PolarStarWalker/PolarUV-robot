@@ -26,7 +26,6 @@ inline void Video::StartVideo(const std::string &pipeline) {
     if (pid == 0) {
         ///Create group for child process and his childs
         setpgid(0, 0);
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         execlp("bash", "bash", "pipeline", nullptr);
     }
 
