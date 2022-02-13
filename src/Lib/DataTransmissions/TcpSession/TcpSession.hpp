@@ -37,8 +37,6 @@ namespace lib::network {
         IService &FindService(ssize_t key);
 
         Map services_;
-
-        std::thread thread_;
     };
 
 
@@ -50,10 +48,19 @@ namespace lib::network {
                          !std::is_move_assignable_v<Service>;
 
     struct IService : std::enable_shared_from_this<IService> {
+
         using Response = lib::network::Response;
 
         explicit IService(ssize_t serviceId) :
                 serviceId_(serviceId) {}
+    public:
+        Response ReadData(std::string_view &data);
+
+        Response WriteData(std::string_view &data);
+
+        Response WriteReadData(std::string_view &data);
+
+    protected:
 
         virtual bool ReadValidate(std::string_view &data);
 
@@ -69,6 +76,8 @@ namespace lib::network {
 
         ///ToDo: когда-нибудь переехать на строки
         const ssize_t serviceId_;
+
+    public:
 
         template<is_service Service, typename... Args>
         static std::shared_ptr<Service> RegisterService(Args &&...args) {

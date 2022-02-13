@@ -1,6 +1,5 @@
 #pragma once
 #include "./CommandsProtocol/CommandsProtocol.hpp"
-#include "./RobotVideoProtocol/RobotVideoProtocol.hpp"
 #include "./MotorsSender/IMotorsSender.hpp"
 #include "./StartSettings/StartSettings.hpp"
 

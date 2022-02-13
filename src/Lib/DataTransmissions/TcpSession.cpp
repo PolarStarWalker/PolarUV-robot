@@ -77,27 +77,15 @@ inline Response DoAction(IService &service, const RequestHeaderType &header, con
 
     std::string_view data(dataBuffer.data(), header.Length);
 
-    auto run = [&](Response(IService::*action)(std::string_view &data),
-                   bool(IService::*validate)(std::string_view &data)) {
-
-        std::clog << "\n[VALIDATE]\n" << std::endl;
-        (service.*validate)(data);
-        std::clog << "\n[START ACTION]\n" << std::endl;
-        Response response = (service.*action)(data);
-        std::clog << "\n[ACTIONS DONE]\n" << std::endl;
-
-        return response;
-    };
-
     switch (header.Type) {
         case TypeEnum::R:
-            return run(&IService::Read, &IService::ReadValidate);
+            return service.ReadData(data);
 
         case TypeEnum::W:
-            return run(&IService::Write, &IService::WriteValidate);
+            return service.WriteData(data);
 
         case TypeEnum::RW:
-            return run(&IService::WriteRead, &IService::WriteReadValidate);
+            return service.WriteReadData(data);
 
         default:
             throw lib::exceptions::NotFount("Такой типа запроса не определён библиотекой");
@@ -167,7 +155,6 @@ void TcpSession::Start() {
             }
         }
     }
-
 }
 
 TcpSession &TcpSession::GetInstance() {
@@ -186,6 +173,42 @@ inline IService &TcpSession::FindService(ssize_t key) {
 
 
 /*****************IService member functions*************************/
+inline Response IService::ReadData(std::string_view &data){
+
+    EASY_FUNCTION(profiler::colors::Magenta); // Magenta block with name "Read"
+    EASY_BLOCK("Calculating sum"); // Begin block with default color == Amber100
+
+    std::clog << "\n[VALIDATE]\n" << std::endl;
+    ReadValidate(data);
+    std::clog << "\n[START ACTION]\n" << std::endl;
+    auto response = Read(data);
+    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
+
+    return response;
+}
+
+inline Response IService::WriteData(std::string_view &data){
+
+    std::clog << "\n[VALIDATE]\n" << std::endl;
+    WriteValidate(data);
+    std::clog << "\n[START ACTION]\n" << std::endl;
+    auto response = Write(data);
+    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
+
+    return response;
+}
+
+inline Response IService::WriteReadData(std::string_view &data){
+
+    std::clog << "\n[VALIDATE]\n" << std::endl;
+    WriteReadValidate(data);
+    std::clog << "\n[START ACTION]\n" << std::endl;
+    auto response = WriteRead(data);
+    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
+
+    return response;
+}
+
 Response IService::Read(std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
 
 Response IService::Write(std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }

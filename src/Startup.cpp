@@ -8,12 +8,6 @@ int main() {
     Robot robot;
     robot.SetUp();
     robot.Start();
-//    std::thread thread(&Robot::Start, std::ref(robot));
-//    thread.join();
-
-    ///OldStart VideoProtocol in background
-    DataProtocols::RobotVideoProtocol robotVideoProtocol;
-    robotVideoProtocol.StartAsync();
 
     auto settings = StartSettings::Get();
     auto &motorsSender = settings.GetMotorsSender();

@@ -5,7 +5,7 @@ add_subdirectory(Video)
 add_subdirectory(Sensors)
 add_subdirectory(Commands)
 
-add_library(Features Features.hpp CommandsProtocol.cpp BaseProtocol.cpp RobotVideoProtocol.cpp StartSettings.cpp)
+add_library(Features Features.hpp CommandsProtocol.cpp BaseProtocol.cpp StartSettings.cpp)
 
 target_link_libraries(Features pthread)
 target_link_libraries(Features RobotSettings)
