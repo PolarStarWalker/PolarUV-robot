@@ -32,44 +32,44 @@ inline BoostSocket GetConnection(IOContext &ioContext) {
 }
 
 template<size_t buffer_size>
-inline std::pair<RequestHeaderType, size_t> ReadData(BoostSocket &socket, Buffer<buffer_size> &buffer) {
-    //using namespace boost::asio;
+inline RequestHeaderType ReadData(BoostSocket &socket, Buffer<buffer_size> &buffer) {
 
     boost::asio::mutable_buffer (*MakeBuffer)(void *, size_t) = boost::asio::buffer;
     boost::asio::detail::transfer_exactly_t (*TransferExactly)(size_t) = boost::asio::transfer_exactly;
 
     RequestHeaderType header;
 
-    std::size_t length = boost::asio::read(socket,
-                                           MakeBuffer((char *) &header, REQUEST_HEADER_SIZE),
-                                           TransferExactly(REQUEST_HEADER_SIZE));
+    boost::asio::read(socket,
+                      MakeBuffer((char *) &header, REQUEST_HEADER_SIZE),
+                      TransferExactly(REQUEST_HEADER_SIZE));
 
-    std::clog << "[HEADER SIZE]: " << REQUEST_HEADER_SIZE << std::endl;
-
-    std::clog << "[REQUEST TYPE]: " << (size_t) header.Type
-              << "\n[ENDPOINT]: " << header.EndpointId
-              << "\n[DATA LENGTH]: " << header.Length << std::endl;
+//    std::clog << "[HEADER SIZE]: " << REQUEST_HEADER_SIZE << std::endl;
+//
+//    std::clog << "[REQUEST TYPE]: " << (size_t) header.Type
+//              << "\n[ENDPOINT]: " << header.EndpointId
+//              << "\n[DATA LENGTH]: " << header.Length << std::endl;
 
     ///если посылка входящих данных больше чем буфер
     if (header.Length > buffer_size)
         throw lib::exceptions::BufferOverflow("Переполнение буфера");
 
 
-    std::size_t readBytes = boost::asio::read(socket,
-                                              MakeBuffer(buffer.data(), header.Length),
-                                              TransferExactly(header.Length));
+    if (header.Length > 0)
+        boost::asio::read(socket,
+                          MakeBuffer(buffer.data(), header.Length),
+                          TransferExactly(header.Length));
 
-    length += readBytes;
-    std::cout << "[BYTES RECEIVE]: " << length << '\0' << std::endl;
 
-    std::clog << "[DATA RECEIVED]: " << '|';
-    for (size_t i = 0; i < header.Length; ++i) {
-        std::clog << (int32_t) buffer[i] << '|';
-    }
+//    std::cout << "[BYTES RECEIVE]: " << length << '\0' << std::endl;
+//
+//    std::clog << "[DATA RECEIVED]: " << '|';
+//    for (size_t i = 0; i < header.Length; ++i) {
+//        std::clog << (int32_t) buffer[i] << '|';
+//    }
 
-    std::clog << std::endl;
+//    std::clog << std::endl;
 
-    return {header, length};
+    return header;
 }
 
 template<size_t buffer_size>
@@ -92,27 +92,24 @@ inline Response DoAction(IService &service, const RequestHeaderType &header, con
     }
 }
 
-inline std::pair<Response::HeaderType, size_t> SendResponse(BoostSocket &socket, const Response &response) {
+inline void SendResponse(BoostSocket &socket, const Response &response) {
+    using namespace boost::asio;
 
-    boost::asio::mutable_buffer (*MakeBuffer)(void *, size_t) = boost::asio::buffer;
-    boost::asio::detail::transfer_exactly_t (*TransferExactly)(size_t) = boost::asio::transfer_exactly;
+    std::array<boost::asio::const_buffer, 2> responseData{
+            boost::asio::const_buffer(&response.Header, RESPONSE_HEADER_SIZE),
+            boost::asio::const_buffer(response.Data.data(), response.Header.Length)};
 
     auto &header = response.Header;
 
-    size_t length = boost::asio::write(socket,
-                                       MakeBuffer((void *) &header, RESPONSE_HEADER_SIZE),
-                                       TransferExactly(RESPONSE_HEADER_SIZE));
-
-    if (header.Length > 0)
-        length += boost::asio::write(socket,
-                                     boost::asio::buffer(response.Data.data(), header.Length),
-                                     TransferExactly(header.Length));
-
-    return {response.Header, length};
+    boost::asio::write(socket,
+                       responseData,
+                       boost::asio::transfer_exactly(RESPONSE_HEADER_SIZE + response.Header.Length));
 }
+
 
 /*****************TcpSession member functions*************************/
 void TcpSession::Start() {
+    using TimePoint = std::chrono::steady_clock::time_point;
 
     Buffer<BUFFER_SIZE> buffer{};
 
@@ -126,18 +123,18 @@ void TcpSession::Start() {
 
             try {
 
-                auto[requestHeader, requestLength] = ReadData(socket, buffer);
-
-                if (requestLength != requestHeader.Length + REQUEST_HEADER_SIZE)
-                    throw exceptions::TransferError("Проблемы с передачей данных");
+                TimePoint requestBegin = std::chrono::steady_clock::now();
+                auto requestHeader = ReadData(socket, buffer);
 
                 auto &service = FindService(requestHeader.EndpointId);
                 auto response = DoAction(service, requestHeader, buffer);
 
-                auto[responseHeader, responseLength] = SendResponse(socket, response);
+                SendResponse(socket, response);
 
-                if (responseLength != responseHeader.Length + RESPONSE_HEADER_SIZE)
-                    throw exceptions::TransferError("Проблемы с передачей данных");
+                TimePoint end = std::chrono::steady_clock::now();
+                std::cout << "Request Time = "
+                          << std::chrono::duration_cast<std::chrono::microseconds>(end - requestBegin).count()
+                          << "[us]" << std::endl;
 
             } catch (lib::exceptions::BufferOverflow &e) {
                 Response response(std::string(e.Message), e.Code, -1);
@@ -147,7 +144,7 @@ void TcpSession::Start() {
                 SendResponse(socket, response);
             } catch (const std::exception &e) {
                 socket.close();
-                std::clog << "[UNKNOW ERROR]" << std::endl;
+                std::clog << "[UNKNOW ERROR] " << e.what() << std::endl;
             }
             catch (...) {
                 socket.close();
@@ -166,45 +163,42 @@ inline IService &TcpSession::FindService(ssize_t key) {
     auto item = services_.find(key);
 
     if (item == services_.end())
-        throw lib::exceptions::NotFount("Эндпоинт не найден");
+        throw lib::exceptions::NotFount("Endpoint not found");
 
     return *(item->second);
 }
 
 
 /*****************IService member functions*************************/
-inline Response IService::ReadData(std::string_view &data){
+inline Response IService::ReadData(std::string_view &data) {
 
-    EASY_FUNCTION(profiler::colors::Magenta); // Magenta block with name "Read"
-    EASY_BLOCK("Calculating sum"); // Begin block with default color == Amber100
-
-    std::clog << "\n[VALIDATE]\n" << std::endl;
+//    std::clog << "\n[VALIDATE]\n" << std::endl;
     ReadValidate(data);
-    std::clog << "\n[START ACTION]\n" << std::endl;
+//    std::clog << "\n[START ACTION]\n" << std::endl;
     auto response = Read(data);
-    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
+//    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
 
     return response;
 }
 
-inline Response IService::WriteData(std::string_view &data){
+inline Response IService::WriteData(std::string_view &data) {
 
-    std::clog << "\n[VALIDATE]\n" << std::endl;
+//    std::clog << "\n[VALIDATE]\n" << std::endl;
     WriteValidate(data);
-    std::clog << "\n[START ACTION]\n" << std::endl;
+//    std::clog << "\n[START ACTION]\n" << std::endl;
     auto response = Write(data);
-    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
+//    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
 
     return response;
 }
 
-inline Response IService::WriteReadData(std::string_view &data){
+inline Response IService::WriteReadData(std::string_view &data) {
 
-    std::clog << "\n[VALIDATE]\n" << std::endl;
+//    std::clog << "\n[VALIDATE]\n" << std::endl;
     WriteReadValidate(data);
-    std::clog << "\n[START ACTION]\n" << std::endl;
+//    std::clog << "\n[START ACTION]\n" << std::endl;
     auto response = WriteRead(data);
-    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
+//    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
 
     return response;
 }
