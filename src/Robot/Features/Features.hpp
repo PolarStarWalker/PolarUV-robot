@@ -1,13 +1,11 @@
 #pragma once
-#include "./CommandsProtocol/CommandsProtocol.hpp"
+/*Interfaces*/
 #include "./MotorsSender/IMotorsSender.hpp"
+#include "./MotorsSender/SPI.hpp"
 #include "./StartSettings/StartSettings.hpp"
 
+/*Features*/
 #include "./RobotSettings/RobotSettings.hpp"
 #include "./Video/Video.hpp"
 #include "./Sensors/Sensors.hpp"
 #include "./Commands/Commands.hpp"
-
-#include "./MotorsSender/SPI.hpp"
-#include "./CommandsReceiver/Network.hpp"
-#include "./StartSettings/StartSettings.hpp"

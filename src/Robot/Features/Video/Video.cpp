@@ -1,4 +1,5 @@
 #include <wait.h>
+#include <unistd.h>
 #include <fstream>
 #include "Video.hpp"
 #include "./VideoMessage.pb.h"

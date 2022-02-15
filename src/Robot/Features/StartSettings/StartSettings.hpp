@@ -5,9 +5,6 @@
 #include "../MotorsSender/IMotorsSender.hpp"
 #include "../MotorsSender/SPI.hpp"
 
-#include "../CommandsReceiver/ICommandsReceiver.hpp"
-#include "../CommandsReceiver/Network.hpp"
-
 #include "Math/SIPrefix.hpp"
 
 class StartSettings {
@@ -29,20 +26,11 @@ public:
         std::terminate();
     }
 
-    CommandsReceiver::ICommandsReceiver &GetCommandsReceiver() {
-        switch (_commandsReceiverId) {
-            case CommandsReceiver::Net:
-                static class CommandsReceiver::Network net(1999);
-                return net;
-        }
-        std::terminate();
-    }
 
 private:
 
-    StartSettings() : _motorsSenderId(MotorsSender::SPI), _commandsReceiverId(CommandsReceiver::Net){}
+    StartSettings() : _motorsSenderId(MotorsSender::SPI){}
 
-    CommandsReceiver::Id _commandsReceiverId;
     MotorsSender::Id _motorsSenderId;
 };
 

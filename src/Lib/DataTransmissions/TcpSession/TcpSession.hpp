@@ -2,8 +2,9 @@
 #define ROBOT_TCPSESSION_HPP
 
 #include <unordered_map>
+#include <memory>
 #include <type_traits>
-#include <boost/asio.hpp>
+#include <Exceptions/Exceptions.hpp>
 #include "Packet.hpp"
 
 
@@ -48,12 +49,16 @@ namespace lib::network {
                          !std::is_move_assignable_v<Service>;
 
     struct IService : std::enable_shared_from_this<IService> {
+        friend TcpSession;
+    protected:
 
         using Response = lib::network::Response;
 
         explicit IService(ssize_t serviceId) :
                 serviceId_(serviceId) {}
-    public:
+
+    private:
+
         Response ReadData(std::string_view &data);
 
         Response WriteData(std::string_view &data);
@@ -88,6 +93,28 @@ namespace lib::network {
 
             return service;
         };
+
+
+    private:
+        template<size_t buffer_size>
+        Response DoAction(const RequestHeaderType &header, const std::array<char, buffer_size> &dataBuffer) {
+
+            std::string_view data(dataBuffer.data(), header.Length);
+
+            switch (header.Type) {
+                case TypeEnum::R:
+                    return this->ReadData(data);
+
+                case TypeEnum::W:
+                    return this->WriteData(data);
+
+                case TypeEnum::RW:
+                    return this->WriteReadData(data);
+
+                default:
+                    throw lib::exceptions::NotFount("Такой типа запроса не определён библиотекой");
+            }
+        }
     };
 }
 #endif

@@ -1,3 +1,4 @@
+#include <boost/asio.hpp>
 #include <iostream>
 #include <memory_resource>
 #include "Exceptions/Exceptions.hpp"
@@ -72,25 +73,6 @@ inline RequestHeaderType ReadData(BoostSocket &socket, Buffer<buffer_size> &buff
     return header;
 }
 
-template<size_t buffer_size>
-inline Response DoAction(IService &service, const RequestHeaderType &header, const Buffer<buffer_size> &dataBuffer) {
-
-    std::string_view data(dataBuffer.data(), header.Length);
-
-    switch (header.Type) {
-        case TypeEnum::R:
-            return service.ReadData(data);
-
-        case TypeEnum::W:
-            return service.WriteData(data);
-
-        case TypeEnum::RW:
-            return service.WriteReadData(data);
-
-        default:
-            throw lib::exceptions::NotFount("Такой типа запроса не определён библиотекой");
-    }
-}
 
 inline void SendResponse(BoostSocket &socket, const Response &response) {
     using namespace boost::asio;
@@ -123,11 +105,11 @@ void TcpSession::Start() {
 
             try {
 
-                TimePoint requestBegin = std::chrono::steady_clock::now();
                 auto requestHeader = ReadData(socket, buffer);
 
+                TimePoint requestBegin = std::chrono::steady_clock::now();
                 auto &service = FindService(requestHeader.EndpointId);
-                auto response = DoAction(service, requestHeader, buffer);
+                auto response = service.DoAction(requestHeader, buffer);
 
                 SendResponse(socket, response);
 

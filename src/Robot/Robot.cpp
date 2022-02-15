@@ -5,16 +5,6 @@
 using namespace app;
 using IService = lib::network::IService;
 
-Robot::Robot() :
-        robotSettings_(IService::RegisterService<RobotSettings>(0, "robot-settings.json")),
-        sensors_(IService::RegisterService<Sensors>(1, "/dev/i2c-1")),
-        startSettings_(StartSettings::Get()),
-        motorsSender_(startSettings_.GetMotorsSender()){
-
-    IService::RegisterService<Video>(2);
-    IService::RegisterService<CommandsService>(3, &motorsSender_, sensors_, robotSettings_);
-}
-
 ///set max sched priority
 inline void SetProcessMaxPriority() {
     struct sched_param process{};
@@ -24,6 +14,15 @@ inline void SetProcessMaxPriority() {
 
 inline void InitService() {}
 
+Robot::Robot() :
+        robotSettings_(IService::RegisterService<RobotSettings>(0, "robot-settings.json")),
+        sensors_(IService::RegisterService<Sensors>(1, "/dev/i2c-1")),
+        startSettings_(StartSettings::Get()),
+        motorsSender_(startSettings_.GetMotorsSender()){
+
+    IService::RegisterService<Video>(2);
+    IService::RegisterService<CommandsService>(3, &motorsSender_, sensors_, robotSettings_);
+}
 
 void Robot::SetUp() {
     SetProcessMaxPriority();
