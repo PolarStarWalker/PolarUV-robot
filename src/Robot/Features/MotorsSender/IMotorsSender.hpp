@@ -1,6 +1,8 @@
 #ifndef ROBOT_IMOTORSSENDER_HPP
 #define ROBOT_IMOTORSSENDER_HPP
 
+#include <cstdint>
+
 namespace MotorsSender {
 
     struct MotorsStruct {
@@ -21,11 +23,11 @@ namespace MotorsSender {
         DShotMode TimerPrescaler = DShot300;
     };
 
-    constexpr size_t MotorsStructArrayLength = sizeof(MotorsStruct::HiPWM);
-    constexpr size_t MotorsStructLen = sizeof(MotorsStruct);
-    constexpr size_t MotorsStructLenMessage = MotorsStructLen + 4;
+    constexpr std::size_t MotorsStructArrayLength = sizeof(MotorsStruct::HiPWM);
+    constexpr std::size_t MotorsStructLen = sizeof(MotorsStruct);
+    constexpr std::size_t MotorsStructLenMessage = MotorsStructLen + 4;
 
-    enum Id : size_t {
+    enum Id : std::size_t {
         SPI = 0
     };
 

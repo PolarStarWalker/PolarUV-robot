@@ -23,13 +23,13 @@ inline MotorsSender::MotorsStruct FormMotorsStruct(const StaticVector<float, 12>
     return motors;
 }
 
-lib::network::Response CommandsService::WriteRead(std::string_view &data) {
-
-    std::string response(sizeof(SensorsStruct), 0);
-    auto& sensorsStruct = *((SensorsStruct*) response.c_str());
-    sensorsStruct = sensors_->GetSensorsStruct();
+lib::network::Response CommandsService::Write(std::string_view &data) {
 
     const auto& commands = *((CommandsStruct*) data.data());
+
+    if(commands.Stabilization != CommandsStruct::None){
+        auto sensorsStruct = sensors_->GetSensorsStruct();
+    }
 
     const auto& settings = settings_->GetSettings();
 
@@ -49,5 +49,5 @@ lib::network::Response CommandsService::WriteRead(std::string_view &data) {
 
     motorsSender_->SendMotorsStruct(motorsStruct);
 
-    return {std::move(response), lib::network::Response::Ok, serviceId_};
+    return {"", lib::network::Response::NoContent, serviceId_};
 }

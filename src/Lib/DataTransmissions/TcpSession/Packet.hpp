@@ -56,6 +56,19 @@ namespace lib::network {
                 Data(std::move(response.Data)),
                 Header(response.Header) {}
 
+
+        template<typename Returned, class Obj, typename ... Args>
+        static std::string GetData(Returned (Obj::*func)(Args...) const, const Obj* obj, Args&& ... args){
+
+            std::string data(sizeof(Returned), 0);
+
+            auto& typedData = (Returned&) *data.c_str();
+
+            typedData = (obj->*func)(std::forward(args)...);
+
+            return data;
+        }
+
         explicit operator bool() const { return Header.Code == Ok || Header.Code == NoContent; }
     };
 

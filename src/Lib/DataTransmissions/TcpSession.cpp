@@ -10,11 +10,15 @@ using IOContext = boost::asio::io_context;
 using BoostSocket = boost::asio::ip::tcp::socket;
 using Acceptor = boost::asio::ip::tcp::acceptor;
 using Endpoint = boost::asio::ip::tcp::endpoint;
+using ConstBuffer = boost::asio::const_buffer;
+using MutableBuffer = boost::asio::mutable_buffer;
+
 template<size_t buffer_size>
 using Buffer = std::array<char, buffer_size>;
 
 constexpr size_t REQUEST_HEADER_SIZE = sizeof(RequestHeaderType);
 constexpr size_t RESPONSE_HEADER_SIZE = sizeof(Response::HeaderType);
+
 constexpr uint16_t PORT = TcpSession::PORT;
 
 inline BoostSocket GetConnection(IOContext &ioContext) {
@@ -35,14 +39,11 @@ inline BoostSocket GetConnection(IOContext &ioContext) {
 template<size_t buffer_size>
 inline RequestHeaderType ReadData(BoostSocket &socket, Buffer<buffer_size> &buffer) {
 
-    boost::asio::mutable_buffer (*MakeBuffer)(void *, size_t) = boost::asio::buffer;
-    boost::asio::detail::transfer_exactly_t (*TransferExactly)(size_t) = boost::asio::transfer_exactly;
-
     RequestHeaderType header;
 
     boost::asio::read(socket,
-                      MakeBuffer((char *) &header, REQUEST_HEADER_SIZE),
-                      TransferExactly(REQUEST_HEADER_SIZE));
+                      MutableBuffer((char *) &header, REQUEST_HEADER_SIZE),
+                      boost::asio::transfer_exactly(REQUEST_HEADER_SIZE));
 
 //    std::clog << "[HEADER SIZE]: " << REQUEST_HEADER_SIZE << std::endl;
 //
@@ -57,8 +58,8 @@ inline RequestHeaderType ReadData(BoostSocket &socket, Buffer<buffer_size> &buff
 
     if (header.Length > 0)
         boost::asio::read(socket,
-                          MakeBuffer(buffer.data(), header.Length),
-                          TransferExactly(header.Length));
+                          MutableBuffer(buffer.data(), header.Length),
+                          boost::asio::transfer_exactly(header.Length));
 
 
 //    std::cout << "[BYTES RECEIVE]: " << length << '\0' << std::endl;
@@ -75,13 +76,9 @@ inline RequestHeaderType ReadData(BoostSocket &socket, Buffer<buffer_size> &buff
 
 
 inline void SendResponse(BoostSocket &socket, const Response &response) {
-    using namespace boost::asio;
-
-    std::array<boost::asio::const_buffer, 2> responseData{
-            boost::asio::const_buffer(&response.Header, RESPONSE_HEADER_SIZE),
-            boost::asio::const_buffer(response.Data.data(), response.Header.Length)};
-
-    auto &header = response.Header;
+    std::array<ConstBuffer, 2> responseData{
+            ConstBuffer(&response.Header, RESPONSE_HEADER_SIZE),
+            ConstBuffer(response.Data.data(), response.Header.Length)};
 
     boost::asio::write(socket,
                        responseData,
@@ -114,7 +111,7 @@ void TcpSession::Start() {
                 SendResponse(socket, response);
 
                 TimePoint end = std::chrono::steady_clock::now();
-                std::cout << "Request Time = "
+                std::cout << "Execution time = "
                           << std::chrono::duration_cast<std::chrono::microseconds>(end - requestBegin).count()
                           << "[us]" << std::endl;
 
@@ -126,11 +123,11 @@ void TcpSession::Start() {
                 SendResponse(socket, response);
             } catch (const std::exception &e) {
                 socket.close();
-                std::clog << "[UNKNOW ERROR] " << e.what() << std::endl;
+                std::clog << "[UNKNOWN ERROR] " << e.what() << std::endl;
             }
             catch (...) {
                 socket.close();
-                std::clog << "[UNKNOW ERROR]" << std::endl;
+                std::clog << "[UNKNOWN ERROR]" << std::endl;
             }
         }
     }
@@ -196,6 +193,3 @@ bool IService::ReadValidate(std::string_view &data) { return true; }
 bool IService::WriteValidate(std::string_view &data) { return true; }
 
 bool IService::WriteReadValidate(std::string_view &data) { return false; }
-
-
-

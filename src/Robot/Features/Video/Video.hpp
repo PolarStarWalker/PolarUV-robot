@@ -1,6 +1,8 @@
 #ifndef ROBOT_VIDEO_HPP
 #define ROBOT_VIDEO_HPP
 
+#include <linux/videodev2.h>
+
 #include "./DataTransmissions/TcpSession/TcpSession.hpp"
 
 namespace app {

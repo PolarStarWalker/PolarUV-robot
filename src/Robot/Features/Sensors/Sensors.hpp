@@ -16,9 +16,9 @@ namespace app {
             W = 3
         };
 
-        float Rotation[4]{};
+        std::array<float, 4> Rotation{};
 
-        float Acceleration[3]{};
+        std::array<float, 3> Acceleration{};
 
         float Depth = 0.0f;
 
@@ -26,7 +26,7 @@ namespace app {
 
         float BatteryVoltage = 0.0f;
 
-        int8_t MotionCalibration[4]{};
+        std::array<int8_t, 4> MotionCalibration{};
 
         bool Euler = true;
     };
@@ -34,25 +34,24 @@ namespace app {
     //TODO: сделать сервис для датчиков
     class Sensors final : public lib::network::IService {
     public:
-        Sensors(ssize_t id, std::string_view i2c) :
-                lib::network::IService(id),
-                peripheralHandler_(i2c, Kilo(10)),
-                bno055_(BNO055_I2C::GetInstance()),
-                ms5837_(MS5837_ADDRESS) {
-
-            peripheralHandler_.AddI2CSensor(bno055_);
-            peripheralHandler_.AddI2CSensor(ms5837_);
-            peripheralHandler_.StartAsync();
-
-        };
+        Sensors(ssize_t id, std::string_view i2c);
 
         Sensors(const Sensors &) = delete;
-
         Sensors(Sensors &&) = delete;
-
         Sensors &operator=(const Sensors &) = delete;
-
         Sensors &operator=(Sensors &&) = delete;
+
+    public:
+        Response Read(std::string_view &data) final;
+
+    private:
+
+        PeripheralHandler peripheralHandler_;
+
+        BNO055_I2C &bno055_;
+        MS5837_I2C ms5837_;
+
+    public:
 
         inline SensorsStruct GetSensorsStruct() const{
             BNO055::Data bnoData = bno055_.GetData();
@@ -77,13 +76,6 @@ namespace app {
 
             return sensorsStruct;
         }
-
-    private:
-
-        PeripheralHandler peripheralHandler_;
-
-        BNO055_I2C &bno055_;
-        MS5837_I2C ms5837_;
     };
 }
 
