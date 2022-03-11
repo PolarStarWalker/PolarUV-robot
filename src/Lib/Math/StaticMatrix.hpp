@@ -12,7 +12,7 @@
 #include "./StaticVector/StaticVector.hpp"
 
 template<typename Type, const size_t Rows, const size_t Columns> requires std::is_arithmetic_v<Type>
-class StaticMatrix {
+struct StaticMatrix {
 private:
 
     Type _elements[Rows * Columns]{};
@@ -32,11 +32,7 @@ public:
 
     StaticMatrix() = default;
 
-    StaticMatrix(const MatrixType &matrix);
-
-    StaticMatrix(const Type *array, size_t rows);
-
-    ~StaticMatrix() = default;
+    StaticMatrix(const MatrixType &matrix) = default;
 
     Type *operator[](size_t index) { return &(_elements[Columns * index]); }
 
@@ -49,8 +45,6 @@ public:
     Type *begin() { return _elements; }
 
     Type *end() { return _elements + Rows * Columns; }
-
-    MatrixType &operator=(const MatrixType &) noexcept;
 
     MatrixType &operator*=(Type value);
 
@@ -93,34 +87,6 @@ public:
         return stream;
     }
 };
-
-
-template<typename Type, size_t Rows, size_t Columns>
-requires std::is_arithmetic_v<Type>
-StaticMatrix<Type, Rows, Columns>::StaticMatrix(const StaticMatrix<Type, Rows, Columns> &matrix) {
-    for (size_t i = 0; i < Rows * Columns; ++i)
-        _elements[i] = matrix._elements[i];
-}
-
-template<typename Type, size_t Rows, size_t Columns>
-requires std::is_arithmetic_v<Type>
-StaticMatrix<Type, Rows, Columns>::StaticMatrix(const Type *array, size_t rows) {
-    for (size_t i = 0; i < Columns * rows; ++i)
-        _elements[i] = array[i];
-}
-
-template<typename Type, size_t Rows, size_t Columns>
-requires std::is_arithmetic_v<Type>
-StaticMatrix<Type, Rows, Columns> &
-StaticMatrix<Type, Rows, Columns>::operator=(const StaticMatrix<Type, Rows, Columns> &matrix) noexcept {
-    if (&matrix == this)
-        return *this;
-
-    for (ssize_t i = 0; i < Rows * Columns; i++)
-        _elements[i] *= matrix._elements[i];
-
-    return *this;
-}
 
 template<typename Type, size_t Rows, size_t Columns>
 requires std::is_arithmetic_v<Type>
@@ -197,24 +163,24 @@ StaticMatrix<Type, Rows, Columns> &StaticMatrix<Type, Rows, Columns>::operator+=
 template<typename Type, size_t Rows, size_t Columns>
 requires std::is_arithmetic_v<Type>
 StaticVector<Type, Rows> StaticMatrix<Type, Rows, Columns>::operator*(const StaticVector<Type, Columns> &inVector)
-        const noexcept requires IsFloat32<Type> {
+const noexcept requires IsFloat32<Type> {
+
+    constexpr size_t iterationCount = GetIterationCount<Type>(Columns);
+    constexpr size_t alignment = GetAlignment<Type>(Columns);
 
     StaticVector<Type, Rows> outVector;
-
-    const size_t iterationCount = GetIterationCount<Type>(Rows * Columns);
-    const size_t alignment = GetAlignment<Type>(Rows * Columns);
 
     const auto *inVectorArray = (const float32x4_t *) &inVector[0];
 
     for (size_t i = 0; i < Rows; ++i) {
-        const auto *matrixArray = (const float32x4_t *) operator[](i);
+        const auto *matrixArray = (const float32x4_t *) (_elements + Columns * i);
 
         for (size_t j = 0; j < iterationCount; ++j) {
             float32x4_t buf = vmulq_f32(matrixArray[j], inVectorArray[j]);
             outVector[i] += vaddvq_f32(buf);
         }
 
-        if (alignment == 0)
+        if constexpr(alignment == 0)
             continue;
 
         for (size_t j = Columns - iterationCount; j < Columns; j++) {

@@ -16,6 +16,7 @@ namespace app {
         Video& operator=(Video&&) = delete;
 
         explicit Video(ssize_t id);
+        ~Video();
         Response Write(std::string_view &action) final;
 
     private:

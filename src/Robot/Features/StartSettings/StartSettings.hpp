@@ -20,7 +20,7 @@ public:
     MotorsSender::IMotorsSender &GetMotorsSender() {
         switch (_motorsSenderId) {
             case MotorsSender::SPI:
-                static class MotorsSender::SPI spi( "/dev/spidev0.0", Mega(35));
+                static class MotorsSender::SPI spi( "/dev/spidev0.0", Mega(6));
                 return spi;
         }
         std::terminate();

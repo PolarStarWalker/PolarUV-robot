@@ -19,4 +19,4 @@ lib::network::Response Sensors::Read(std::string_view &data) {
     std::string outputData = Response::GetData(&Sensors::GetSensorsStruct, this);
 
     return {std::move(outputData), lib::network::Response::Ok, serviceId_};
-};
+}

@@ -111,9 +111,9 @@ void TcpSession::Start() {
                 SendResponse(socket, response);
 
                 TimePoint end = std::chrono::steady_clock::now();
-                std::cout << "Execution time = "
-                          << std::chrono::duration_cast<std::chrono::microseconds>(end - requestBegin).count()
-                          << "[us]" << std::endl;
+//                std::cout << "Execution time = "
+//                          << std::chrono::duration_cast<std::chrono::microseconds>(end - requestBegin).count()
+//                          << "[us]" << std::endl;
 
             } catch (lib::exceptions::BufferOverflow &e) {
                 Response response(std::string(e.Message), e.Code, -1);

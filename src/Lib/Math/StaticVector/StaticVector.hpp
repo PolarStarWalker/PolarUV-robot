@@ -12,9 +12,9 @@
 #include <array>
 
 template<typename Type, size_t VectorSize> requires std::is_arithmetic_v<Type>
-class StaticVector {
+struct StaticVector {
 private:
-    Type _elements[VectorSize];
+    Type _elements[VectorSize]{};
 
     using StaticVectorType = StaticVector<Type, VectorSize>;
 
@@ -22,15 +22,11 @@ public:
 
     StaticVector() : _elements{} {};
 
-    StaticVector(const StaticVector<Type, VectorSize> &vector) noexcept;
+    StaticVector(const StaticVector<Type, VectorSize> &vector) = default;
 
     explicit StaticVector(const std::array<Type, VectorSize> &array) noexcept;
 
     StaticVector(std::initializer_list<Type> list);
-
-    explicit StaticVector(const Type *data, size_t size) noexcept;
-
-    ~StaticVector() = default;
 
     [[nodiscard]] size_t Size() const noexcept { return VectorSize; }
 
@@ -83,24 +79,9 @@ StaticVector<Type, VectorSize>::StaticVector(const std::initializer_list<Type> l
 
 template<typename Type, size_t VectorSize>
 requires std::is_arithmetic_v<Type>
-StaticVector<Type, VectorSize>::StaticVector(const StaticVector<Type, VectorSize> &vector) noexcept {
-    for (size_t i = 0; i < VectorSize; i++)
-        _elements[i] = vector._elements[i];
-}
-
-template<typename Type, size_t VectorSize>
-requires std::is_arithmetic_v<Type>
 StaticVector<Type, VectorSize>::StaticVector(const std::array<Type, VectorSize> &array) noexcept {
     for (size_t i = 0; i < VectorSize; ++i)
         _elements[i] = array[i];
-}
-
-
-template<typename Type, size_t VectorSize>
-requires std::is_arithmetic_v<Type>
-StaticVector<Type, VectorSize>::StaticVector(const Type *data, size_t Size) noexcept {
-    for (size_t i = 0; i < Size; ++i)
-        _elements[i] = data[i];
 }
 
 template<typename Type, size_t VectorSize>

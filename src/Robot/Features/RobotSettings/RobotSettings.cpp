@@ -7,28 +7,33 @@
 using namespace app;
 using Response = lib::network::Response;
 
-inline RobotSettingsData ParseSettings(const RobotSettingsMessage &message) {
+inline void ParseSettings(const RobotSettingsMessage &message, RobotSettingsData &data) {
 
-    RobotSettingsData settings{};
+    //ToDo: сделать в виде чистой функции
 
-    settings.HandFreedom = message.hand_coefficient_size();
-    auto &hand_coefficient = message.hand_coefficient();
-    for (size_t i = 0; i < settings.HandFreedom; ++i)
-        settings.HandCoefficientArray[i] = hand_coefficient[i];
+    data.HandFreedom = message.hand_coefficient_size();
+    const auto &hand_coefficient = message.hand_coefficient();
+    for (size_t i = 0; i < data.HandFreedom; ++i)
+        data.HandCoefficientArray[i] = hand_coefficient[i];
 
-    settings.ThrustersNumber = message.thrusters_coefficient_size() / 6;
-    auto &thrusters_coefficient = message.thrusters_coefficient();
-    for (size_t i = 0; i < settings.ThrustersNumber; ++i)
-        settings.ThrustersCoefficientArray.begin()[i] = thrusters_coefficient[i];
+    data.ThrustersNumber = message.thrusters_coefficient_size() / 6;
+    const auto &thrusters_coefficient = message.thrusters_coefficient();
+    for (size_t i = 0; i < message.thrusters_coefficient_size(); ++i) {
+        auto value = thrusters_coefficient[i];
+        data.ThrustersCoefficientArray.begin()[i] = value;
+    }
 
-    return settings;
+    //std::cout << data << std::endl;
 }
 
 
 RobotSettings::RobotSettings(ssize_t id, std::string_view filename) :
         lib::network::IService(id),
-        filename_(filename) {
-    settings_ = GetSettingsFromDisk();
+        filename_(filename),
+        settings_() {
+    settings_.HandFreedom = 2;
+    settings_.ThrustersNumber = 8;
+    //settings_ = GetSettingsFromDisk();
 }
 
 bool RobotSettings::WriteValidate(std::string_view &robotSettings) {
@@ -70,7 +75,9 @@ Response RobotSettings::Write(std::string_view &robotSettings) {
 
     RobotSettingsMessage message;
     message.ParseFromArray(robotSettings.data(), robotSettings.size());
-    settings_ = ParseSettings(message);
+    ParseSettings(message, settings_);
+
+    std::cout << settings_ << std::endl;
 
     return {std::string(), lib::network::Response::NoContent, serviceId_};
 }
@@ -89,7 +96,10 @@ Response RobotSettings::Read(std::string_view &request) {
     return {std::move(out), lib::network::Response::Ok, serviceId_};
 }
 
-RobotSettingsData RobotSettings::GetSettingsFromDisk() {
+void RobotSettings::GetSettingsFromDisk() {
+
+    //ToDo: сделать автозагрузку
+
     RobotSettingsMessage message;
 
     {
@@ -97,7 +107,7 @@ RobotSettingsData RobotSettings::GetSettingsFromDisk() {
         message.ParseFromIstream(&file);
     }
 
-    return ParseSettings(message);
+    ParseSettings(message, settings_);
 }
 
 

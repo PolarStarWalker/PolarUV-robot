@@ -30,8 +30,10 @@ inline void Video::StartVideo(const std::string &pipeline) {
     {
         std::fstream file("pipeline", std::ios::out | std::ios::trunc);
         file << "#!/bin/bash" << std::endl;
-        file << "gst-launch-1.0 -v -e ";
-        file << pipeline;
+        file << "gst-launch-1.0 -v -e "
+             << pipeline
+             //<< " > stream.log"
+             << std::endl;
     }
 
     std::system("chmod +x pipeline");
@@ -74,4 +76,8 @@ void Video::KillStream() {
     }
 
     childPid_ = 0;
+}
+
+Video::~Video() {
+    KillStream();
 }

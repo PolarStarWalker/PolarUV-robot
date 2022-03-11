@@ -2,11 +2,12 @@
 
 using namespace app;
 
-CommandsService::CommandsService(ssize_t id, MotorsSender::IMotorsSender* motorsSender, std::shared_ptr<Sensors> sensors, std::shared_ptr<RobotSettings> settings) :
+CommandsService::CommandsService(ssize_t id, MotorsSender::IMotorsSender *motorsSender,
+                                 std::shared_ptr<Sensors> sensors, std::shared_ptr<RobotSettings> settings) :
         lib::network::IService(id),
         sensors_(std::move(sensors)),
         settings_(std::move(settings)),
-        motorsSender_(motorsSender){}
+        motorsSender_(motorsSender) {}
 
 
 inline MotorsSender::MotorsStruct FormMotorsStruct(const StaticVector<float, 12> &hiPwm,
@@ -25,17 +26,17 @@ inline MotorsSender::MotorsStruct FormMotorsStruct(const StaticVector<float, 12>
 
 lib::network::Response CommandsService::Write(std::string_view &data) {
 
-    const auto& commands = *((CommandsStruct*) data.data());
+    const auto &commands = *((CommandsStruct *) data.data());
 
-    if(commands.Stabilization != CommandsStruct::None){
+    if (commands.Stabilization != CommandsStruct::None) {
         auto sensorsStruct = sensors_->GetSensorsStruct();
     }
 
-    const auto& settings = settings_->GetSettings();
+    const auto &settings = settings_->GetSettings();
 
     auto hiPWM = settings.ThrustersCoefficientArray * commands.Move;
 
-    for(size_t i = 0; i < settings.HandFreedom; ++i)
+    for (size_t i = 0; i < settings.HandFreedom; ++i)
         hiPWM[i + settings.ThrustersNumber] = settings.HandCoefficientArray[i] * commands.Hand[i];
 
     hiPWM += static_cast<float>(100);
@@ -46,6 +47,10 @@ lib::network::Response CommandsService::Write(std::string_view &data) {
     lowPWM[0] += 1500;
 
     auto motorsStruct = FormMotorsStruct(hiPWM, lowPWM);
+
+    std::cout << commands << std::endl;
+    std::cout << settings << std::endl;
+    std::cout << motorsStruct << std::endl;
 
     motorsSender_->SendMotorsStruct(motorsStruct);
 

@@ -2,6 +2,7 @@
 #define ROBOT_IMOTORSSENDER_HPP
 
 #include <cstdint>
+#include <ostream>
 
 namespace MotorsSender {
 
@@ -21,6 +22,32 @@ namespace MotorsSender {
         ///Array prototype
         ///{T1, T2, T3, T4, T5}
         DShotMode TimerPrescaler = DShot300;
+
+        friend std::ostream &operator<<(std::ostream &out, const MotorsStruct &motors) {
+
+            out << "[MOTORS STRUCT]\n"
+                << "HiPWM: "
+                << motors.HiPWM[0] << ", "
+                << motors.HiPWM[1] << ", "
+                << motors.HiPWM[2] << ", "
+                << motors.HiPWM[3] << ", "
+                << motors.HiPWM[4] << ", "
+                << motors.HiPWM[5] << ", "
+                << motors.HiPWM[6] << ", "
+                << motors.HiPWM[7] << ", "
+                << motors.HiPWM[8] << ", "
+                << motors.HiPWM[9] << ", "
+                << motors.HiPWM[10] << ", "
+                << motors.HiPWM[11] << ", "
+                << '\n'
+                << "LoPWM: "
+                << motors.LowPWM[0] << ", "
+                << motors.LowPWM[1] << ", "
+                << motors.LowPWM[2] << ", "
+                << motors.LowPWM[3];
+
+            return out;
+        }
     };
 
     constexpr std::size_t MotorsStructArrayLength = sizeof(MotorsStruct::HiPWM);
