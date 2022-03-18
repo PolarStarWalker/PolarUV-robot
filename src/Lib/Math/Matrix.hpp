@@ -12,11 +12,11 @@ template<typename Type> requires(std::is_arithmetic_v<Type>)
 
 class Matrix {
 private:
-    Type *_elements;
+    Type *elements_;
     const size_t _row;
     const size_t _column;
 
-    bool IfThisMultipliableOn(const Matrix<Type> &matrix) const {
+    constexpr bool IfThisMultipliableOn(const Matrix<Type> &matrix) const {
         return this->_column == matrix._row;
     }
 
@@ -24,35 +24,35 @@ public:
 #pragma region constructors
 
     Matrix(size_t row, size_t column) : _row(row), _column(column) {
-        _elements = new Type[row * column]{};
+        elements_ = new Type[row * column]{};
     }
 
     Matrix(const Matrix<Type> &matrix) : _row(matrix._row), _column(matrix._column) {
         _row = matrix._row;
         _column = matrix._column;
-        _elements = new Type[_row * _column];
+        elements_ = new Type[_row * _column];
         for (ssize_t i = 0; i < matrix._column * matrix._row; i++)
-            _elements[i] = matrix._elements[i];
+            elements_[i] = matrix.elements_[i];
 
     }
 
     Matrix(Matrix<Type> &&matrix)  noexcept : _row(matrix._row), _column(matrix._column)  {
-        _elements = matrix._elements;
-        matrix._elements = nullptr;
+        elements_ = matrix.elements_;
+        matrix.elements_ = nullptr;
     }
 #pragma endregion
 
     ~Matrix() {
-        delete[] _elements;
+        delete[] elements_;
     }
 
-    inline size_t GetRow() const { return _row; }
+    [[nodiscard]] inline size_t GetRow() const { return _row; }
 
-    inline size_t GetColumn() const { return _column; }
+    [[nodiscard]] inline size_t GetColumn() const { return _column; }
 
-    inline Type *operator[](size_t row) const { return &(_elements[row * _column]); };
+    inline Type *operator[](size_t row) const { return &(elements_[row * _column]); };
 
-    inline Type *operator[](size_t row) { return &(_elements[row * _column]); };
+    inline Type *operator[](size_t row) { return &(elements_[row * _column]); };
 
     Matrix<Type> &operator=(const Matrix<Type> &matrix)    noexcept {
         if (&matrix == this)
@@ -61,12 +61,12 @@ public:
         if (_row * _column != matrix._row * matrix._column) {
             _row = matrix._row;
             _column = matrix._column;
-            delete[] _elements;
-            _elements = new Type[_row * _column];
+            delete[] elements_;
+            elements_ = new Type[_row * _column];
         }
 
         for (ssize_t i = 0; i < _row * _column; i++)
-            _elements[i] *= matrix._elements[i];
+            elements_[i] *= matrix.elements_[i];
 
         return *this;
     }
@@ -75,8 +75,8 @@ public:
 
         _row = matrix._row;
         _column = matrix._column;
-        _elements = matrix._elements;
-        matrix._elements = nullptr;
+        elements_ = matrix.elements_;
+        matrix.elements_ = nullptr;
 
         return *this;
     }
@@ -84,7 +84,7 @@ public:
     Matrix<Type> &operator=(Type *array)   noexcept {
 
         for (size_t i = 0; i < _row * _column; i++) {
-            _elements[i] = array[i];
+            elements_[i] = array[i];
         }
 
         return *this;
@@ -92,13 +92,13 @@ public:
 
     Matrix<Type> &operator*=(ssize_t value) {
         for (ssize_t i = 0; i < _row * _column; i++)
-            _elements[i] *= value;
+            elements_[i] *= value;
         return *this;
     };
 
     Matrix<Type> &operator/=(ssize_t value) {
         for (ssize_t i = 0; i < _row * _column; i++)
-            _elements[i] /= value;
+            elements_[i] /= value;
         return *this;
     };
 

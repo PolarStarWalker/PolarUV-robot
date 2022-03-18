@@ -1,30 +1,31 @@
 #ifndef ROBOT_ROBOTSETTINGS_HPP
 #define ROBOT_ROBOTSETTINGS_HPP
 
-#include "./Math/StaticVector/StaticVector.hpp"
-#include "./Math/StaticMatrix.hpp"
+#include "Math/Static/Vector.hpp"
+#include "Math/Static/Matrix.hpp"
 #include "./DataTransmissions/TcpSession/TcpSession.hpp"
 
 namespace app {
 
     struct RobotSettingsData {
 
-        StaticMatrix<float, 12, 6> ThrustersCoefficientArray;
-        StaticVector<float, 6> HandCoefficientArray;
+        using Matrix_t = stc::Matrix<float, 12, 6>;
+        using Vecotr_t = stc::Vector<stc::Horizontal, float, 6>;
+
+        Matrix_t ThrustersCoefficientArray;
+        Vecotr_t HandCoefficientArray;
         size_t ThrustersNumber = 0;
         size_t HandFreedom = 0;
 
         friend std::ostream &operator<<(std::ostream &out, const RobotSettingsData &settings) {
 
             out << "[MOTORS SETTINGS]\n"
-                << "ThrustersCoefficients:\n";
-
-            for (size_t i = 0; i < settings.ThrustersNumber; ++i) {
-                for (size_t j = 0; j < settings.ThrustersCoefficientArray.GetColumn(); ++j) {
-                    out << settings.ThrustersCoefficientArray[i][j] << " ";
-                }
-                out << '\n';
-            }
+                << "ThrustersNumber: " << settings.ThrustersNumber << '\n'
+                << "ThrustersCoefficients:\n"
+                << settings.ThrustersCoefficientArray << '\n'
+                << "HandFreedom: " << settings.HandFreedom <<'\n'
+                << "HandCoefficients: " << settings.HandCoefficientArray
+                << std::endl;
 
             return out;
         }

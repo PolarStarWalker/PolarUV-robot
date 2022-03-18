@@ -20,7 +20,7 @@ inline void ParseSettings(const RobotSettingsMessage &message, RobotSettingsData
     const auto &thrusters_coefficient = message.thrusters_coefficient();
     for (size_t i = 0; i < message.thrusters_coefficient_size(); ++i) {
         auto value = thrusters_coefficient[i];
-        data.ThrustersCoefficientArray.begin()[i] = value;
+        data.ThrustersCoefficientArray.begin()->begin()[i] = value;
     }
 
     //std::cout << data << std::endl;
@@ -48,9 +48,6 @@ bool RobotSettings::WriteValidate(std::string_view &robotSettings) {
 
     if (message.thrusters_coefficient_size() % 6 != 0)
         throw InvalidOperation("Неправильно задана матрица");
-
-    if (message.thrusters_coefficient_size() / 6 < 0 || message.thrusters_coefficient_size() / 6 > 8)
-        throw InvalidOperation("Неверное количество трастеров");
 
     if (message.hand_coefficient_size() + message.thrusters_coefficient_size() / 6 > 12)
         throw InvalidOperation("количество двигателей должно быть меньше 12");

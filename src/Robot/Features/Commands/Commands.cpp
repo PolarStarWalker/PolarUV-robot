@@ -10,8 +10,8 @@ CommandsService::CommandsService(ssize_t id, MotorsSender::IMotorsSender *motors
         motorsSender_(motorsSender) {}
 
 
-inline MotorsSender::MotorsStruct FormMotorsStruct(const StaticVector<float, 12> &hiPwm,
-                                                   const StaticVector<float, 4> &lowPwm) {
+inline MotorsSender::MotorsStruct FormMotorsStruct(const stc::VerticalVector<float, 12> &hiPwm,
+                                                   const std::array<float, 4> &lowPwm) {
 
     MotorsSender::MotorsStruct motors;
 
@@ -48,9 +48,9 @@ lib::network::Response CommandsService::Write(std::string_view &data) {
 
     auto motorsStruct = FormMotorsStruct(hiPWM, lowPWM);
 
-    std::cout << commands << std::endl;
-    std::cout << settings << std::endl;
-    std::cout << motorsStruct << std::endl;
+//    std::cout << commands << std::endl;
+//    std::cout << settings << std::endl;
+//    std::cout << motorsStruct << std::endl;
 
     motorsSender_->SendMotorsStruct(motorsStruct);
 

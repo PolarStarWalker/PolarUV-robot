@@ -15,7 +15,7 @@ if (CMAKE_BUILD_TYPE MATCHES "Debug")
     set(CMAKE_CXX_FLAGS_DEBUG "-g")
     add_definitions(-DDEBUG)
 else ()
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -mtune=native")
 endif ()
 
 project("robot")

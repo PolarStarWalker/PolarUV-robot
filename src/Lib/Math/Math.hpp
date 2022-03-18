@@ -6,8 +6,8 @@
 #include "./Matrix.hpp"
 #include "./Vector.hpp"
 
-#include "./StaticMatrix.hpp"
-#include "./StaticVector/StaticVector.hpp"
+#include "Math/Static/Matrix.hpp"
+#include "Math/Static/Vector.hpp"
 
 
 #endif

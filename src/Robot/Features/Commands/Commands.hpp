@@ -25,9 +25,9 @@ namespace app {
             Absolute = 2
         };
 
-        StaticVector<float, 6> Move{};
-        StaticVector<float, 6> Hand{};
-        StaticVector<float, 4> LowPWM{};
+        stc::VerticalVector<float, 6> Move{};
+        std::array<float, 6> Hand{};
+        std::array<float, 4> LowPWM{};
 
         StabilizationType Stabilization = None;
 

@@ -28,12 +28,12 @@ public:
     Vector(const Vector<Type> &vector) noexcept : _size(vector._size)  {
         _elements = new Type[_size]{};
         for (size_t i = 0; i < _size; i++) {
-            _elements[i] = vector._elements[i];
+            _elements[i] = vector.elements_[i];
         }
     }
 
     Vector(Vector<Type> &&vector) noexcept : _size(vector._size)  {
-        _elements = vector._elements;
+        _elements = vector.elements_;
         vector._elements = nullptr;
     }
 
