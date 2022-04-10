@@ -1,9 +1,9 @@
 #ifndef ROBOT_VIDEO_HPP
 #define ROBOT_VIDEO_HPP
 
-#include <linux/videodev2.h>
+#include <gst/gst.h>
 
-#include "./DataTransmissions/TcpSession/TcpSession.hpp"
+#include <TcpSession/TcpSession.hpp>
 
 namespace app {
 
@@ -17,7 +17,7 @@ namespace app {
 
         explicit Video(ssize_t id);
         ~Video();
-        Response Write(std::string_view &action) final;
+        Response Write(const std::string_view &action) final;
 
     private:
         void StartVideo(const std::string&);

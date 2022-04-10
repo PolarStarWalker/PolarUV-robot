@@ -3,6 +3,7 @@
 #include <memory_resource>
 #include "Exceptions/Exceptions.hpp"
 #include "TcpSession/TcpSession.hpp"
+#include "BufferType.hpp"
 
 using namespace lib::network;
 
@@ -14,7 +15,7 @@ using ConstBuffer = boost::asio::const_buffer;
 using MutableBuffer = boost::asio::mutable_buffer;
 
 template<size_t buffer_size>
-using Buffer = std::array<char, buffer_size>;
+using Buffer = BufferType<buffer_size, 3>;
 
 constexpr size_t REQUEST_HEADER_SIZE = sizeof(RequestHeaderType);
 constexpr size_t RESPONSE_HEADER_SIZE = sizeof(Response::HeaderType);
@@ -45,12 +46,6 @@ inline RequestHeaderType ReadData(BoostSocket &socket, Buffer<buffer_size> &buff
                       MutableBuffer((char *) &header, REQUEST_HEADER_SIZE),
                       boost::asio::transfer_exactly(REQUEST_HEADER_SIZE));
 
-//    std::clog << "[HEADER SIZE]: " << REQUEST_HEADER_SIZE << std::endl;
-//
-//    std::clog << "[REQUEST TYPE]: " << (size_t) header.Type
-//              << "\n[ENDPOINT]: " << header.EndpointId
-//              << "\n[DATA LENGTH]: " << header.Length << std::endl;
-
     ///если посылка входящих данных больше чем буфер
     if (header.Length > buffer_size)
         throw lib::exceptions::BufferOverflow("Переполнение буфера");
@@ -58,18 +53,8 @@ inline RequestHeaderType ReadData(BoostSocket &socket, Buffer<buffer_size> &buff
 
     if (header.Length > 0)
         boost::asio::read(socket,
-                          MutableBuffer(buffer.data(), header.Length),
+                          MutableBuffer(buffer.begin(), header.Length),
                           boost::asio::transfer_exactly(header.Length));
-
-
-//    std::cout << "[BYTES RECEIVE]: " << length << '\0' << std::endl;
-//
-//    std::clog << "[DATA RECEIVED]: " << '|';
-//    for (size_t i = 0; i < header.Length; ++i) {
-//        std::clog << (int32_t) buffer[i] << '|';
-//    }
-
-//    std::clog << std::endl;
 
     return header;
 }
@@ -104,26 +89,36 @@ void TcpSession::Start() {
 
                 auto requestHeader = ReadData(socket, buffer);
 
-                TimePoint requestBegin = std::chrono::steady_clock::now();
-                auto &service = FindService(requestHeader.EndpointId);
-                auto response = service.DoAction(requestHeader, buffer);
+                TimePoint begin = std::chrono::steady_clock::now();
 
-                SendResponse(socket, response);
+                auto data = buffer.Decompress(requestHeader.Length);
 
                 TimePoint end = std::chrono::steady_clock::now();
-//                std::cout << "Execution time = "
-//                          << std::chrono::duration_cast<std::chrono::microseconds>(end - requestBegin).count()
-//                          << "[us]" << std::endl;
 
-            } catch (lib::exceptions::BufferOverflow &e) {
+                auto &service = FindService(requestHeader.EndpointId);
+
+                auto response = service.DoAction(requestHeader.Type, (std::string_view) data);
+
+                SendResponse(socket, response);
+
+                std::cout << "Execution time = "
+                          << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()
+                          << "[us]" << std::endl;
+
+            } catch (const lib::exceptions::BufferOverflow &e) {
                 Response response(std::string(e.Message), e.Code, -1);
                 SendResponse(socket, response);
-            } catch (lib::exceptions::BaseException &e) {
+
+            } catch(const lib::exceptions::ConnectionTimeout &e)
+            {
+                socket.close();
+                std::cout<< e.Message <<std::endl;
+            }catch (const lib::exceptions::BaseException &e) {
                 Response response(std::string(e.Message), e.Code, -1);
                 SendResponse(socket, response);
             } catch (const std::exception &e) {
                 socket.close();
-                std::clog << "[UNKNOWN ERROR] " << e.what() << std::endl;
+                std::clog << "[UNKNOWN EXCEPTION ERROR]\n" << e.what() << std::endl;
             }
             catch (...) {
                 socket.close();
@@ -131,11 +126,6 @@ void TcpSession::Start() {
             }
         }
     }
-}
-
-TcpSession &TcpSession::GetInstance() {
-    static TcpSession network;
-    return network;
 }
 
 inline IService &TcpSession::FindService(ssize_t key) {
@@ -149,7 +139,7 @@ inline IService &TcpSession::FindService(ssize_t key) {
 
 
 /*****************IService member functions*************************/
-inline Response IService::ReadData(std::string_view &data) {
+inline Response IService::ReadData(const std::string_view &data) {
 
 //    std::clog << "\n[VALIDATE]\n" << std::endl;
     ReadValidate(data);
@@ -160,7 +150,7 @@ inline Response IService::ReadData(std::string_view &data) {
     return response;
 }
 
-inline Response IService::WriteData(std::string_view &data) {
+inline Response IService::WriteData(const std::string_view &data) {
 
 //    std::clog << "\n[VALIDATE]\n" << std::endl;
     WriteValidate(data);
@@ -171,7 +161,7 @@ inline Response IService::WriteData(std::string_view &data) {
     return response;
 }
 
-inline Response IService::WriteReadData(std::string_view &data) {
+inline Response IService::WriteReadData(const std::string_view &data) {
 
 //    std::clog << "\n[VALIDATE]\n" << std::endl;
     WriteReadValidate(data);
@@ -182,14 +172,31 @@ inline Response IService::WriteReadData(std::string_view &data) {
     return response;
 }
 
-Response IService::Read(std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+Response IService::Read(const std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
 
-Response IService::Write(std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+Response IService::Write(const std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
 
-Response IService::WriteRead(std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+Response IService::WriteRead(const std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
 
-bool IService::ReadValidate(std::string_view &data) { return true; }
+bool IService::ReadValidate(const std::string_view &data) { return true; }
 
-bool IService::WriteValidate(std::string_view &data) { return true; }
+bool IService::WriteValidate(const std::string_view &data) { return true; }
 
-bool IService::WriteReadValidate(std::string_view &data) { return false; }
+bool IService::WriteReadValidate(const std::string_view &data) { return false; }
+
+Response IService::DoAction(RequestTypeEnum type, const std::string_view &data) {
+
+    switch (type) {
+        case RequestTypeEnum::R:
+            return this->ReadData(data);
+
+        case RequestTypeEnum::W:
+            return this->WriteData(data);
+
+        case RequestTypeEnum::RW:
+            return this->WriteReadData(data);
+
+        default:
+            throw lib::exceptions::NotFount("[REQUEST NOT FOUND]");
+    }
+}

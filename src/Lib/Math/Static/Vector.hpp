@@ -20,10 +20,11 @@ namespace stc {
     template<VectorTypeEnum VectorType, typename Type, size_t VectorSize> requires std::is_arithmetic_v<Type>
     struct Vector {
     private:
-        Type elements_[VectorSize]{};
 
         using Vector_t = Vector<VectorType, Type, VectorSize>;
         using Array_t = std::array<Type, VectorSize>;
+
+        Array_t elements_{};
 
     public:
 
@@ -35,9 +36,9 @@ namespace stc {
 
         Vector(std::initializer_list<Type> list);
 
-        [[nodiscard]] size_t Size() const noexcept { return VectorSize; }
+        [[nodiscard]] consteval size_t Size() const noexcept { return VectorSize; }
 
-        [[nodiscard]] Type &operator[](size_t index) {
+        [[nodiscard]] Type &operator[](size_t index) &{
 #ifdef DEBUG
             if (index >= VectorSize)
                 throw std::out_of_range("index out of range");
@@ -46,7 +47,7 @@ namespace stc {
             return elements_[index];
         }
 
-        [[nodiscard]] const Type &operator[](size_t index) const {
+        [[nodiscard]] const Type &operator[](size_t index) const & {
 #ifdef DEBUG
             if (index >= VectorSize)
                 throw std::out_of_range("index out of range");
@@ -65,17 +66,29 @@ namespace stc {
 
         Vector_t &operator+=(Type value) requires IsFloat32<Type>;
 
-        [[nodiscard]] Type *begin() { return elements_; }
+        [[nodiscard]] Type *begin() noexcept { return elements_.begin(); }
 
-        [[nodiscard]] Type *end() { return elements_ + VectorSize; }
+        [[nodiscard]] Type *end() noexcept { return elements_.end(); }
 
-        [[nodiscard]] const Type *cbegin() const { return elements_; }
+        [[nodiscard]] const Type *cbegin() const noexcept  { return elements_.cbegin(); }
 
-        [[nodiscard]] const Type *cend() const { return elements_ + VectorSize; }
+        [[nodiscard]] const Type *cend() const noexcept { return elements_.cend(); }
+
+        [[nodiscard]] Type *rbegin() noexcept{ return elements_.rbegin(); }
+
+        [[nodiscard]] Type *rend() noexcept { return elements_.rend(); }
+
+        [[nodiscard]] const Type *rcbegin() const noexcept{ return elements_.crbegin(); }
+
+        [[nodiscard]] const Type *rcend() const noexcept { return elements_.crend(); }
 
         void Normalize(Type amplitude);
 
         void Normalize(Type amplitude) requires IsFloat32<Type>;
+
+        explicit operator std::array<Type, VectorSize>(){
+            return elements_;
+        }
     };
 
     template<typename T, size_t VS>
@@ -118,7 +131,7 @@ Vector<VectorType, Type, VectorSize>::Vector(const std::initializer_list<Type> l
         constexpr size_t iterationCount = GetIterationCount<T>(VS);
         constexpr size_t alignment = GetAlignment<T>(VS);
 
-        auto *array = (float32x4_t *) elements_;
+        auto *array = (float32x4_t *) &elements_[0];
         for (size_t i = 0; i < iterationCount; ++i) {
             array[i] = vmulq_n_f32(array[i], value);
         }
@@ -164,7 +177,7 @@ Vector<VectorType, Type, VectorSize>::Vector(const std::initializer_list<Type> l
         const T valueArray[4] = {value, value, value, value};
         auto &values = (float32x4_t &) valueArray;
 
-        auto *array = (float32x4_t *) elements_;
+        auto *array = (float32x4_t *) &elements_[0];
         for (size_t i = 0; i < iterationCount; ++i) {
             array[i] = vaddq_f32(array[i], values);
         }
@@ -211,7 +224,7 @@ Vector<VectorType, Type, VectorSize>::Vector(const std::initializer_list<Type> l
 
         double maxValue = 0;
 
-        auto *array = (float32x4_t *) elements_;
+        auto *array = (float32x4_t *) &elements_[0];
         for (size_t i = 0; i < iterationCount; ++i) {
             ///find ABS
             float32x4_t abs = vabsq_f32(array[i]);

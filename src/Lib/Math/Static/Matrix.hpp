@@ -37,7 +37,7 @@ namespace stc {
 
         Matrix(const Matrix_t &matrix) = default;
 
-        Row_t &operator[](size_t index) {
+        Row_t &operator[](size_t index) &{
 #ifdef DEBUG
             if (index >= Rows)
                 throw std::out_of_range("index out of range");
@@ -45,7 +45,7 @@ namespace stc {
             return rows_[index];
         }
 
-        const Row_t &operator[](size_t index) const {
+        const Row_t &operator[](size_t index) const &{
 #ifdef DEBUG
             if (index >= Rows)
                 throw std::out_of_range("index out of range");
@@ -115,7 +115,7 @@ namespace stc {
 
     template<typename Type, size_t Rows, size_t Columns>
     requires std::is_arithmetic_v<Type>
-    Matrix<Type, Rows, Columns> & Matrix<Type, Rows, Columns>::operator*=(Type value) requires IsFloat32<Type> {
+    Matrix<Type, Rows, Columns> &Matrix<Type, Rows, Columns>::operator*=(Type value) requires IsFloat32<Type> {
 
         const size_t iterationCount = GetIterationCount<Type>(Rows * Columns);
         const size_t alignment = GetAlignment<Type>(Rows * Columns);
@@ -160,8 +160,7 @@ namespace stc {
 
     template<typename Type, size_t Rows, size_t Columns>
     requires std::is_arithmetic_v<Type>
-    Matrix<Type, Rows, Columns> &
-    Matrix<Type, Rows, Columns>::operator+=(Type value) requires IsFloat32<Type> {
+    Matrix<Type, Rows, Columns> &Matrix<Type, Rows, Columns>::operator+=(Type value) requires IsFloat32<Type> {
 
         const size_t iterationCount = GetIterationCount<Type>(Rows * Columns);
         const size_t alignment = GetAlignment<Type>(Rows * Columns);
@@ -191,7 +190,7 @@ namespace stc {
 
         VerticalVector<T, Rows> outVector;
 
-        for(size_t i = 0; i < Rows; ++i){
+        for (size_t i = 0; i < Rows; ++i) {
             outVector[i] = rows_[i] * inVector;
         }
 

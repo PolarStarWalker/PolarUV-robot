@@ -14,7 +14,7 @@ Sensors::Sensors(ssize_t id, std::string_view i2c) :
 
 }
 
-lib::network::Response Sensors::Read(std::string_view &data) {
+lib::network::Response Sensors::Read(const std::string_view &data) {
 
     std::string outputData = Response::GetData(&Sensors::GetSensorsStruct, this);
 

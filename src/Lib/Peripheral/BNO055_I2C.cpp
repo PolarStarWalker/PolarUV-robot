@@ -120,7 +120,7 @@ bool BNO055_I2C::ReadData() {
     auto eulerZ = (int16_t) (eulerBuffer[4] | (eulerBuffer[5] << 8));
 
     data.EulerAngle[X] = ((double) eulerZ) / 16.0;
-    data.EulerAngle[Y] = ((double) eulerY) / 16.0;
+    data.EulerAngle[Y] = -((double) eulerY) / 16.0;
     data.EulerAngle[Z] = ((double) eulerX) / 16.0;
 
     data.Temperature = (int8_t) (_i2c->ReadByteFromRegister(_sensorAddress, TEMP_REG));

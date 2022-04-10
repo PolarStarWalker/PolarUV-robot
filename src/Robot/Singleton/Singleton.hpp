@@ -1,7 +1,7 @@
 #ifndef ROBOT_SINGLETON_HPP
 #define ROBOT_SINGLETON_HPP
 
-#include "./DataTransmissions/TcpSession/TcpSession.hpp"
+#include <TcpSession/TcpSession.hpp>
 
 template<typename Type>
 concept is_default_constructor = requires(Type obj){ obj(); };

@@ -4,6 +4,7 @@
 
 using namespace app;
 using IService = lib::network::IService;
+using Network = lib::network::TcpSession;
 
 ///set max sched priority
 inline void SetProcessMaxPriority() {
@@ -12,29 +13,23 @@ inline void SetProcessMaxPriority() {
     sched_setscheduler(0, SCHED_RR, &process);
 }
 
-inline void InitService() {}
-
 Robot::Robot() :
-        robotSettings_(IService::RegisterService<RobotSettings>(0, "robot-settings.json")),
-        sensors_(IService::RegisterService<Sensors>(1, "/dev/i2c-1")),
+        network_(),
         startSettings_(StartSettings::Get()),
-        motorsSender_(startSettings_.GetMotorsSender()){
+        motorsSender_(startSettings_.GetMotorsSender()),
+        robotSettings_(network_.CreateService<RobotSettings>(0, "robot-settings.json")),
+        sensors_(network_.CreateService<Sensors>(1, "/dev/i2c-1")),
+        video_(network_.CreateService<Video>(2)),
+        commandsService_(network_.CreateService<CommandsService>(3, &motorsSender_, sensors_, robotSettings_)){}
 
-    IService::RegisterService<Video>(2);
-    IService::RegisterService<CommandsService>(3, &motorsSender_, sensors_, robotSettings_);
-}
 
 void Robot::SetUp() {
     SetProcessMaxPriority();
-
     lib::Initialize();
-
-    InitService();
 }
 
 
 void Robot::Start() {
-    auto &network = lib::network::TcpSession::GetInstance();
-    network.Start();
+    network_.Start();
 }
 

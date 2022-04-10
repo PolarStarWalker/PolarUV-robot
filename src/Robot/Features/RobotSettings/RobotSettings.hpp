@@ -1,9 +1,10 @@
 #ifndef ROBOT_ROBOTSETTINGS_HPP
 #define ROBOT_ROBOTSETTINGS_HPP
 
+#include <mutex>
 #include "Math/Static/Vector.hpp"
 #include "Math/Static/Matrix.hpp"
-#include "./DataTransmissions/TcpSession/TcpSession.hpp"
+#include <TcpSession/TcpSession.hpp>
 
 namespace app {
 
@@ -24,8 +25,7 @@ namespace app {
                 << "ThrustersCoefficients:\n"
                 << settings.ThrustersCoefficientArray << '\n'
                 << "HandFreedom: " << settings.HandFreedom <<'\n'
-                << "HandCoefficients: " << settings.HandCoefficientArray
-                << std::endl;
+                << "HandCoefficients: " << settings.HandCoefficientArray;
 
             return out;
         }
@@ -45,21 +45,23 @@ namespace app {
 
         RobotSettings(ssize_t id, std::string_view filename);
 
-        bool WriteValidate(std::string_view &robotSettings) final;
+        bool WriteValidate(const std::string_view &robotSettings) final;
 
-        Response Write(std::string_view &robotSettings) final;
+        Response Write(const std::string_view &robotSettings) final;
 
-        Response Read(std::string_view &request) final;
+        Response Read(const std::string_view &request) final;
 
         inline const RobotSettingsData &GetSettings() {
+            std::lock_guard lock(settingsMutex_);
             return settings_;
         };
 
     private:
+        void SetSettings(const RobotSettingsData& settingsData);
+
+        std::mutex settingsMutex_;
         std::string_view filename_;
         RobotSettingsData settings_;
-
-        void GetSettingsFromDisk();
     };
 
 }

@@ -22,6 +22,21 @@ template<typename Type>
 concept IsInt64 = std::is_integral_v<Type> && (sizeof(Type) == 8);
 
 template<typename Type>
+struct VectorTypeTraits{
+
+    consteval size_t IterationCount(size_t vectorSize) requires IsFloat32<Type> {
+        const size_t bytesCount = vectorSize * sizeof(Type);
+        return bytesCount / 16;
+    }
+
+    consteval size_t Alignment(size_t vectorSize) requires IsFloat32<Type> {
+        const size_t bytesCount = vectorSize * sizeof(Type);
+        return (bytesCount % 16) / sizeof(Type);
+    }
+
+};
+
+template<typename Type>
 consteval size_t GetIterationCount(size_t vectorSize) requires IsFloat32<Type> {
     const size_t bytesCount = vectorSize * sizeof(Type);
     return bytesCount / 16;

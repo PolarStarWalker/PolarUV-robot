@@ -1,19 +1,19 @@
 #ifndef ROBOT_BASE_HPP
 #define ROBOT_BASE_HPP
 
-#include "DataTransmissions/TcpSession/Packet.hpp"
 #include <string>
+#include <TcpSession/Packet.hpp>
 
 namespace lib::exceptions {
 
     struct BaseException : std::exception {
     public:
-        BaseException(std::string_view& message, network::Response::CodeEnum code) :
+        BaseException(const std::string_view& message, lib::network::Response::CodeEnum code) :
                 Message(message),
                 Code(code){}
 
         const std::string_view Message;
-        const network::Response::CodeEnum Code;
+        const lib::network::Response::CodeEnum Code;
     };
 
 }

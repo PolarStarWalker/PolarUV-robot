@@ -1,7 +1,7 @@
 #ifndef ROBOT_SENSORS_HPP
 #define ROBOT_SENSORS_HPP
 
-#include "./DataTransmissions/TcpSession/TcpSession.hpp"
+#include <TcpSession/TcpSession.hpp>
 #include "./Peripheral/PeripheralHandler/PeripheralHandler.hpp"
 #include "./Peripheral/Peripheral.hpp"
 #include "./Math/SIPrefix.hpp"
@@ -42,7 +42,7 @@ namespace app {
         Sensors &operator=(Sensors &&) = delete;
 
     public:
-        Response Read(std::string_view &data) final;
+        Response Read(const std::string_view &data) final;
 
     private:
 
@@ -53,7 +53,7 @@ namespace app {
 
     public:
 
-        inline SensorsStruct GetSensorsStruct() const{
+        [[nodiscard]] inline SensorsStruct GetSensorsStruct() const{
             BNO055::Data bnoData = bno055_.GetData();
 
             MS5837::Data msData = ms5837_.GetData();

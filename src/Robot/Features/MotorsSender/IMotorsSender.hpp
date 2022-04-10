@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <ostream>
+#include <array>
 
 namespace MotorsSender {
 
@@ -14,13 +15,9 @@ namespace MotorsSender {
             DShot1200 = 8
         };
 
-        uint16_t HiPWM[12]{};
-        uint16_t LowPWM[4]{};
+        std::array<uint16_t, 12> HiPWM{};
+        std::array<uint16_t, 4> LowPWM{};
 
-        ///DShotMode applies to the entire timer,
-        ///it changes the operation of all channels of one timer
-        ///Array prototype
-        ///{T1, T2, T3, T4, T5}
         DShotMode TimerPrescaler = DShot300;
 
         friend std::ostream &operator<<(std::ostream &out, const MotorsStruct &motors) {

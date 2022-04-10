@@ -5,6 +5,7 @@
 #include "./Peripheral/Peripheral.hpp"
 
 namespace app {
+
     class Robot {
     public:
         Robot();
@@ -13,10 +14,15 @@ namespace app {
 
         void Start();
 
+    private:
+
+        lib::network::TcpSession network_;
+        StartSettings startSettings_;
+        MotorsSender::IMotorsSender &motorsSender_;
         std::shared_ptr<Sensors> sensors_;
         std::shared_ptr<RobotSettings> robotSettings_;
-        StartSettings startSettings_;
-        MotorsSender::IMotorsSender& motorsSender_;
+        std::shared_ptr<Video> video_;
+        std::shared_ptr<CommandsService> commandsService_;
     };
 }
 

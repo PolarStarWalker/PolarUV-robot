@@ -4,5 +4,6 @@
 #include "InvalidOperation/InvalidOperation.hpp"
 #include "TransferError/TransferError.hpp"
 #include "BufferOverlfow/BufferOverflow.hpp"
+#include "ConnectionTimeout/ConnectionTimeout.hpp"
 #include "Handler.hpp"
 #endif

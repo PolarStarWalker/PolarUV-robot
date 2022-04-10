@@ -5,6 +5,7 @@
 #include "./Peripheral/Peripheral.hpp"
 #include "./Coroutine/All.hpp"
 #include "./DataTransmissions/DataTransmissions.hpp"
+#include "./TcpSession/TcpSession.hpp"
 
 namespace lib {
 
@@ -12,7 +13,6 @@ namespace lib {
 
     static void Initialize() {
         LoggerInitialize();
-        auto& network = network::TcpSession::GetInstance();
     }
 }
 #endif

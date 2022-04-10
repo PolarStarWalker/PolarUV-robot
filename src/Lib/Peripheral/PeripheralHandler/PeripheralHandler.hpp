@@ -28,7 +28,7 @@ class PeripheralHandler {
 private:
 
     mutable std::shared_mutex i2cMutex_;
-    mutable std::shared_mutex i2cPeripheralMutex_;
+    mutable std::shared_mutex peripheralMutex_;
 
     mutable std::list<I2CSensorsContext> i2cPeripherals_;
 

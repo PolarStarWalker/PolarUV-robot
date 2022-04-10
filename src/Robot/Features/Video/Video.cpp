@@ -52,7 +52,7 @@ inline void Video::StartVideo(const std::string &pipeline) {
     childPid_ = pid;
 }
 
-lib::network::Response Video::Write(std::string_view &action) {
+lib::network::Response Video::Write(const std::string_view &action) {
     VideoMessage message;
     message.ParseFromArray(action.begin(), action.size());
 

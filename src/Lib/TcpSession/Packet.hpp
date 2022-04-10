@@ -7,14 +7,33 @@
 
 namespace lib::network {
 
-    enum class TypeEnum : size_t {
+    struct Request {
+    private:
+        char *data_;
+        size_t size_;
+
+    public:
+        template<typename Type>
+        Type* As(){
+
+            if(size_ == sizeof(Type))
+                return (Type*) data_;
+
+            return nullptr;
+        }
+
+        char* begin(){return data_;}
+
+    };
+
+    enum class RequestTypeEnum : size_t {
         R,
         W,
         RW
     };
 
     struct RequestHeaderType {
-        TypeEnum Type{};
+        RequestTypeEnum Type{};
         ssize_t EndpointId{};
         size_t Length{};
     };
@@ -27,6 +46,7 @@ namespace lib::network {
             BadRequest,
             ConnectionError,
             BufferOverflow,
+            ConnectionTimeout,
             NotFound,
         };
 
