@@ -38,7 +38,7 @@ public:
 template<size_t Size, size_t MaxRatio>
 class BufferType {
 
-    ///Make it consteval
+    ///ToDo: Make it consteval when clang-tidy is ready
     constexpr static size_t Capacity() { return (MaxRatio + 1) * Size; }
 
     std::array<char, Capacity()> data_;

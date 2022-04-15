@@ -4,7 +4,6 @@
 
 using namespace app;
 using IService = lib::network::IService;
-using Network = lib::network::TcpSession;
 
 ///set max sched priority
 inline void SetProcessMaxPriority() {

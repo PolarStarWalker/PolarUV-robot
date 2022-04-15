@@ -12,6 +12,7 @@ namespace app {
 
         void SetUp();
 
+        [[noreturn]]
         void Start();
 
     private:
