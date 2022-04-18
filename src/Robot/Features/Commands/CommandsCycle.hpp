@@ -1,5 +1,5 @@
-#ifndef ROBOT_STABILIZATION_HPP
-#define ROBOT_STABILIZATION_HPP
+#ifndef ROBOT_COMMANDSCYCLE_HPP
+#define ROBOT_COMMANDSCYCLE_HPP
 
 #include <mutex>
 #include <thread>
@@ -7,6 +7,9 @@
 #include "../Sensors/Sensors.hpp"
 #include "../RobotSettings/RobotSettings.hpp"
 #include "../MotorsSender/IMotorsSender.hpp"
+
+
+#include "Stabilization.hpp"
 
 namespace app {
     struct CommandsStruct {
@@ -62,7 +65,6 @@ namespace app {
 
     class CommandsCycle {
 
-
         constexpr static size_t PERIOD_US = 2500;
 
         class CommandsQueue {
@@ -92,14 +94,15 @@ namespace app {
             }
         };
 
+        PIDArray<3> pids_;
         CommandsQueue commandsQueue_;
         std::thread thread_;
         MotorsSender::IMotorsSender *motorsSender_;
         std::shared_ptr<Sensors> sensors_;
         std::shared_ptr<RobotSettings> settings_;
         std::atomic<bool> isNotDone_;
-
-
+        Timer timer_;
+        Stabilization stabilization_;
     public:
 
         CommandsCycle(MotorsSender::IMotorsSender *motorsSender,
