@@ -5,9 +5,11 @@
 #include "../../DataTransmissions/I2C/I2C.hpp"
 
 class PeripheralHandler;
+class I2CSensorsContext;
 
 class II2CPeripheral {
     friend PeripheralHandler;
+    friend I2CSensorsContext;
 protected:
 
     explicit II2CPeripheral(ssize_t period_us) : period_us_(period_us){}

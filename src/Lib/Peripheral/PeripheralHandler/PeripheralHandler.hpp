@@ -16,12 +16,10 @@ struct I2CSensorsContext {
     II2CPeripheral *I2CPeripheral;
     bool IsOnline;
     bool WaitTransmissions;
+    int timerfd;
 
-    explicit I2CSensorsContext(II2CPeripheral *i2cPeripheral) {
-        I2CPeripheral = i2cPeripheral;
-        IsOnline = false;
-        WaitTransmissions = false;
-    }
+    explicit I2CSensorsContext(II2CPeripheral *i2cPeripheral);
+    ~I2CSensorsContext();
 };
 
 class PeripheralHandler {
@@ -33,8 +31,10 @@ private:
     mutable std::list<I2CSensorsContext> i2cPeripherals_;
 
     const I2C _i2c;
+    int epollfd;
 
     size_t delay_us_;
+
 public:
 
     explicit PeripheralHandler(std::string_view i2c_path, size_t delay_us);
@@ -45,8 +45,7 @@ public:
 
     void StartAsync() const;
 
-
-
+    ~PeripheralHandler();
 };
 
 #endif
