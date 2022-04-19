@@ -16,7 +16,7 @@ struct I2CSensorsContext {
     II2CPeripheral *I2CPeripheral;
     bool IsOnline;
     bool WaitTransmissions;
-    int timerfd;
+    int Timerfd;
 
     explicit I2CSensorsContext(II2CPeripheral *i2cPeripheral);
     ~I2CSensorsContext();
@@ -25,23 +25,29 @@ struct I2CSensorsContext {
 class PeripheralHandler {
 private:
 
-    mutable std::shared_mutex i2cMutex_;
-    mutable std::shared_mutex peripheralMutex_;
+    static constexpr size_t MAX_SENSORS = 10;
+    static constexpr int MAX_TIMEOUT_MS = 500;
+
+    mutable std::mutex i2cMutex_;
+    mutable std::mutex peripheralMutex_;
 
     mutable std::list<I2CSensorsContext> i2cPeripherals_;
 
-    const I2C _i2c;
-    int epollfd;
+    const I2C i2c_;
 
-    size_t delay_us_;
+    int epollfd_;
+
+    std::thread thread_;
+
+    std::atomic<bool> notDone_;
 
 public:
 
-    explicit PeripheralHandler(std::string_view i2c_path, size_t delay_us);
+    explicit PeripheralHandler(std::string_view i2c_path);
 
     bool AddI2CSensor(II2CPeripheral &newSensor) const;
 
-    [[noreturn]] void Start() const;
+    void Start() const;
 
     void StartAsync() const;
 

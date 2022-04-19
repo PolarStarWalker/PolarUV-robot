@@ -4,7 +4,7 @@ using namespace app;
 
 Sensors::Sensors(ssize_t id, std::string_view i2c) :
         lib::network::IService(id),
-        peripheralHandler_(i2c, Kilo(10)),
+        peripheralHandler_(i2c),
         bno055_(BNO055_I2C::GetInstance()),
         ms5837_(MS5837_ADDRESS) {
 
