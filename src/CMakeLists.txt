@@ -8,7 +8,6 @@ add_subdirectory (Robot)
 add_executable (robot "Startup.cpp" "Startup.hpp")
 
 target_precompile_headers(robot REUSE_FROM Robot)
-target_precompile_headers(robot REUSE_FROM Lib)
 
 target_link_libraries(robot Robot)
 target_link_libraries(robot Lib)
