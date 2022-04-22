@@ -7,53 +7,49 @@
 #include <cstdint>
 #include <array>
 #include <shared_mutex>
+
+#include "../PeripheralHandler/SensorHandler.hpp"
+
 #include "./BNO055.hpp"
-#include "../Interfaces/II2CPeripheral.hpp"
+#include "./Filters/FiltersGroup.hpp"
 
-#include "Filters/FiltersGroup.hpp"
-#include "DataTransmissions/I2C/I2C.hpp"
-
-class BNO055_I2C final : public II2CPeripheral {
+class BNO055_I2C final : public ISensor {
 public:
-
-    static BNO055_I2C &GetInstance() {
-        static BNO055_I2C bno(BNO055_ADDRESS);
-        return bno;
-    }
-
-    BNO055_I2C(const BNO055_I2C &bno055) = delete;
-
-    bool Init(const I2C *i2c) final;
-
-    void SendOperationMode(BNO055::OperationMode mode) const;
-
-    void UseExternalCrystal(bool useExtCrl);
-
-    size_t DelayUs() const final;
-
-    BNO055::Data GetData() const;
-
-private:
 
     explicit BNO055_I2C(uint16_t sensorAddress, BNO055::OperationMode mode = BNO055::OPERATION_MODE_NDOF_FMC_OFF);
 
-    BNO055::Data _data{};
+    BNO055_I2C(const BNO055_I2C &bno055) = delete;
 
-    FiltersGroup<14> _filters;
+    bool Init(const I2C *i2c, TimerType &timer) final;
 
-    mutable std::shared_mutex _dataMutex;
-    const I2C *_i2c{};
-    uint16_t _sensorAddress;
-    BNO055::OperationMode _operationMode;
+    BNO055::Data GetData() const;
 
-    bool ReadData() final;
+    SensorTask ReadDataImpl();
 
-    bool Reload() final;
+    SensorTask InitSensorsImpl();
+
+private:
+
+    SensorTask ReadDataAsync;
+    SensorTask InitSensorsAsync;
+
+    const I2C *i2c_{};
+
+    BNO055::Data data_{};
+
+    FiltersGroup<14> filters_;
+
+    mutable std::mutex dataMutex_;
+
+    uint16_t sensorAddress_;
+
+    BNO055::OperationMode operationMode_;
+
+    bool ReadData(TimerType &timer) final;
 
     inline void SetData(const BNO055::Data &data) {
-        this->_dataMutex.lock();
-        this->_data = data;
-        this->_dataMutex.unlock();
+        std::lock_guard guard(dataMutex_);
+        data_ = data;
     }
 };
 

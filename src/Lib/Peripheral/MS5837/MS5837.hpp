@@ -2,7 +2,7 @@
 #define ROBOT_MS5837_HPP
 namespace MS5837 {
 
-    enum Commands : uint16_t {
+    enum Commands : uint8_t {
         MS5837_RESET = 0x1E,
         MS5837_ADC_READ = 0x00,
         MS5837_PROM_READ = 0xA0,
@@ -20,6 +20,12 @@ namespace MS5837 {
         Depth = 0,
         Pressure = 1,
         Temperature = 2
+    };
+
+    struct Measure{
+        double FluidDensity{};
+        uint32_t d1Pressure_{};
+        uint32_t D2Temperature{};
     };
 
 }

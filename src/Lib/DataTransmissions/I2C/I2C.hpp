@@ -27,18 +27,18 @@ public:
 
     ~I2C();
 
-    void Read(__u16 slaveAddress,
-              const __u8 *slaveRegister,
-              size_t addressLength,
+    [[nodiscard]] bool Read(__u16 slaveAddress,
+                            const __u8 *slaveRegister,
+                            size_t addressLength,
+                            __u8 *buffer,
+                            size_t bufferLength) const;
+
+    bool Read(__u16 slaveAddress,
               __u8 *buffer,
               size_t bufferLength) const;
 
-    void Read(__u16 slaveAddress,
-              __u8 *buffer,
-              size_t bufferLength) const;
-
-    uint8_t ReadByteFromRegister(__u16 slaveAddress,
-                                 __u8 slaveRegister) const;
+    [[nodiscard]] std::pair<uint8_t, bool> ReadByteFromRegister(__u16 slaveAddress,
+                                                                __u8 slaveRegister) const;
 
     ///Note не работает
     bool Write(__u16 slaveAddress,

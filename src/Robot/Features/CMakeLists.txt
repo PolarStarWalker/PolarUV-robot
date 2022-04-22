@@ -7,7 +7,7 @@ add_subdirectory(Commands)
 
 add_library(Features Features.hpp StartSettings.cpp)
 
-target_precompile_headers(Features PUBLIC Features.hpp)
+target_precompile_headers(Features REUSE_FROM Lib)
 
 target_link_libraries(Features pthread)
 target_link_libraries(Features RobotSettings)

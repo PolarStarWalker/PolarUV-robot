@@ -9,5 +9,4 @@ target_link_libraries(Robot Features)
 target_link_libraries(Robot Singleton)
 
 target_precompile_headers(Robot REUSE_FROM Lib)
-target_precompile_headers(Robot REUSE_FROM Features)
 
