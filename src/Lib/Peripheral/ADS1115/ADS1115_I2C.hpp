@@ -1,10 +1,10 @@
 #ifndef ROBOT_ADS1115_I2C_HPP
 #define ROBOT_ADS1115_I2C_HPP
 
+#include "Peripheral/PeripheralHandler/SensorHandler.hpp"
 #include "./ADS1115.hpp"
-#include "../Interfaces/II2CPeripheral.hpp"
 
-class ADS1115_I2C final : public II2CPeripheral {
+class ADS1115_I2C final : public ISensor {
 private:
     const I2C *_i2c;
     ADS1115::Gain _gain;
@@ -16,11 +16,9 @@ public:
                          ADS1115::Gain gain = ADS1115::GAIN_TWOTHIRDS,
                          ADS1115::DataRate dataRate = ADS1115::SPS128);
 
-    bool Init(const I2C *i2c) final;
+    bool Init(const I2C *i2c, TimerType &timer) final;
 
-    bool ReadData() final;
-
-    bool Reload() final;
+    bool ReadData(TimerType &timer) final;
 
     int16_t ReadADC_SingleEnded(ADS1115::Channel channel);
 
@@ -32,7 +30,7 @@ public:
 
 private:
     inline bool ConversionComplete(){
-        return (_i2c->ReadByteFromRegister(_address, ADS1115::CONFIG) & 0x8000) != 0;
+        return (_i2c->ReadByteFromRegister(_address, ADS1115::CONFIG).first & 0x8000) != 0;
     }
 
     inline void WriteRegister(uint8_t reg, uint16_t value) {

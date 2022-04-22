@@ -2,7 +2,7 @@
 #define ROBOT_SENSORS_HPP
 
 #include <TcpSession/TcpSession.hpp>
-#include "./Peripheral/PeripheralHandler/PeripheralHandler.hpp"
+#include "./Peripheral/PeripheralHandler/SensorHandler.hpp"
 #include "./Peripheral/Peripheral.hpp"
 #include "./Math/SIPrefix.hpp"
 
@@ -46,17 +46,17 @@ namespace app {
 
     private:
 
-        PeripheralHandler peripheralHandler_;
+        SensorHandler sensorHandler_;
 
-        BNO055_I2C &bno055_;
-        MS5837_I2C ms5837_;
+        std::shared_ptr<BNO055_I2C> bno055_;
+        std::shared_ptr<MS5837_I2C> ms5837_;
 
     public:
 
         [[nodiscard]] inline SensorsStruct GetSensorsStruct() const{
-            BNO055::Data bnoData = bno055_.GetData();
+            BNO055::Data bnoData = bno055_->GetData();
 
-            MS5837::Data msData = ms5837_.GetData();
+            MS5837::Data msData = ms5837_->GetData();
 
             SensorsStruct sensorsStruct;
 

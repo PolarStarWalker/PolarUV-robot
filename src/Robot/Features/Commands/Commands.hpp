@@ -6,7 +6,6 @@
 
 namespace app {
 
-
     class CommandsService final : public lib::network::IService {
     public:
         CommandsService(ssize_t id, MotorsSender::IMotorsSender *motorsSender,

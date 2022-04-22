@@ -2,16 +2,20 @@
 #include "./Math/SIPrefix.hpp"
 using namespace ADS1115;
 
-ADS1115_I2C::ADS1115_I2C(uint16_t address, ADS1115::Gain gain, ADS1115::DataRate dataRate) : II2CPeripheral(Kilo(50)){
+ADS1115_I2C::ADS1115_I2C(uint16_t address, ADS1115::Gain gain, ADS1115::DataRate dataRate) : ISensor(Kilo(50)){
     _i2c = nullptr;
     _gain = gain;
     _dataRate = dataRate;
     _address = address;
 }
 
-bool ADS1115_I2C::Init(const I2C *i2c) {
+bool ADS1115_I2C::Init(const I2C *i2c, TimerType &timer) {
     _i2c = i2c;
-    return true;
+    return 0;
+}
+
+bool ADS1115_I2C::ReadData(TimerType &timer) {
+    return 0;
 }
 
 int16_t ADS1115_I2C::ReadADC_SingleEnded(Channel channel) {
@@ -83,7 +87,7 @@ void ADS1115_I2C::StartComparator_SingleEnded(Channel channel,
 }
 
 int16_t ADS1115_I2C::GetLastConversionResults() {
-    uint16_t result = _i2c->ReadByteFromRegister(_address, CONVERT);
+    uint16_t result = _i2c->ReadByteFromRegister(_address, CONVERT).first;
     return (int16_t) result;
 }
 
@@ -114,17 +118,6 @@ double ADS1115_I2C::ComputeVolts(int16_t counts) {
     return counts * (fsRange / (0x8000));
 }
 
-bool ADS1115_I2C::ReadData() {
-
-
-    return false;
-}
-
-bool ADS1115_I2C::Reload() {
-
-
-    return false;
-}
 
 
 

@@ -2,6 +2,12 @@
 #define ROBOT_DEFAULT_HPP
 #include <coroutine>
 
+template<typename T, typename C>
+struct Expected{
+    T Value;
+    C Error;
+};
+
 template<typename Type = void>
 struct Task;
 
@@ -17,31 +23,30 @@ struct Task<void> {
         //всегда такой
         auto get_return_object()noexcept { return coro_handle::from_promise(*this); }
 
-        static auto initial_suspend() noexcept { return std::suspend_never(); }
+        static auto initial_suspend() noexcept { return std::suspend_always(); }
 
         static auto final_suspend() noexcept { return std::suspend_always(); }
 
         void return_void() {}
 
         static void unhandled_exception() { std::terminate(); }
-
     };
 
-    bool resume() {
-        if (!_handle.done()) _handle.resume();
-        return _handle.done();
+    bool operator()(){
+        if (!handle_.done()) handle_.resume();
+        return handle_.done();
     }
 
-    Task(coro_handle handle) : _handle(handle) {}
+    Task(coro_handle handle) : handle_(handle) {}
 
     Task(const Task &) = delete;
 
-    Task(Task &&task) noexcept: _handle(task._handle) { task._handle = nullptr; }
+    Task(Task &&task) noexcept: handle_(task.handle_) { task.handle_ = nullptr; }
 
-    ~Task() { _handle.destroy(); }
+    ~Task() { handle_.destroy(); }
 
 protected:
-    coro_handle _handle;
+    coro_handle handle_;
 };
 
 
@@ -57,7 +62,7 @@ struct Task {
         //всегда такой
         auto get_return_object() noexcept { return coro_handle::from_promise(*this); }
 
-        static inline auto initial_suspend() noexcept { return std::suspend_never(); }
+        static inline auto initial_suspend() noexcept { return std::suspend_always(); }
 
         static inline auto final_suspend() noexcept { return std::suspend_always(); }
 
@@ -66,30 +71,28 @@ struct Task {
         static inline void unhandled_exception() { std::terminate(); }
 
         auto yield_value(Type type) {
-            current_value = std::move(type);
-            return std::suspend_always{};
+            isActive = std::move(type);
+            return std::suspend_always();
         }
 
-        Type current_value;
+        Type isActive;
     };
 
-    bool resume() {
-        if (!_handle.done()) _handle.resume();
-        return _handle.done();
+    Expected<Type, bool> operator()(){
+        if (!handle_.done()) handle_.resume();
+        return {handle_.promise().isActive , handle_.done()};
     }
 
-    Type current_value() { return _handle.promise().current_value; }
-
-    Task(coro_handle handle) : _handle(handle) {}
+    Task(coro_handle handle) : handle_(handle) {}
 
     Task(const Task &) = delete;
 
-    Task(Task &&task) noexcept: _handle(task._handle) { task._handle = nullptr; }
+    Task(Task &&task) noexcept: handle_(task.handle_) { task.handle_ = nullptr; }
 
-    ~Task() { _handle.destroy(); }
+    ~Task() { handle_.destroy(); }
 
 protected:
-    coro_handle _handle;
+    coro_handle handle_;
 };
 
 #endif
