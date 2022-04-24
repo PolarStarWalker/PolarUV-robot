@@ -20,44 +20,22 @@
 class I2C {
 
 private:
-    int i2CDescriptor_ = -1;
+    int i2CDescriptor_;
 
 public:
     explicit I2C(std::string_view &i2c_path);
 
     ~I2C();
 
-    [[nodiscard]] bool Read(__u16 slaveAddress,
-                            const __u8 *slaveRegister,
-                            size_t addressLength,
-                            __u8 *buffer,
-                            size_t bufferLength) const;
+    bool Read(__u16 slaveAddress, __u8 *buffer, size_t bufferLength);
 
-    bool Read(__u16 slaveAddress,
-              __u8 *buffer,
-              size_t bufferLength) const;
+    [[nodiscard]] std::pair<uint8_t, bool> ReadByteFromRegister(__u16 slaveAddress, __u8 slaveRegister);
 
-    [[nodiscard]] std::pair<uint8_t, bool> ReadByteFromRegister(__u16 slaveAddress,
-                                                                __u8 slaveRegister) const;
+    bool ReadFromRegister(__u16 slaveAddress, __u8 slaveRegister, __u8* buffer, size_t size);
 
-    ///Note не работает
-    bool Write(__u16 slaveAddress,
-               const __u8 *slaveRegister,
-               size_t addressLength,
-               const __u8 *buffer,
-               size_t bufferLength) const;
+    bool WriteByteToRegister(__u16 slaveAddress, __u8 slaveRegister, __u8 byte);
 
-    ///Note не работает
-    bool Write(__u16 slaveAddress,
-               const __u8 *buffer,
-               size_t bufferLength) const;
-
-    bool WriteByteToRegister(__u16 slaveAddress,
-                             __u8 slaveRegister,
-                             __u8 byte) const;
-
-    bool WriteByte(__u16 slaveAddress,
-                   __u8 byte) const;
+    bool WriteByte(__u16 slaveAddress, __u8 byte);
 };
 
 #endif

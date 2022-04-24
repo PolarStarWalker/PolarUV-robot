@@ -18,7 +18,7 @@ private:
 
     mutable std::list<SensorContext> sensors_;
 
-    const I2C i2c_;
+    I2C i2c_;
 
     EventTracker eventTracker_;
 
@@ -26,7 +26,7 @@ private:
 
     std::atomic<bool> notDone_;
 
-    bool RegisterSensor(const std::shared_ptr<ISensor> &newSensor);
+    bool RegisterSensor(const std::shared_ptr<ISensor> &newSensor, SensorTask &&init, SensorTask &&readData);
 
 public:
 
@@ -41,9 +41,10 @@ public:
     template<class T, typename ... Args>
     requires(std::convertible_to<T *, ISensor *>)
     std::shared_ptr<T> CreateSensor(Args && ... args){
-        auto sensor = std::make_shared<T>(std::forward<Args>(args)...);
 
-        RegisterSensor(sensor);
+        auto sensor = std::make_shared<T>(i2c_, std::forward<Args>(args)...);
+
+        RegisterSensor(sensor, sensor->Init(), sensor->ReadData());
 
         return sensor;
     }

@@ -33,7 +33,8 @@ struct SensorTask {
             return std::suspend_always();
         }
 
-        itimerspec timespec_{{0, 0}, {0, 0}};
+        itimerspec timespec_{{0, 0},
+                             {0, 0}};
         bool isActive = false;
     };
 
@@ -48,7 +49,7 @@ struct SensorTask {
 
     SensorTask(SensorTask &&task) noexcept: handle_(task.handle_) { task.handle_ = nullptr; }
 
-    ~SensorTask() { handle_.destroy(); }
+    ~SensorTask() { if (handle_) handle_.destroy(); }
 
 protected:
     coro_handle handle_;

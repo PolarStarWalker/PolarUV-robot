@@ -52,11 +52,13 @@ bool EventTracker::TrackEvent(const TimerType &timer, uint32_t events) const {
 }
 
 
-SensorContext::SensorContext(std::shared_ptr<ISensor> sensors) :
+SensorContext::SensorContext(std::shared_ptr<ISensor> sensors, SensorTask &&init, SensorTask &&readData) :
         Timer(),
         State(Offline),
-        I2CPeripheral(std::move(sensors)) {
-    auto time = Timer.SleepFor_us(I2CPeripheral->period_us_);
+        Sensor(std::move(sensors)),
+        Init(std::move(init)),
+        ReadData(std::move(readData)) {
+    auto time = Timer.SleepFor_ms(10);
     Timer.SetTimer(time);
 }
 
@@ -66,9 +68,11 @@ SensorHandler::SensorHandler(std::string_view i2c_path) :
         notDone_(true),
         thread_() {}
 
-bool SensorHandler::RegisterSensor(const std::shared_ptr<ISensor> &newSensor) {
+bool SensorHandler::RegisterSensor(const std::shared_ptr<ISensor> &newSensor,
+                                   SensorTask &&init,
+                                   SensorTask &&readData) {
 
-    auto &context = sensors_.emplace_front(newSensor);
+    auto &context = sensors_.emplace_front(newSensor, std::move(init), std::move(readData));
 
     if (eventTracker_.TrackEvent(context.Timer, EPOLLIN))
         return true;
@@ -95,6 +99,8 @@ void SensorHandler::Start() const {
         if (events <= 0)
             continue;
 
+//        auto begin = std::chrono::system_clock::now();
+
         for (size_t i = 0; i < events; ++i) {
 
             timerfd = epollEvents[i].data.fd;
@@ -110,13 +116,15 @@ void SensorHandler::Start() const {
 
             switch (context->State) {
                 case SensorContext::Online: {
-                    bool isOnline = context->I2CPeripheral->ReadData(context->Timer);
+                    auto [time, isOnline] = context->ReadData();
+                    context->Timer.SetTimer(time);
                     if (!isOnline)
                         context->State = SensorContext::Offline;
                     break;
                 }
                 case SensorContext::Offline: {
-                    bool isOnline = context->I2CPeripheral->Init(&i2c_, context->Timer);
+                    auto [time, isOnline] = context->Init();
+                    context->Timer.SetTimer(time);
                     if (isOnline)
                         context->State = SensorContext::Online;
                     break;
@@ -126,6 +134,11 @@ void SensorHandler::Start() const {
             }
         }
 
+//        auto end = std::chrono::system_clock::now();
+
+//        std::cout << "Execution time: "
+//                  << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()
+//                  << "[ns]\n";
 
     }
 }
