@@ -2,6 +2,8 @@
 #define ROBOT_MS5837_HPP
 namespace MS5837 {
 
+    constexpr uint16_t ADDRESS = 0x76;
+
     enum Commands : uint8_t {
         MS5837_RESET = 0x1E,
         MS5837_ADC_READ = 0x00,

@@ -6,8 +6,8 @@
 #include <type_traits>
 #include <Exceptions/Exceptions.hpp>
 #include <chrono>
+#include <boost/container/flat_map.hpp>
 #include "Packet.hpp"
-
 
 namespace lib::network {
 
@@ -61,7 +61,7 @@ namespace lib::network {
 
     class TcpSession {
         using IService_ptr = std::shared_ptr<IService>;
-        using Map = std::unordered_map<size_t, IService_ptr>;
+        using Map = boost::container::flat_map<size_t, IService_ptr>;
 
     public:
         constexpr static const size_t BUFFER_SIZE = 1024;
@@ -97,7 +97,7 @@ namespace lib::network {
 
             auto service = std::make_shared<Service>(std::forward<Args>(args)...);
 
-            services_[service->serviceId_] = service;
+            services_.insert({service->serviceId_, service});
 
             return service;
         };

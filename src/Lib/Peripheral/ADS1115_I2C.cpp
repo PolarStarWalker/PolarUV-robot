@@ -1,21 +1,26 @@
 #include "./ADS1115/ADS1115_I2C.hpp"
 #include "./Math/SIPrefix.hpp"
+
 using namespace ADS1115;
 
-ADS1115_I2C::ADS1115_I2C(uint16_t address, ADS1115::Gain gain, ADS1115::DataRate dataRate) : ISensor(Kilo(50)){
-    _i2c = nullptr;
-    _gain = gain;
-    _dataRate = dataRate;
-    _address = address;
+ADS1115_I2C::ADS1115_I2C(I2C &i2c, uint16_t address, ADS1115::Gain gain, ADS1115::DataRate dataRate)
+        : ISensor(i2c),
+          gain_(gain),
+          dataRate_(dataRate),
+          address_(address) {}
+
+SensorTask ADS1115_I2C::Init() {
+    for (;;) {
+        co_yield false;
+        co_await TimerType::SleepFor_ms(100);
+    }
 }
 
-bool ADS1115_I2C::Init(const I2C *i2c, TimerType &timer) {
-    _i2c = i2c;
-    return 0;
-}
-
-bool ADS1115_I2C::ReadData(TimerType &timer) {
-    return 0;
+SensorTask ADS1115_I2C::ReadData() {
+    for (;;) {
+        co_yield false;
+        co_await TimerType::SleepFor_ms(100);
+    }
 }
 
 int16_t ADS1115_I2C::ReadADC_SingleEnded(Channel channel) {
@@ -28,8 +33,8 @@ int16_t ADS1115_I2C::ReadADC_SingleEnded(Channel channel) {
                       CMODE_TRAD |
                       MODE_SINGLE;
 
-    config |= _gain |
-              _dataRate; ///ToDo:??????
+    config |= gain_ |
+              dataRate_; ///ToDo:??????
 
     switch (channel) {
         case (A0):
@@ -63,8 +68,8 @@ void ADS1115_I2C::StartComparator_SingleEnded(Channel channel,
                       CMODE_TRAD |
                       MODE_CONTIN;
 
-    config |= _gain |
-              _dataRate;
+    config |= gain_ |
+              dataRate_;
 
     switch (channel) {
         case (A0):
@@ -87,13 +92,13 @@ void ADS1115_I2C::StartComparator_SingleEnded(Channel channel,
 }
 
 int16_t ADS1115_I2C::GetLastConversionResults() {
-    uint16_t result = _i2c->ReadByteFromRegister(_address, CONVERT).first;
+    uint16_t result = i2c_->ReadByteFromRegister(address_, CONVERT).first;
     return (int16_t) result;
 }
 
 double ADS1115_I2C::ComputeVolts(int16_t counts) {
     double fsRange;
-    switch (_gain) {
+    switch (gain_) {
         case GAIN_TWOTHIRDS:
             fsRange = 6.144f;
             break;

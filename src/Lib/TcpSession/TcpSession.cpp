@@ -91,9 +91,12 @@ void TcpSession::Start() {
 
                 TimePoint begin = std::chrono::steady_clock::now();
 
-                auto data = buffer.Decompress(requestHeader.Length);
+                ArrayView data{buffer.data(), 0};
 
                 TimePoint end = std::chrono::steady_clock::now();
+
+                if (requestHeader.Type == RequestTypeEnum::W)
+                    data = buffer.Decompress(requestHeader.Length);
 
                 auto &service = FindService(requestHeader.EndpointId);
 
@@ -101,24 +104,24 @@ void TcpSession::Start() {
 
                 SendResponse(socket, response);
 
-                std::cout << "Execution time = "
-                          << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count()
-                          << "[us]" << std::endl;
+                std::cout << requestHeader << '\n'
+                          << "Execution time = "
+                          << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()
+                          << "[ns]" << std::endl;
 
             } catch (const lib::exceptions::BufferOverflow &e) {
                 Response response(std::string(e.Message), e.Code, -1);
                 SendResponse(socket, response);
-
-            } catch(const lib::exceptions::ConnectionTimeout &e)
-            {
+            } catch (const lib::exceptions::ConnectionTimeout &e) {
                 socket.close();
-                std::cout<< e.Message <<std::endl;
-            }catch (const lib::exceptions::BaseException &e) {
+                std::cout << e.Message << std::endl;
+            } catch (const lib::exceptions::BaseException &e) {
                 Response response(std::string(e.Message), e.Code, -1);
                 SendResponse(socket, response);
             } catch (const std::exception &e) {
                 socket.close();
-                std::clog << "[UNKNOWN EXCEPTION ERROR]\n" << e.what() << std::endl;
+                std::clog << "[UNKNOWN EXCEPTION ERROR]\n"
+                          << e.what() << std::endl;
             }
             catch (...) {
                 socket.close();

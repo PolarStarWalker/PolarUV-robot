@@ -74,13 +74,13 @@ namespace stc {
 
         [[nodiscard]] const Type *cend() const noexcept { return elements_.cend(); }
 
-        [[nodiscard]] Type *rbegin() noexcept{ return elements_.rbegin(); }
+        [[nodiscard]] auto rbegin() noexcept{ return elements_.rbegin(); }
 
-        [[nodiscard]] Type *rend() noexcept { return elements_.rend(); }
+        [[nodiscard]] auto rend() noexcept { return elements_.rend(); }
 
-        [[nodiscard]] const Type *rcbegin() const noexcept{ return elements_.crbegin(); }
+        [[nodiscard]] auto rcbegin() const noexcept{ return elements_.crbegin(); }
 
-        [[nodiscard]] const Type *rcend() const noexcept { return elements_.crend(); }
+        [[nodiscard]] auto rcend() const noexcept { return elements_.crend(); }
 
         void Normalize(Type amplitude);
 

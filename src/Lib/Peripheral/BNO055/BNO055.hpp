@@ -2,6 +2,9 @@
 #define ROBOT_BNO055_HPP
 
 namespace BNO055 {
+    constexpr uint8_t ID = 0xA0;
+    constexpr uint16_t ADDRESS = 0x29;
+
     enum Axis : size_t {
         X = 0,
         Y = 1,

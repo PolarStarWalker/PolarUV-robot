@@ -5,31 +5,98 @@
 
 using namespace MS5837;
 
-MS5837_I2C::MS5837_I2C(uint16_t sensorAddress) :
-        ISensor(Kilo(20)),
+MS5837_I2C::MS5837_I2C(I2C& i2c,uint16_t sensorAddress) :
+        ISensor(i2c),
         sensorAddress_(sensorAddress),
         sensorCalibration_({}),
-        i2c_(nullptr),
-        ReadDataAsync(ReadDataImpl()),
-        InitSensorsAsync(InitSensorsImpl()),
         filters_({new MovingAverage<5>(), new MovingAverage<5>(), new MovingAverage<5>()}) {}
 
-bool MS5837_I2C::Init(const I2C *i2c, TimerType &timer) {
+SensorTask MS5837_I2C::Init() {
+    for (;;) {
 
-    i2c_ = i2c;
+        co_await TimerType::SleepFor_ms(10);
 
-    auto [time, isActive] = InitSensorsAsync();
-    timer.SetTimer(time);
+        if (!i2c_->WriteByte(sensorAddress_, MS5837_RESET))
+            continue;
 
-    return isActive;
+        co_await TimerType::SleepFor_ms(10);
+
+        int isContinue = false;
+        for (uint8_t i = 0; i < 7; i++) {
+            i2c_->WriteByte(sensorAddress_, MS5837_PROM_READ + (i * 2));
+            uint8_t cData[2]{};
+            i2c_->Read(sensorAddress_, cData, 2);
+            if (cData[0] == 0 && cData[1] == 0) {
+                isContinue = true;
+                break;
+            }
+            sensorCalibration_[i] = (cData[0] << 8) | cData[1];
+        }
+
+        if (isContinue)
+            continue;
+
+
+        uint8_t crcRead = sensorCalibration_[0] >> 12;
+        uint8_t crcCalculated = CRC4(sensorCalibration_);
+
+        if (crcCalculated != crcRead)
+            continue;
+
+        co_yield true;
+    }
 }
 
-bool MS5837_I2C::ReadData(TimerType &timer) {
+SensorTask MS5837_I2C::ReadData() {
+    for (;;) {
 
-    auto [time, isActive] = ReadDataAsync();
-    timer.SetTimer(time);
+        co_await TimerType::SleepFor_ms(10);
 
-    return isActive;
+        if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D1_8192))
+            continue;
+
+        co_await TimerType::SleepFor_ms(20);
+
+        if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ))
+            continue;
+
+        std::array<uint8_t, 3> d1Data{};
+        if (!i2c_->Read(sensorAddress_, d1Data.begin(), d1Data.size()))
+            continue;
+
+        MS5837::Measure measure;
+        measure.d1Pressure_ = d1Data[0];
+        measure.d1Pressure_ = (measure.d1Pressure_ << 8) | d1Data[1];
+        measure.d1Pressure_ = (measure.d1Pressure_ << 8) | d1Data[2];
+
+        if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D2_8192))
+            continue;
+
+        co_await TimerType::SleepFor_ms(20);
+
+        if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ))
+            continue;
+
+        std::array<uint8_t, 3> d2Data{};
+        if (!i2c_->Read(sensorAddress_, d2Data.begin(), d2Data.size()))
+            continue;
+
+        measure.D2Temperature = d2Data[0];
+        measure.D2Temperature = (measure.D2Temperature << 8) | d2Data[1];
+        measure.D2Temperature = (measure.D2Temperature << 8) | d2Data[2];
+
+        measure.FluidDensity = fluidDensity_;
+
+        MS5837::Data data = Calculate(measure, sensorCalibration_);
+
+        data.Depth = filters_[Depth](data.Depth);
+        data.Pressure = filters_[Pressure](data.Pressure);
+        data.Temperature = filters_[Temperature](data.Temperature);
+
+        SetData(data);
+
+        co_yield true;
+    }
 }
 
 void MS5837_I2C::SetFluidDensity(double density) {
@@ -112,111 +179,4 @@ MS5837::Data MS5837_I2C::GetData() const {
     std::lock_guard guard(dataMutex_);
     MS5837::Data data = data_;
     return data;
-}
-
-SensorTask MS5837_I2C::ReadDataImpl() {
-    for (;;) {
-
-        co_await TimerType::SleepFor_ms(10);
-        co_yield false;
-
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D1_8192)) {
-            co_yield false;
-            continue;
-        };
-
-        co_await TimerType::SleepFor_ms(20);
-
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ)) {
-            co_yield false;
-            continue;
-        };
-
-        MS5837::Measure measure;
-
-        std::array<uint8_t, 3> d1Data{};
-        if (!i2c_->Read(sensorAddress_, d1Data.begin(), d1Data.size())) {
-            co_yield false;
-            continue;
-        };
-
-        measure.d1Pressure_ = d1Data[0];
-        measure.d1Pressure_ = (measure.d1Pressure_ << 8) | d1Data[1];
-        measure.d1Pressure_ = (measure.d1Pressure_ << 8) | d1Data[2];
-
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D2_8192)) {
-            co_yield false;
-            continue;
-        };
-
-        co_await TimerType::SleepFor_ms(20);
-
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ)) {
-            co_yield false;
-            continue;
-        };
-
-        std::array<uint8_t, 3> d2Data{};
-        if (!i2c_->Read(sensorAddress_, d2Data.begin(), d2Data.size())) {
-            co_yield false;
-            continue;
-        };
-
-        measure.D2Temperature = d2Data[0];
-        measure.D2Temperature = (measure.D2Temperature << 8) | d2Data[1];
-        measure.D2Temperature = (measure.D2Temperature << 8) | d2Data[2];
-
-        measure.FluidDensity = fluidDensity_;
-
-        MS5837::Data data = Calculate(measure, sensorCalibration_);
-
-        data.Depth = filters_[Depth](data.Depth);
-        data.Pressure = filters_[Pressure](data.Pressure);
-        data.Temperature = filters_[Temperature](data.Temperature);
-
-        SetData(data);
-
-        co_yield true;
-    }
-}
-
-SensorTask MS5837_I2C::InitSensorsImpl() {
-    for (;;) {
-
-        co_await TimerType::SleepFor_ms(10);
-
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_RESET)) {
-            co_yield false;
-            continue;
-        }
-
-        co_await TimerType::SleepFor_ms(10);
-
-        int isContinue = false;
-        for (uint8_t i = 0; i < 7; i++) {
-            i2c_->WriteByte(sensorAddress_, MS5837_PROM_READ + (i * 2));
-            uint8_t cData[2]{};
-            i2c_->Read(sensorAddress_, cData, 2);
-            if (cData[0] == 0 && cData[1] == 0) {
-                isContinue = true;
-                break;
-            }
-            sensorCalibration_[i] = (cData[0] << 8) | cData[1];
-        }
-
-        if (isContinue) {
-            co_yield false;
-            continue;
-        }
-
-        uint8_t crcRead = sensorCalibration_[0] >> 12;
-        uint8_t crcCalculated = CRC4(sensorCalibration_);
-
-        if (crcCalculated != crcRead) {
-            co_yield false;
-            continue;
-        }
-
-        co_yield true;
-    }
 }

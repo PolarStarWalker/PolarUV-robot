@@ -7,6 +7,7 @@
 #include "./Coruitine.hpp"
 
 class SensorHandler;
+
 class SensorContext;
 
 class ISensor {
@@ -14,14 +15,10 @@ class ISensor {
     friend SensorContext;
 protected:
 
-    explicit ISensor(ssize_t period_us) :
-            period_us_(period_us){}
+    explicit ISensor(I2C &i2c) :
+            i2c_(&i2c) {}
 
-    virtual bool ReadData(TimerType &timer) = 0;
-
-    virtual bool Init(const I2C *i2c, TimerType &timer) = 0;
-
-    const ssize_t period_us_;
+    I2C *i2c_;
 };
 
 struct SensorContext {
@@ -31,11 +28,13 @@ struct SensorContext {
         Offline
     };
 
-    std::shared_ptr<ISensor> I2CPeripheral;
+    std::shared_ptr<ISensor> Sensor;
+    SensorTask ReadData;
+    SensorTask Init;
     TimerType Timer;
     StateEnum State;
 
-    explicit SensorContext(std::shared_ptr<ISensor> i2cPeripheral);
+    explicit SensorContext(std::shared_ptr<ISensor> i2cPeripheral, SensorTask &&init, SensorTask &&readData);
 };
 
 #endif

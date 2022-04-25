@@ -5,55 +5,49 @@
 #include "./Filters/FiltersGroup.hpp"
 #include "./MS5837.hpp"
 
-#define MS5837_ADDRESS 0x76
 
+namespace MS5837{
 class MS5837_I2C final : public ISensor {
 public:
 
-    explicit MS5837_I2C(uint16_t sensorAddress);
+    explicit MS5837_I2C(I2C &i2c, uint16_t sensorAddress = ADDRESS);
 
     void SetFluidDensity(double density);
 
-    MS5837::Data GetData() const;
-
-    //from sensor
-    bool Init(const I2C *i2c, TimerType &timer) final;
+    Data GetData() const;
 
 private:
 
-    double fluidDensity_ = 997.0; // Freshwater
+    double fluidDensity_ = 997.0; //
 
     std::array<uint8_t, 8> sensorCalibration_;
 
-    const I2C *i2c_{};
-
     mutable std::mutex dataMutex_;
 
-    MS5837::Data data_;
+    Data data_;
 
     FiltersGroup<3> filters_;
 
     const uint16_t sensorAddress_;
 
-    SensorTask ReadDataAsync;
-    SensorTask InitSensorsAsync;
-
 private:
-
-    SensorTask ReadDataImpl();
-
-    SensorTask InitSensorsImpl();
 
     static uint8_t CRC4(std::array<uint8_t, 8> &n_prom);
 
-    static MS5837::Data Calculate(const MS5837::Measure &measure, const std::array<uint8_t, 8> &Calibration);
+    static Data Calculate(const Measure &measure, const std::array<uint8_t, 8> &Calibration);
 
-    bool ReadData(TimerType &timer) final;
-
-    inline void SetData(const MS5837::Data &data) {
+    inline void SetData(const Data &data) {
         std::lock_guard guard(dataMutex_);
         data_ = data;
     }
+
+    //from ISensor
+public:
+
+    SensorTask ReadData();
+
+    SensorTask Init();
 };
 
+}
 #endif

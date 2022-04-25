@@ -1,4 +1,6 @@
 #include "CommandsCycle.hpp"
+#include <algorithm>
+#include <ranges>
 
 using namespace app;
 
@@ -9,13 +11,13 @@ constexpr auto Z = SensorsStruct::Position::Z;
 inline MotorsSender::MotorsStruct FormMotorsStruct(const std::array<float, 12> &hiPwm,
                                                    const std::array<float, 4> &lowPwm) {
 
+    auto func = [](float x) -> uint16_t { return std::ceil(x); };
+
     MotorsSender::MotorsStruct motors;
 
-    for (size_t i = 0; i < 12; ++i)
-        motors.HiPWM[i] = std::ceil(hiPwm[i]);
+    std::ranges::transform(hiPwm.cbegin(), hiPwm.cend(), motors.HiPWM.begin(), func);
 
-    for (size_t i = 0; i < 4; ++i)
-        motors.LowPWM[i] = std::ceil(lowPwm[i]);
+    std::ranges::transform(lowPwm.cbegin(), lowPwm.cend(), motors.LowPWM.begin(), func);
 
     return motors;
 }
@@ -74,8 +76,14 @@ void CommandsCycle::StartCommands() {
         auto hiPWM = settings.ThrustersCoefficientArray * commands.Move;
         hiPWM.Normalize(100.0f);
 
-        for (size_t i = 0; i < settings.HandFreedom; ++i)
-            hiPWM.end()[-(i + 1)] = settings.HandCoefficientArray[i] * commands.Hand[i];
+        std::transform(commands.Hand.cbegin(),
+                       commands.Hand.cbegin() + settings.HandFreedom,
+                       settings.HandCoefficientArray.cbegin(),
+                       hiPWM.rbegin(),
+                       [](float hand, float coefficient) { return hand * coefficient; });
+
+//        for (size_t i = 0; i < settings.HandFreedom; ++i)
+//            hiPWM.end()[-(i + 1)] = settings.HandCoefficientArray[i] * commands.Hand[i];
 
         hiPWM += 100.0f;
         hiPWM *= 10.0f;

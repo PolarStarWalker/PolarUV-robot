@@ -49,7 +49,7 @@ namespace app {
         SensorHandler sensorHandler_;
 
         std::shared_ptr<BNO055_I2C> bno055_;
-        std::shared_ptr<MS5837_I2C> ms5837_;
+        std::shared_ptr<MS5837::MS5837_I2C> ms5837_;
 
     public:
 

@@ -12,7 +12,6 @@ struct SensorTask {
 
     struct promise_type {
 
-        //всегда такой
         auto get_return_object() noexcept { return coro_handle::from_promise(*this); }
 
         static inline auto initial_suspend() noexcept { return std::suspend_always(); }
@@ -33,13 +32,14 @@ struct SensorTask {
             return std::suspend_always();
         }
 
-        itimerspec timespec_{{0, 0}, {0, 0}};
+        itimerspec timespec_{{0, 0},
+                             {0, 0}};
         bool isActive = false;
     };
 
-    std::pair<itimerspec, bool> operator()() {
+    std::pair<itimerspec, bool> operator()(bool flag) {
         if (!handle_.done()) handle_.resume();
-        return {handle_.promise().timespec_, handle_.promise().isActive};
+        return {handle_.promise().timespec_, std::exchange(handle_.promise().isActive, flag) };
     }
 
     SensorTask(coro_handle handle) : handle_(handle) {}
@@ -48,7 +48,7 @@ struct SensorTask {
 
     SensorTask(SensorTask &&task) noexcept: handle_(task.handle_) { task.handle_ = nullptr; }
 
-    ~SensorTask() { handle_.destroy(); }
+    ~SensorTask() { if (handle_) handle_.destroy(); }
 
 protected:
     coro_handle handle_;

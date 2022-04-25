@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <sys/types.h>
 #include <string>
+#include <ostream>
 
 namespace lib::network {
 
@@ -14,15 +15,15 @@ namespace lib::network {
 
     public:
         template<typename Type>
-        Type* As(){
+        Type *As() {
 
-            if(size_ == sizeof(Type))
-                return (Type*) data_;
+            if (size_ == sizeof(Type))
+                return (Type *) data_;
 
             return nullptr;
         }
 
-        char* begin(){return data_;}
+        char *begin() { return data_; }
 
     };
 
@@ -37,6 +38,31 @@ namespace lib::network {
         ssize_t EndpointId{};
         size_t Length{};
     };
+
+    inline std::ostream &operator<<(std::ostream &out, const RequestHeaderType &header) {
+
+        out << "[REQUEST HEADER]\n"
+            << "Endpoint: " << header.EndpointId << ", Type: ";
+
+        switch (header.Type) {
+
+            case RequestTypeEnum::R:
+                out << 'R';
+                break;
+            case RequestTypeEnum::W:
+                out << 'W';
+                break;
+            case RequestTypeEnum::RW:
+                out << "RW";
+                break;
+            default:
+                out << "UNDEFINED";
+        }
+
+        out << ", Data length: " << header.Length;
+
+        return out;
+    }
 
     struct Response {
 
@@ -78,11 +104,11 @@ namespace lib::network {
 
 
         template<typename Returned, class Obj, typename ... Args>
-        static std::string GetData(Returned (Obj::*func)(Args...) const, const Obj* obj, Args&& ... args){
+        static std::string GetData(Returned (Obj::*func)(Args...) const, const Obj *obj, Args &&... args) {
 
             std::string data(sizeof(Returned), 0);
 
-            auto& typedData = (Returned&) *data.c_str();
+            auto &typedData = (Returned &) *data.c_str();
 
             typedData = (obj->*func)(std::forward(args)...);
 
