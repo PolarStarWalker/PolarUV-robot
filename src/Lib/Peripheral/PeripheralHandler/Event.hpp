@@ -8,6 +8,8 @@ class TimerType {
 public:
     TimerType();
 
+    TimerType(TimerType&&) noexcept;
+
     ~TimerType();
 
     bool operator==(int fd) const { return timerfd_ == fd; }
