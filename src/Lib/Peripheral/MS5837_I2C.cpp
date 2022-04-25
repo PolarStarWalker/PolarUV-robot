@@ -16,10 +16,8 @@ SensorTask MS5837_I2C::Init() {
 
         co_await TimerType::SleepFor_ms(10);
 
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_RESET)) {
-            co_yield false;
+        if (!i2c_->WriteByte(sensorAddress_, MS5837_RESET))
             continue;
-        }
 
         co_await TimerType::SleepFor_ms(10);
 
@@ -35,18 +33,15 @@ SensorTask MS5837_I2C::Init() {
             sensorCalibration_[i] = (cData[0] << 8) | cData[1];
         }
 
-        if (isContinue) {
-            co_yield false;
+        if (isContinue)
             continue;
-        }
+
 
         uint8_t crcRead = sensorCalibration_[0] >> 12;
         uint8_t crcCalculated = CRC4(sensorCalibration_);
 
-        if (crcCalculated != crcRead) {
-            co_yield false;
+        if (crcCalculated != crcRead)
             continue;
-        }
 
         co_yield true;
     }
@@ -56,48 +51,35 @@ SensorTask MS5837_I2C::ReadData() {
     for (;;) {
 
         co_await TimerType::SleepFor_ms(10);
-        co_yield false;
 
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D1_8192)) {
-            co_yield false;
+        if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D1_8192))
             continue;
-        };
 
         co_await TimerType::SleepFor_ms(20);
 
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ)) {
-            co_yield false;
+        if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ))
             continue;
-        };
 
         std::array<uint8_t, 3> d1Data{};
-        if (!i2c_->Read(sensorAddress_, d1Data.begin(), d1Data.size())) {
-            co_yield false;
+        if (!i2c_->Read(sensorAddress_, d1Data.begin(), d1Data.size()))
             continue;
-        };
 
         MS5837::Measure measure;
         measure.d1Pressure_ = d1Data[0];
         measure.d1Pressure_ = (measure.d1Pressure_ << 8) | d1Data[1];
         measure.d1Pressure_ = (measure.d1Pressure_ << 8) | d1Data[2];
 
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D2_8192)) {
-            co_yield false;
+        if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D2_8192))
             continue;
-        };
 
         co_await TimerType::SleepFor_ms(20);
 
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ)) {
-            co_yield false;
+        if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ))
             continue;
-        };
 
         std::array<uint8_t, 3> d2Data{};
-        if (!i2c_->Read(sensorAddress_, d2Data.begin(), d2Data.size())) {
-            co_yield false;
+        if (!i2c_->Read(sensorAddress_, d2Data.begin(), d2Data.size()))
             continue;
-        };
 
         measure.D2Temperature = d2Data[0];
         measure.D2Temperature = (measure.D2Temperature << 8) | d2Data[1];

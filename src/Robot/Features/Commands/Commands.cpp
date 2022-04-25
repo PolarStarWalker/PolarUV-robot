@@ -20,3 +20,9 @@ lib::network::Response CommandsService::Write(const std::string_view &data) {
 
     return {"", lib::network::Response::NoContent, serviceId_};
 }
+
+
+
+
+
+

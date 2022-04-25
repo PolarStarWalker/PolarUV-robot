@@ -4,7 +4,7 @@
 #include <thread>
 #include <cstring>
 #include <shared_mutex>
-#include <list>
+#include <vector>
 
 #include "./ISensor.hpp"
 
@@ -16,7 +16,7 @@ private:
     static constexpr size_t MAX_SENSORS = 10;
     static constexpr int MAX_TIMEOUT_MS = 500;
 
-    mutable std::list<SensorContext> sensors_;
+    std::vector<SensorContext> sensors_;
 
     I2C i2c_;
 
@@ -34,9 +34,9 @@ public:
 
     ~SensorHandler();
 
-    void Start() const;
+    void Start();
 
-    void StartAsync() const;
+    void StartAsync();
 
     template<class T, typename ... Args>
     requires(std::convertible_to<T *, ISensor *>)

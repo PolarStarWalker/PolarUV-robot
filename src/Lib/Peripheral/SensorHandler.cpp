@@ -4,7 +4,6 @@
 #include <ranges>
 #include <algorithm>
 #include <utility>
-#include <variant>
 
 #include <sys/timerfd.h>
 #include <sys/epoll.h>
@@ -29,7 +28,7 @@ itimerspec TimerType::SleepFor_ms(ssize_t ms) {
 
 bool TimerType::SetTimer(const itimerspec &time) const {
 
-    bool success = timerfd_settime(timerfd_, 0, &time, nullptr) == 0;
+    int success = timerfd_settime(timerfd_, 0, &time, nullptr) == 0;
 
     return success;
 }
@@ -54,7 +53,7 @@ bool EventTracker::TrackEvent(const TimerType &timer, uint32_t events) const {
 
 SensorContext::SensorContext(std::shared_ptr<ISensor> sensors, SensorTask &&init, SensorTask &&readData) :
         Timer(),
-        State(Offline),
+        State(Online),
         Sensor(std::move(sensors)),
         Init(std::move(init)),
         ReadData(std::move(readData)) {
@@ -72,26 +71,21 @@ bool SensorHandler::RegisterSensor(const std::shared_ptr<ISensor> &newSensor,
                                    SensorTask &&init,
                                    SensorTask &&readData) {
 
-    auto &context = sensors_.emplace_front(newSensor, std::move(init), std::move(readData));
+    auto &context = sensors_.emplace_back(newSensor, std::move(init), std::move(readData));
 
     if (eventTracker_.TrackEvent(context.Timer, EPOLLIN))
         return true;
 
-    sensors_.pop_front();
+    sensors_.pop_back();
 
     return false;
 }
 
-void SensorHandler::StartAsync() const {
+void SensorHandler::StartAsync() {
     thread_ = std::thread(&SensorHandler::Start, this);
 }
 
-void SensorHandler::Start() const {
-
-    int timerfd;
-
-    auto comparator = [&](const SensorContext &context) { return context.Timer == timerfd; };
-
+void SensorHandler::Start() {
     while (notDone_.load()) {
 
         auto [epollEvents, events] = eventTracker_.Listen<MAX_SENSORS>(MAX_TIMEOUT_MS);
@@ -103,27 +97,29 @@ void SensorHandler::Start() const {
 
         for (size_t i = 0; i < events; ++i) {
 
-            timerfd = epollEvents[i].data.fd;
+            int fd = epollEvents[i].data.fd;
 
-            auto context = std::ranges::find_if(sensors_, comparator);
+            auto context = std::ranges::find_if(sensors_,
+                                                [&](const TimerType &timer) { return timer == fd; },
+                                                [](const SensorContext& context)-> const TimerType& { return context.Timer;});
 
             if (context == sensors_.end())
                 continue;
 
             // to reset the timer overflow amount
             uint64_t ticNumber;
-            ssize_t size = read(timerfd, (char *) &ticNumber, sizeof(uint64_t));
+            ssize_t size = read(fd, (char *) &ticNumber, sizeof(uint64_t));
 
             switch (context->State) {
                 case SensorContext::Online: {
-                    auto [time, isOnline] = context->ReadData();
+                    auto [time, isOnline] = context->ReadData(true);
                     context->Timer.SetTimer(time);
                     if (!isOnline)
                         context->State = SensorContext::Offline;
                     break;
                 }
                 case SensorContext::Offline: {
-                    auto [time, isOnline] = context->Init();
+                    auto [time, isOnline] = context->Init(false);
                     context->Timer.SetTimer(time);
                     if (isOnline)
                         context->State = SensorContext::Online;
