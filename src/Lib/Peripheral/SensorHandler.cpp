@@ -12,6 +12,11 @@
 
 TimerType::TimerType() : timerfd_(timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK)) {}
 
+TimerType::TimerType(TimerType&& another)  noexcept : timerfd_(another.timerfd_) {
+    another.timerfd_ = -1;
+}
+
+
 TimerType::~TimerType() {
     close(timerfd_);
 }
@@ -28,9 +33,9 @@ itimerspec TimerType::SleepFor_ms(ssize_t ms) {
 
 bool TimerType::SetTimer(const itimerspec &time) const {
 
-    int success = timerfd_settime(timerfd_, 0, &time, nullptr) == 0;
+    int success = timerfd_settime(timerfd_, 0, &time, nullptr);
 
-    return success;
+    return success == 0;
 }
 
 EventTracker::EventTracker(int maxEvents) : epollfd_(epoll_create(maxEvents)) {}
@@ -65,7 +70,9 @@ SensorHandler::SensorHandler(std::string_view i2c_path) :
         i2c_(i2c_path),
         eventTracker_(MAX_SENSORS),
         notDone_(true),
-        thread_() {}
+        thread_() {
+    sensors_.reserve(MAX_SENSORS);
+}
 
 bool SensorHandler::RegisterSensor(const std::shared_ptr<ISensor> &newSensor,
                                    SensorTask &&init,

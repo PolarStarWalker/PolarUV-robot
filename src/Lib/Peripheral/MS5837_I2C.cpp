@@ -36,7 +36,6 @@ SensorTask MS5837_I2C::Init() {
         if (isContinue)
             continue;
 
-
         uint8_t crcRead = sensorCalibration_[0] >> 12;
         uint8_t crcCalculated = CRC4(sensorCalibration_);
 
@@ -48,54 +47,56 @@ SensorTask MS5837_I2C::Init() {
 }
 
 SensorTask MS5837_I2C::ReadData() {
-    for (;;) {
+    for(;;){
+        for (;;) {
 
-        co_await TimerType::SleepFor_ms(10);
+            co_await TimerType::SleepFor_ms(10);
 
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D1_8192))
-            continue;
+            if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D1_8192))
+                break;
 
-        co_await TimerType::SleepFor_ms(20);
+            co_await TimerType::SleepFor_ms(20); // Max conversation time per datasheet
 
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ))
-            continue;
+            if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ))
+                break;
 
-        std::array<uint8_t, 3> d1Data{};
-        if (!i2c_->Read(sensorAddress_, d1Data.begin(), d1Data.size()))
-            continue;
+            std::array<uint8_t, 3> d1Data{};
+            if (!i2c_->Read(sensorAddress_, d1Data.begin(), d1Data.size()))
+                break;
 
-        MS5837::Measure measure;
-        measure.d1Pressure_ = d1Data[0];
-        measure.d1Pressure_ = (measure.d1Pressure_ << 8) | d1Data[1];
-        measure.d1Pressure_ = (measure.d1Pressure_ << 8) | d1Data[2];
+            MS5837::Measure measure;
+            measure.d1Pressure_ = d1Data[0];
+            measure.d1Pressure_ = (measure.d1Pressure_ << 8) | d1Data[1];
+            measure.d1Pressure_ = (measure.d1Pressure_ << 8) | d1Data[2];
 
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D2_8192))
-            continue;
+            if (!i2c_->WriteByte(sensorAddress_, MS5837_CONVERT_D2_8192))
+                break;
 
-        co_await TimerType::SleepFor_ms(20);
+            co_await TimerType::SleepFor_ms(20);
 
-        if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ))
-            continue;
+            if (!i2c_->WriteByte(sensorAddress_, MS5837_ADC_READ))
+                break;
 
-        std::array<uint8_t, 3> d2Data{};
-        if (!i2c_->Read(sensorAddress_, d2Data.begin(), d2Data.size()))
-            continue;
+            std::array<uint8_t, 3> d2Data{};
+            if (!i2c_->Read(sensorAddress_, d2Data.begin(), d2Data.size()))
+                break;
 
-        measure.D2Temperature = d2Data[0];
-        measure.D2Temperature = (measure.D2Temperature << 8) | d2Data[1];
-        measure.D2Temperature = (measure.D2Temperature << 8) | d2Data[2];
+            measure.D2Temperature = d2Data[0];
+            measure.D2Temperature = (measure.D2Temperature << 8) | d2Data[1];
+            measure.D2Temperature = (measure.D2Temperature << 8) | d2Data[2];
 
-        measure.FluidDensity = fluidDensity_;
+            measure.FluidDensity = fluidDensity_;
 
-        MS5837::Data data = Calculate(measure, sensorCalibration_);
+            MS5837::Data data = Calculate(measure, sensorCalibration_);
 
-        data.Depth = filters_[Depth](data.Depth);
-        data.Pressure = filters_[Pressure](data.Pressure);
-        data.Temperature = filters_[Temperature](data.Temperature);
+            data.Depth = filters_[Depth](data.Depth);
+            data.Pressure = filters_[Pressure](data.Pressure);
+            data.Temperature = filters_[Temperature](data.Temperature);
 
-        SetData(data);
+            SetData(data);
+        }
 
-        co_yield true;
+        co_yield false;
     }
 }
 
