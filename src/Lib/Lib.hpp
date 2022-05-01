@@ -6,13 +6,9 @@
 #include "./Coroutine/All.hpp"
 #include "./DataTransmissions/DataTransmissions.hpp"
 #include "./TcpSession/TcpSession.hpp"
+#include <gst/gst.h>
 
 namespace lib {
-
-    void LoggerInitialize();
-
-    static void Initialize() {
-        LoggerInitialize();
-    }
+    void Initialize();
 }
 #endif

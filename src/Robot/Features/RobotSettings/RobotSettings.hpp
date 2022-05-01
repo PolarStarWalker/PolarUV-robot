@@ -51,15 +51,12 @@ namespace app {
 
         Response Read(const std::string_view &request) final;
 
-        inline const RobotSettingsData &GetSettings() {
-            std::lock_guard lock(settingsMutex_);
-            return settings_;
-        };
+        RobotSettingsData GetSettings() const;
 
     private:
         void SetSettings(const RobotSettingsData& settingsData);
 
-        std::mutex settingsMutex_;
+        mutable std::mutex settingsMutex_;
         std::string_view filename_;
         RobotSettingsData settings_;
     };

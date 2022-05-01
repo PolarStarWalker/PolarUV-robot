@@ -19,7 +19,7 @@ inline MotorsSender::MotorsStruct FormMotorsStruct(const std::array<float, 12> &
     return motors;
 }
 
-CommandsCycle::CommandsCycle(MotorsSender::IMotorsSender *motorsSender,
+CommandsCycle::CommandsCycle(MotorsSender::IMotorsSender &motorsSender,
                              std::shared_ptr<Sensors> sensors,
                              std::shared_ptr<RobotSettings> settings) :
         motorsSender_(motorsSender),
@@ -44,7 +44,7 @@ void CommandsCycle::StartCommands() {
             auto sensorsStruct = sensors_->GetSensorsStruct();
         }
 
-        const auto settings = settings_->GetSettings();
+        auto settings = settings_->GetSettings();
 
         auto hiPWM = settings.ThrustersCoefficientArray * commands.Move;
         hiPWM.Normalize(100.0f);
@@ -63,7 +63,7 @@ void CommandsCycle::StartCommands() {
 
         auto motorsStruct = FormMotorsStruct((std::array<float, 12>) hiPWM, commands.LowPWM);
 
-        motorsSender_->SendMotorsStruct(motorsStruct);
+        motorsSender_.SendMotorsStruct(motorsStruct);
 
         usleep(PERIOD_US);
     }

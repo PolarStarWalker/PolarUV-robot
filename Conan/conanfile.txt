@@ -9,6 +9,7 @@
     gstreamer/1.19.1
     gst-plugins-base/1.19.1
     gst-plugins-good/1.19.1
+    gst-plugins-bad/1.19.1
     glib/2.70.1
     freetype/2.11.0
     libalsa/1.1.9

@@ -4,7 +4,7 @@
 using namespace app;
 
 CommandsService::CommandsService(ssize_t id,
-                                 MotorsSender::IMotorsSender *motorsSender,
+                                 MotorsSender::IMotorsSender &motorsSender,
                                  std::shared_ptr<Sensors> sensors,
                                  std::shared_ptr<RobotSettings> settings) :
         lib::network::IService(id),

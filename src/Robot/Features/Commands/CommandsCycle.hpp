@@ -94,7 +94,7 @@ namespace app {
 
         CommandsQueue commandsQueue_;
         std::thread thread_;
-        MotorsSender::IMotorsSender *motorsSender_;
+        MotorsSender::IMotorsSender &motorsSender_;
         std::shared_ptr<Sensors> sensors_;
         std::shared_ptr<RobotSettings> settings_;
         std::atomic<bool> isNotDone_;
@@ -102,7 +102,7 @@ namespace app {
 
     public:
 
-        CommandsCycle(MotorsSender::IMotorsSender *motorsSender,
+        CommandsCycle(MotorsSender::IMotorsSender &motorsSender,
                       std::shared_ptr<Sensors> sensors,
                       std::shared_ptr<RobotSettings> settings);
 

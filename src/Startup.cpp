@@ -4,6 +4,9 @@ using namespace app;
 
 
 int main() {
+
+    lib::Initialize();
+
     Robot robot;
     robot.SetUp();
     robot.Start();

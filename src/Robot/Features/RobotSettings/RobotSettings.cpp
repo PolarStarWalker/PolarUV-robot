@@ -116,5 +116,8 @@ inline void RobotSettings::SetSettings(const RobotSettingsData& settingsData) {
 }
 
 
-
+RobotSettingsData RobotSettings::GetSettings() const {
+    std::unique_lock lock(settingsMutex_);
+    return settings_;
+}
 

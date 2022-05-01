@@ -8,7 +8,7 @@ namespace app {
 
     class CommandsService final : public lib::network::IService {
     public:
-        CommandsService(ssize_t id, MotorsSender::IMotorsSender *motorsSender,
+        CommandsService(ssize_t id, MotorsSender::IMotorsSender &motorsSender,
                         std::shared_ptr<Sensors> sensors,
                         std::shared_ptr<RobotSettings> settings);
 
