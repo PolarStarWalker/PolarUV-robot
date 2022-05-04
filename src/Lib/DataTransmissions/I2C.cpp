@@ -1,7 +1,8 @@
 #include <cstdint>
 #include <iostream>
 #include "I2C/I2C.hpp"
-#ifdef DEBUG
+
+#ifdef DEBUGG
 #define DEBUG_OUT(str) (std::cout << str << std::endl)
 #else
 #define DEBUG_OUT(str)

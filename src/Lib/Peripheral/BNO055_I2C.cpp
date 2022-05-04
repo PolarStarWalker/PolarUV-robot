@@ -143,8 +143,6 @@ SensorTask BNO055_I2C::ReadData() {
             data.LinearAcceleration[Y] = filters_[LinearAccelerationY](data.LinearAcceleration[Y]);
             data.LinearAcceleration[Z] = filters_[LinearAccelerationZ](data.LinearAcceleration[Z]);
 
-            std::cout << data.EulerAngle[X] << '\n';
-
             SetData(data);
         }
 
