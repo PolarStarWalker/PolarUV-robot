@@ -39,7 +39,7 @@ inline void Video::StartVideo(const std::string &pipeline) {
     std::system("chmod +x pipeline");
 
     if (childPid_ != 0)
-        KillStream();
+        childPid_ = KillStream(childPid_);
 
     pid_t pid = fork();
 
@@ -61,23 +61,23 @@ lib::network::Response Video::Write(const std::string_view &action) {
             StartVideo(message.pipeline());
             break;
         case VideoMessage::STOP:
-            KillStream();
+            KillStream(childPid_);
             break;
     }
 
     return {"", lib::network::Response::NoContent, serviceId_};
 }
 
-void Video::KillStream() {
-    if (childPid_ != 0) {
+pid_t Video::KillStream(pid_t process) {
+    if (process != 0) {
         ///Kill child group
-        killpg(childPid_, SIGKILL);
-        waitpid(childPid_, nullptr, 0);
+        killpg(process, SIGKILL);
+        waitpid(process, nullptr, 0);
     }
 
-    childPid_ = 0;
+    return 0;
 }
 
 Video::~Video() {
-    KillStream();
+    KillStream(childPid_);
 }

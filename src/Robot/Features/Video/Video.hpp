@@ -1,7 +1,7 @@
 #ifndef ROBOT_VIDEO_HPP
 #define ROBOT_VIDEO_HPP
 
-#include <gst/gst.h>
+#include "./Gstreamer.hpp"
 
 #include <TcpSession/TcpSession.hpp>
 
@@ -21,7 +21,7 @@ namespace app {
 
     private:
         void StartVideo(const std::string&);
-        void KillStream();
+        static pid_t KillStream(pid_t process);
 
         pid_t childPid_{};
     };

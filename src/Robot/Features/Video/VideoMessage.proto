@@ -12,4 +12,10 @@ message VideoMessage{
   required Action action = 1;
   required string pipeline = 2;
 
+  required int32 device_id = 3;
+  required int32 width = 4;
+  required int32 height = 5;
+  required int32 framerate_numerator = 6;
+  required int32 framerate_denumenator = 7;
+
 }
