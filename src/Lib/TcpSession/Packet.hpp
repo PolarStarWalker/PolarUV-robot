@@ -95,12 +95,12 @@ namespace lib::network {
         std::string Data;
 
         Response(std::string &&data, enum CodeEnum code, ssize_t endpointId) :
-                Data(std::move(data)),
-                Header(code, endpointId, data.size()) {};
+                Header(code, endpointId, data.size()),
+                Data(std::move(data)){};
 
         Response(Response &&response) noexcept:
-                Data(std::move(response.Data)),
-                Header(response.Header) {}
+                Header(response.Header),
+                Data(std::move(response.Data)){}
 
 
         template<typename Returned, class Obj, typename ... Args>

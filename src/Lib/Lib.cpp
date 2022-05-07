@@ -13,27 +13,9 @@ void LoggerInitialize() {
 #endif
 }
 
-extern "C" void InitGstreamer() {
 
-    gst_init(nullptr, nullptr);
-
-    GST_PLUGIN_STATIC_DECLARE(coreelements);
-    GST_PLUGIN_STATIC_REGISTER(coreelements);
-
-//    GST_PLUGIN_STATIC_DECLARE(video4linux2);
-//    GST_PLUGIN_STATIC_REGISTER(video4linux2);
-
-    GST_PLUGIN_STATIC_DECLARE(rtp);
-    GST_PLUGIN_STATIC_REGISTER(rtp);
-
-    GST_PLUGIN_STATIC_DECLARE(gdp);
-    GST_PLUGIN_STATIC_REGISTER(gdp);
-
-    GST_PLUGIN_STATIC_DECLARE(udp);
-    GST_PLUGIN_STATIC_REGISTER(udp);
-}
 
 void lib::Initialize() {
     LoggerInitialize();
-    InitGstreamer();
+    //InitGstreamer();
 }

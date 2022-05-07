@@ -142,15 +142,15 @@ inline IService &TcpSession::FindService(ssize_t key) {
 
 
 /*****************IService member functions*************************/
-inline Response IService::ReadData(const std::string_view &data) {
+inline Response IService::ReadData() {
 
 //    std::clog << "\n[VALIDATE]\n" << std::endl;
-    ReadValidate(data);
+    ReadValidate();
 //    std::clog << "\n[START ACTION]\n" << std::endl;
-    auto response = Read(data);
+    auto out = Read();
 //    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
 
-    return response;
+    return {std::move(out), lib::network::Response::Ok, serviceId_};
 }
 
 inline Response IService::WriteData(const std::string_view &data) {
@@ -158,10 +158,10 @@ inline Response IService::WriteData(const std::string_view &data) {
 //    std::clog << "\n[VALIDATE]\n" << std::endl;
     WriteValidate(data);
 //    std::clog << "\n[START ACTION]\n" << std::endl;
-    auto response = Write(data);
+    Write(data);
 //    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
 
-    return response;
+    return {"", lib::network::Response::NoContent, serviceId_};
 }
 
 inline Response IService::WriteReadData(const std::string_view &data) {
@@ -169,29 +169,37 @@ inline Response IService::WriteReadData(const std::string_view &data) {
 //    std::clog << "\n[VALIDATE]\n" << std::endl;
     WriteReadValidate(data);
 //    std::clog << "\n[START ACTION]\n" << std::endl;
-    auto response = WriteRead(data);
+    auto out = WriteRead(data);
 //    std::clog << "\n[ACTIONS DONE]\n" << std::endl;
 
-    return response;
+    return {std::move(out), Response::Ok, serviceId_};
 }
 
-Response IService::Read(const std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+IService::ResponseBufferType
+IService::Read() { throw exceptions::NotFount("Данный метод не существует"); }
 
-Response IService::Write(const std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+void IService::Write(const std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
 
-Response IService::WriteRead(const std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+IService::ResponseBufferType
+IService::WriteRead(const std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
 
-bool IService::ReadValidate(const std::string_view &data) { return true; }
+bool IService::ReadValidate() { return true; }
 
-bool IService::WriteValidate(const std::string_view &data) { return true; }
+bool IService::WriteValidate(const std::string_view &data) {
+    if (data.empty()) throw lib::exceptions::TransferError("Data is empty");
+}
 
-bool IService::WriteReadValidate(const std::string_view &data) { return false; }
+bool IService::WriteReadValidate(const std::string_view &data) {
+    if (data.empty()) throw lib::exceptions::TransferError("Data is empty");
+}
+
+void IService::ConnectionLost() {}
 
 Response IService::DoAction(RequestTypeEnum type, const std::string_view &data) {
 
     switch (type) {
         case RequestTypeEnum::R:
-            return this->ReadData(data);
+            return this->ReadData();
 
         case RequestTypeEnum::W:
             return this->WriteData(data);

@@ -2,6 +2,8 @@
 
 using namespace app;
 
+using ResponseBufferType = lib::network::IService::ResponseBufferType;
+
 Sensors::Sensors(ssize_t id, const std::string_view i2c) :
         lib::network::IService(id),
         sensorHandler_(i2c),
@@ -12,9 +14,13 @@ Sensors::Sensors(ssize_t id, const std::string_view i2c) :
     sensorHandler_.StartAsync();
 }
 
-lib::network::Response Sensors::Read(const std::string_view &data) {
+ResponseBufferType Sensors::Read() {
 
-    std::string outputData = Response::GetData(&Sensors::GetSensorsStruct, this);
+    std::string outputData(sizeof(SensorsStruct), 0);
 
-    return {std::move(outputData), lib::network::Response::Ok, serviceId_};
+    SensorsStruct& bufferBegin = *((SensorsStruct*) outputData.c_str());
+
+    bufferBegin = GetSensorsStruct();
+
+    return outputData;
 }

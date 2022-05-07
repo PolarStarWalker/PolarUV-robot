@@ -22,9 +22,9 @@ private:
 
     EventTracker eventTracker_;
 
-    mutable std::thread thread_;
-
     std::atomic<bool> notDone_;
+
+    mutable std::thread thread_;
 
     bool RegisterSensor(const std::shared_ptr<ISensor> &newSensor, SensorTask &&init, SensorTask &&readData);
 

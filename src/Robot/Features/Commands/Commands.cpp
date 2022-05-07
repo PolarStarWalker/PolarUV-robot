@@ -10,15 +10,13 @@ CommandsService::CommandsService(ssize_t id,
         lib::network::IService(id),
         commandsCycle_(motorsSender, std::move(sensors), std::move(settings)) {}
 
-lib::network::Response CommandsService::Write(const std::string_view &data) {
+void CommandsService::Write(const std::string_view &data) {
 
     const auto &commands = *((CommandsStruct *) data.data());
 
     //std::cout << commands << std::endl;
 
     commandsCycle_.UpdateCommands(commands);
-
-    return {"", lib::network::Response::NoContent, serviceId_};
 }
 
 

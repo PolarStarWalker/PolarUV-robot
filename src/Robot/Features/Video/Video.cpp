@@ -52,7 +52,7 @@ inline void Video::StartVideo(const std::string &pipeline) {
     childPid_ = pid;
 }
 
-lib::network::Response Video::Write(const std::string_view &action) {
+void Video::Write(const std::string_view &action) {
     VideoMessage message;
     message.ParseFromArray(action.begin(), action.size());
 
@@ -64,8 +64,6 @@ lib::network::Response Video::Write(const std::string_view &action) {
             KillStream(childPid_);
             break;
     }
-
-    return {"", lib::network::Response::NoContent, serviceId_};
 }
 
 pid_t Video::KillStream(pid_t process) {
@@ -79,5 +77,11 @@ pid_t Video::KillStream(pid_t process) {
 }
 
 Video::~Video() {
-    KillStream(childPid_);
+    if(childPid_!=0)
+        KillStream(childPid_);
+}
+
+void Video::ConnectionLost() {
+    if(childPid_!=0)
+        childPid_ = KillStream(childPid_);
 }
