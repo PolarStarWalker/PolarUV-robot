@@ -122,10 +122,14 @@ void TcpSession::Start() {
                 socket.close();
                 std::clog << "[UNKNOWN EXCEPTION ERROR]\n"
                           << e.what() << std::endl;
+
+                std::ranges::for_each(services_, [](Map::value_type& pair){pair.second->ConnectionLost();});
             }
             catch (...) {
                 socket.close();
                 std::clog << "[UNKNOWN ERROR]" << std::endl;
+
+                std::ranges::for_each(services_, [](Map::value_type& pair){pair.second->ConnectionLost();});
             }
         }
     }
@@ -175,22 +179,31 @@ inline Response IService::WriteReadData(const std::string_view &data) {
     return {std::move(out), Response::Ok, serviceId_};
 }
 
-IService::ResponseBufferType
-IService::Read() { throw exceptions::NotFount("Данный метод не существует"); }
 
-void IService::Write(const std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+void IService::Write(const std::string_view &data) {
+    throw exceptions::NotFount("Данный метод не существует");
+}
 
-IService::ResponseBufferType
-IService::WriteRead(const std::string_view &data) { throw exceptions::NotFount("Данный метод не существует"); }
+Response::BufferType IService::Read() {
+    throw exceptions::NotFount("Данный метод не существует");
+}
 
-bool IService::ReadValidate() { return true; }
+Response::BufferType IService::WriteRead(const std::string_view &data) {
+    throw exceptions::NotFount("Данный метод не существует");
+}
+
+bool IService::ReadValidate() {
+    return true;
+}
 
 bool IService::WriteValidate(const std::string_view &data) {
-    if (data.empty()) throw lib::exceptions::TransferError("Data is empty");
+    if (data.empty()) throw exceptions::TransferError("Data is empty");
+    return true;
 }
 
 bool IService::WriteReadValidate(const std::string_view &data) {
     if (data.empty()) throw lib::exceptions::TransferError("Data is empty");
+    return true;
 }
 
 void IService::ConnectionLost() {}
@@ -199,15 +212,15 @@ Response IService::DoAction(RequestTypeEnum type, const std::string_view &data) 
 
     switch (type) {
         case RequestTypeEnum::R:
-            return this->ReadData();
+            return ReadData();
 
         case RequestTypeEnum::W:
-            return this->WriteData(data);
+            return WriteData(data);
 
         case RequestTypeEnum::RW:
-            return this->WriteReadData(data);
+            return WriteReadData(data);
 
         default:
-            throw lib::exceptions::NotFount("[REQUEST NOT FOUND]");
+            throw exceptions::NotFount("[REQUEST NOT FOUND]");
     }
 }

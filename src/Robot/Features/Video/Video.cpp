@@ -1,4 +1,3 @@
-#include <wait.h>
 #include <unistd.h>
 #include <fstream>
 #include "Video.hpp"
@@ -23,34 +22,7 @@ namespace auv {
         ! filesink location=/home/pi/files/test.mkv)";
 }
 
-Video::Video(ssize_t id) : IService(id), childPid_() {}
-
-inline void Video::StartVideo(const std::string &pipeline) {
-
-    {
-        std::fstream file("pipeline", std::ios::out | std::ios::trunc);
-        file << "#!/bin/bash" << std::endl;
-        file << "gst-launch-1.0 -v -e "
-             << pipeline
-             //<< " > stream.log"
-             << std::endl;
-    }
-
-    std::system("chmod +x pipeline");
-
-    if (childPid_ != 0)
-        childPid_ = KillStream(childPid_);
-
-    pid_t pid = fork();
-
-    if (pid == 0) {
-        ///Create group for child process and his childs
-        setpgid(0, 0);
-        execlp("bash", "bash", "pipeline", nullptr);
-    }
-
-    childPid_ = pid;
-}
+Video::Video(ssize_t id) : IService(id), gstreamer_() {}
 
 void Video::Write(const std::string_view &action) {
     VideoMessage message;
@@ -58,30 +30,19 @@ void Video::Write(const std::string_view &action) {
 
     switch (message.action()) {
         case VideoMessage::START:
-            StartVideo(message.pipeline());
+            gstreamer_.Start();
             break;
         case VideoMessage::STOP:
-            KillStream(childPid_);
+            gstreamer_.Stop();
             break;
     }
-}
 
-pid_t Video::KillStream(pid_t process) {
-    if (process != 0) {
-        ///Kill child group
-        killpg(process, SIGKILL);
-        waitpid(process, nullptr, 0);
-    }
-
-    return 0;
 }
 
 Video::~Video() {
-    if(childPid_!=0)
-        KillStream(childPid_);
+    gstreamer_.Stop();
 }
 
 void Video::ConnectionLost() {
-    if(childPid_!=0)
-        childPid_ = KillStream(childPid_);
+    gstreamer_.Stop();
 }

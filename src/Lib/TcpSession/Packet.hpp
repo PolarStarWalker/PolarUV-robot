@@ -66,6 +66,8 @@ namespace lib::network {
 
     struct Response {
 
+        using BufferType = std::string;
+
         enum CodeEnum : size_t {
             Ok,
             NoContent,

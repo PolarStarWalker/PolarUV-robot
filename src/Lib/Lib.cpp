@@ -17,5 +17,5 @@ void LoggerInitialize() {
 
 void lib::Initialize() {
     LoggerInitialize();
-    //InitGstreamer();
+    InitGstreamer();
 }
