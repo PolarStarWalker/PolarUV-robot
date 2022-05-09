@@ -5,7 +5,6 @@
 
 using namespace app;
 
-
 namespace auv {
     constexpr std::string_view auv_pipeline = R"(v4l2src device=/dev/video2 do-timestamp=true
         ! video/x-h264,width=1920,height=1080,framerate=30/1
@@ -27,16 +26,32 @@ Video::Video(ssize_t id) : IService(id), gstreamer_() {}
 void Video::Write(const std::string_view &action) {
     VideoMessage message;
     message.ParseFromArray(action.begin(), action.size());
-
     switch (message.action()) {
-        case VideoMessage::START:
-            gstreamer_.Start();
+        case VideoMessage::START:{
+
+            if(!message.has_video_settings())
+                throw lib::exceptions::InvalidOperation("no settings");
+
+            auto& settingsMessage = message.video_settings();
+
+            //ToDo: add other options
+            lib::processing::Settings settings{
+                    settingsMessage.ip(),
+                    settingsMessage.device_name(),
+                    0,0,0,0
+            };
+
+
+            gstreamer_.Start(settings);
             break;
-        case VideoMessage::STOP:
+        }
+        case VideoMessage::STOP: {
             gstreamer_.Stop();
             break;
+        }
+        default:
+            throw lib::exceptions::InvalidOperation("settings is invalid");
     }
-
 }
 
 Video::~Video() {

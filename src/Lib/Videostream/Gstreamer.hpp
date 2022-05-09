@@ -6,6 +6,15 @@
 
 namespace lib::processing {
 
+    struct Settings{
+        std::string_view Ip;
+        std::string_view DeviceName;
+        int FramerateEnumerator;
+        int FrameDenumerator;
+        int Brightness;
+        int Contrast;
+    };
+
     class Gstreamer {
         GstElement *src;
         GstElement *h264parse;
@@ -16,8 +25,9 @@ namespace lib::processing {
 
     public:
         Gstreamer();
+        ~Gstreamer();
 
-        void Start();
+        void Start(const Settings &settings);
         void Stop();
 
         friend std::ostream &operator<<(std::ostream &out, const Gstreamer &gst) {
