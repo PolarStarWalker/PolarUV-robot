@@ -33,11 +33,5 @@
     glib:shared = False
     opencv:shared = False
 
-#    #block opengl and graphical out
-#    gst-plugins-base:with_gl=True
-#    gst-plugins-base:with_egl=True
-#    gst-plugins-base:with_xorg=True
-#    gst-plugins-base:with_wayland=True
-
 [generators]
     cmake
