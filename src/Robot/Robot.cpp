@@ -1,6 +1,5 @@
 #include <sched.h>
 #include "Robot.hpp"
-#include "Lib.hpp"
 
 using namespace app;
 using IService = lib::network::IService;
@@ -14,17 +13,15 @@ inline void SetProcessMaxPriority() {
 
 Robot::Robot() :
         network_(),
-        startSettings_(StartSettings::Get()),
-        motorsSender_(startSettings_.GetMotorsSender()),
-        robotSettings_(network_.CreateService<RobotSettings>(0, "robot-settings.json")),
-        sensors_(network_.CreateService<Sensors>(1, "/dev/i2c-1")),
-        video_(network_.CreateService<Video>(2)),
-        commandsService_(network_.CreateService<CommandsService>(3, &motorsSender_, sensors_, robotSettings_)){}
+        startSettings_(),
+        motorsSender_(startSettings_.GetMotorsSender()) {}
 
 
 void Robot::SetUp() {
-    SetProcessMaxPriority();
-    lib::Initialize();
+    robotSettings_ = network_.CreateService<RobotSettings>(0, "robot-settings.json");
+    sensors_ = network_.CreateService<Sensors>(1, "/dev/i2c-1");
+    video_ = network_.CreateService<Video>(2);
+    commandsService_ = network_.CreateService<CommandsService>(3, motorsSender_, sensors_, robotSettings_);
 }
 
 

@@ -42,7 +42,7 @@ namespace app {
         Sensors &operator=(Sensors &&) = delete;
 
     public:
-        Response Read(const std::string_view &data) final;
+        ResponseBufferType Read() final;
 
     private:
 

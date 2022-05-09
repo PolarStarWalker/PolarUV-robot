@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-void lib::LoggerInitialize(){
+void LoggerInitialize() {
 #if DEBUG
     std::clog.rdbuf(std::cout.rdbuf());
 #else
@@ -11,4 +11,11 @@ void lib::LoggerInitialize(){
     //std::clog.rdbuf(output.rdbuf());
     std::clog.rdbuf(std::cout.rdbuf());
 #endif
+}
+
+
+
+void lib::Initialize() {
+    LoggerInitialize();
+    InitGstreamer();
 }

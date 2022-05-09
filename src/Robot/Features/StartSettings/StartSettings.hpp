@@ -10,28 +10,31 @@
 class StartSettings {
 public:
 
-    static StartSettings Get() {
-        StartSettings settings{};
+    StartSettings() :
+            motorsSender_(nullptr),
+            motorsSenderId_(MotorsSender::SPI){
         std::fstream file("StartSettings", std::ios_base::in | std::ios_base::binary);
-        file.read((char *) &settings, sizeof(settings));
-        return settings;
+        file.read((char *) this, sizeof(StartSettings));
     }
 
+    ~StartSettings(){
+        delete motorsSender_;
+    };
+
     MotorsSender::IMotorsSender &GetMotorsSender() {
-        switch (_motorsSenderId) {
+        switch (motorsSenderId_) {
             case MotorsSender::SPI:
-                static class MotorsSender::SPI spi( "/dev/spidev0.0", Mega(6));
-                return spi;
+                motorsSender_ = new class MotorsSender::SPI("/dev/spidev0.0", Mega(6));
+                return *motorsSender_;
         }
         std::terminate();
     }
 
 
 private:
+    MotorsSender::IMotorsSender *motorsSender_;
+    MotorsSender::Id motorsSenderId_;
 
-    StartSettings() : _motorsSenderId(MotorsSender::SPI){}
-
-    MotorsSender::Id _motorsSenderId;
 };
 
 

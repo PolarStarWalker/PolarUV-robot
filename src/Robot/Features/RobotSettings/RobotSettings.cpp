@@ -6,6 +6,7 @@
 
 using namespace app;
 using Response = lib::network::Response;
+using ResponseBufferType = lib::network::IService::ResponseBufferType;
 
 inline RobotSettingsData ParseSettings(const RobotSettingsMessage &message) {
 
@@ -18,7 +19,7 @@ inline RobotSettingsData ParseSettings(const RobotSettingsMessage &message) {
 
     settings.ThrustersNumber = message.thrusters_coefficient_size() / 6;
     const auto &thrusters_coefficient = message.thrusters_coefficient();
-    for (size_t i = 0; i < message.thrusters_coefficient_size(); ++i) {
+    for (int i = 0; i < message.thrusters_coefficient_size(); ++i) {
         auto value = thrusters_coefficient[i];
         settings.ThrustersCoefficientArray.begin()->begin()[i] = value;
     }
@@ -80,7 +81,7 @@ bool RobotSettings::WriteValidate(const std::string_view &robotSettings) {
     return true;
 }
 
-Response RobotSettings::Write(const std::string_view &robotSettings) {
+void RobotSettings::Write(const std::string_view &robotSettings) {
 
     {
         std::fstream file(filename_.data(), std::ios::trunc | std::ios::out | std::ios::binary);
@@ -92,11 +93,9 @@ Response RobotSettings::Write(const std::string_view &robotSettings) {
     SetSettings(ParseSettings(message)) ;
 
     //   std::cout << settings_ << std::endl;
-
-    return {std::string(), lib::network::Response::NoContent, serviceId_};
 }
 
-Response RobotSettings::Read(const std::string_view &request) {
+ResponseBufferType RobotSettings::Read() {
     std::fstream file(filename_.data(), std::ios::in | std::ios::binary);
 
     file.seekg(0, std::fstream::end);
@@ -107,7 +106,7 @@ Response RobotSettings::Read(const std::string_view &request) {
 
     file.read(out.data(), length);
 
-    return {std::move(out), lib::network::Response::Ok, serviceId_};
+    return out;
 }
 
 inline void RobotSettings::SetSettings(const RobotSettingsData& settingsData) {
@@ -116,5 +115,8 @@ inline void RobotSettings::SetSettings(const RobotSettingsData& settingsData) {
 }
 
 
-
+RobotSettingsData RobotSettings::GetSettings() const {
+    std::unique_lock lock(settingsMutex_);
+    return settings_;
+}
 

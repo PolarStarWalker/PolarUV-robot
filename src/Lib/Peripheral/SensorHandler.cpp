@@ -57,11 +57,11 @@ bool EventTracker::TrackEvent(const TimerType &timer, uint32_t events) const {
 
 
 SensorContext::SensorContext(std::shared_ptr<ISensor> sensors, SensorTask &&init, SensorTask &&readData) :
-        Timer(),
-        State(Online),
         Sensor(std::move(sensors)),
+        ReadData(std::move(readData)),
         Init(std::move(init)),
-        ReadData(std::move(readData)) {
+        Timer(),
+        State(Online){
     auto time = Timer.SleepFor_ms(10);
     Timer.SetTimer(time);
 }
@@ -102,7 +102,7 @@ void SensorHandler::Start() {
 
 //        auto begin = std::chrono::system_clock::now();
 
-        for (size_t i = 0; i < events; ++i) {
+        for (int i = 0; i < events; ++i) {
 
             int fd = epollEvents[i].data.fd;
 
@@ -115,6 +115,7 @@ void SensorHandler::Start() {
 
             // to reset the timer overflow amount
             uint64_t ticNumber;
+            [[maybe_unused]]
             ssize_t size = read(fd, (char *) &ticNumber, sizeof(uint64_t));
 
             switch (context->State) {

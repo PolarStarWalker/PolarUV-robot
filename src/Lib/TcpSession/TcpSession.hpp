@@ -15,6 +15,7 @@ namespace lib::network {
 
     struct IService {
         friend TcpSession;
+        using ResponseBufferType = std::string;
     protected:
 
         using Response = lib::network::Response;
@@ -22,9 +23,11 @@ namespace lib::network {
         explicit IService(ssize_t serviceId) :
                 serviceId_(serviceId) {}
 
+        virtual ~IService() = default;
+
     private:
 
-        Response ReadData(const std::string_view &data);
+        Response ReadData();
 
         Response WriteData(const std::string_view &data);
 
@@ -32,17 +35,24 @@ namespace lib::network {
 
     protected:
 
-        virtual bool ReadValidate(const std::string_view &data);
+        /*validate functions*/
+        virtual bool ReadValidate();
 
         virtual bool WriteValidate(const std::string_view &data);
 
         virtual bool WriteReadValidate(const std::string_view &data);
 
-        virtual Response Read(const std::string_view &data);
+        /*request function*/
 
-        virtual Response Write(const std::string_view &data);
+        virtual ResponseBufferType Read();
 
-        virtual Response WriteRead(const std::string_view &data);
+        virtual void Write(const std::string_view &data);
+
+        virtual ResponseBufferType WriteRead(const std::string_view &data);
+
+        /*callbacks*/
+
+        virtual void ConnectionLost();
 
     public:
         ///ToDo: когда-нибудь переехать на строки

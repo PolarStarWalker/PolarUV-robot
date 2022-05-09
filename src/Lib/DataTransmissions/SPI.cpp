@@ -4,11 +4,11 @@
 using namespace DataTransmissions;
 
 SPI::SPI(const char *address, u_int32_t speedHz)
-        : _speed(speedHz),
-        _spiDescriptor(open(address, O_RDWR)) {}
+        : spifd_(open(address, O_RDWR)),
+          _speed(speedHz){}
 
 SPI::~SPI() {
-    if (_spiDescriptor != -1) close(this->_spiDescriptor);
+    if (spifd_ != -1) close(this->spifd_);
 }
 
 void SPI::ReadWrite(const void *tx, void *rx, size_t length) const {
@@ -23,6 +23,6 @@ void SPI::ReadWrite(const void *tx, void *rx, size_t length) const {
     message.speed_hz = _speed;
     message.delay_usecs = _delay;
 
-    ioctl(this->_spiDescriptor, SPI_IOC_MESSAGE(1), &message);
+    ioctl(spifd_, SPI_IOC_MESSAGE(1), &message);
 }
 

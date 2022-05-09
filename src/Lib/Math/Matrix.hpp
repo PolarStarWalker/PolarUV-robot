@@ -21,7 +21,6 @@ private:
     }
 
 public:
-#pragma region constructors
 
     Matrix(size_t row, size_t column) : _row(row), _column(column) {
         elements_ = new Type[row * column]{};
@@ -40,7 +39,6 @@ public:
         elements_ = matrix.elements_;
         matrix.elements_ = nullptr;
     }
-#pragma endregion
 
     ~Matrix() {
         delete[] elements_;

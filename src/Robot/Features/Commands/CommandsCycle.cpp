@@ -9,7 +9,7 @@ constexpr auto Y = SensorsStruct::Position::Y;
 constexpr auto Z = SensorsStruct::Position::Z;
 
 inline MotorsSender::MotorsStruct FormMotorsStruct(const std::array<float, 12> &hiPwm,
-                                                   const std::array<float, 4> &lowPwm) {
+                                            const std::array<float, 4> &lowPwm) {
 
     auto func = [](float x) -> uint16_t { return std::ceil(x); };
 
@@ -22,17 +22,14 @@ inline MotorsSender::MotorsStruct FormMotorsStruct(const std::array<float, 12> &
     return motors;
 }
 
-CommandsCycle::CommandsCycle(MotorsSender::IMotorsSender *motorsSender,
+CommandsCycle::CommandsCycle(MotorsSender::IMotorsSender &motorsSender,
                              std::shared_ptr<Sensors> sensors,
                              std::shared_ptr<RobotSettings> settings) :
         motorsSender_(motorsSender),
-        thread_(&CommandsCycle::StartCommands, this),
         sensors_(std::move(sensors)),
         settings_(std::move(settings)),
-        isNotDone_(true),
-        timer_(),
-        pids_(),
-        stabilization_() {};
+        thread_(&CommandsCycle::StartCommands, this),
+        isNotDone_(true) {};
 
 CommandsCycle::~CommandsCycle() {
     isNotDone_.store(false);
@@ -71,7 +68,7 @@ void CommandsCycle::StartCommands() {
 
         stabilization_.SetAngles(position);
 
-        const auto settings = settings_->GetSettings();
+        auto settings = settings_->GetSettings();
 
         auto hiPWM = settings.ThrustersCoefficientArray * commands.Move;
         hiPWM.Normalize(100.0f);
@@ -94,7 +91,7 @@ void CommandsCycle::StartCommands() {
         //std::cout << settings << std::endl;
         //std::cout << motorsStruct << std::endl;
 
-        motorsSender_->SendMotorsStruct(motorsStruct);
+        motorsSender_.SendMotorsStruct(motorsStruct);
 
         usleep(PERIOD_US);
     }

@@ -1,9 +1,8 @@
 #ifndef ROBOT_VIDEO_HPP
 #define ROBOT_VIDEO_HPP
 
-#include <gst/gst.h>
-
 #include <TcpSession/TcpSession.hpp>
+#include <Videostream/Gstreamer.hpp>
 
 namespace app {
 
@@ -16,14 +15,13 @@ namespace app {
         Video& operator=(Video&&) = delete;
 
         explicit Video(ssize_t id);
-        ~Video();
-        Response Write(const std::string_view &action) final;
+        ~Video() final;
+        void Write(const std::string_view &action) final;
 
     private:
-        void StartVideo(const std::string&);
-        void KillStream();
+        void ConnectionLost() final;
 
-        pid_t childPid_{};
+        lib::processing::Gstreamer gstreamer_;
     };
 }
 

@@ -45,7 +45,7 @@ ssize_t Socket::SendDataLen(char *msg, size_t len)  const{
     return (result);
 }
 
-ssize_t Socket::recvall(int socketDescriptor, char *buf, size_t len, int flags) const{
+ssize_t Socket::recvall(int socketDescriptor, char *buf, ssize_t len, int flags) const{
 
     //Структура для ожидания
     struct pollfd pfd{};
@@ -65,7 +65,7 @@ ssize_t Socket::recvall(int socketDescriptor, char *buf, size_t len, int flags) 
     return n;
 }
 
-ssize_t Socket::sendall(int socketDescriptor, char *buf, size_t len, int flags) const {
+ssize_t Socket::sendall(int socketDescriptor, char *buf, ssize_t len, int flags) const {
 
     if (!_isOnline)
         return -1;

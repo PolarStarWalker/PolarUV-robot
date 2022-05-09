@@ -11,4 +11,5 @@ target_precompile_headers(robot REUSE_FROM Robot)
 
 target_link_libraries(robot Robot)
 target_link_libraries(robot Lib)
+target_link_libraries(robot ${CONAN_LIBS})
 

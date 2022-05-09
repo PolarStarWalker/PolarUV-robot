@@ -10,8 +10,6 @@ constexpr double ToDegrees = 180 / std::numbers::pi_v<double>;
 
 BNO055_I2C::BNO055_I2C(I2C &i2c, uint16_t sensorAddress, BNO055::OperationMode mode) :
         ISensor(i2c),
-        sensorAddress_(sensorAddress),
-        operationMode_(mode),
         filters_({new CircleMovingAverage<20>(),
                   new CircleMovingAverage<20>(),
                   new CircleMovingAverage<20>(),
@@ -25,7 +23,9 @@ BNO055_I2C::BNO055_I2C(I2C &i2c, uint16_t sensorAddress, BNO055::OperationMode m
                   new MovingAverage<10>(),
                   new MovingAverage<10>(),
                   new MovingAverage<10>(),
-                  new MovingAverage<10>()}) {}
+                  new MovingAverage<10>()}),
+        sensorAddress_(sensorAddress),
+        operationMode_(mode) {}
 
 SensorTask BNO055_I2C::Init() {
     for (;;) {
@@ -94,10 +94,10 @@ SensorTask BNO055_I2C::ReadData() {
                 break;
 
             Data data{};
-            data.CalibrationArray[0] = (uint8_t)((calibrationData >> 6) & 0x03); // System
-            data.CalibrationArray[1] = (uint8_t)((calibrationData >> 4) & 0x03); // Gyroscope
-            data.CalibrationArray[2] = (uint8_t)((calibrationData >> 2) & 0x03); // Accelerometer
-            data.CalibrationArray[3] = (uint8_t)(calibrationData & 0x03);        // Magnetometer
+            data.CalibrationArray[0] = (uint8_t) ((calibrationData >> 6) & 0x03); // System
+            data.CalibrationArray[1] = (uint8_t) ((calibrationData >> 4) & 0x03); // Gyroscope
+            data.CalibrationArray[2] = (uint8_t) ((calibrationData >> 2) & 0x03); // Accelerometer
+            data.CalibrationArray[3] = (uint8_t) (calibrationData & 0x03);        // Magnetometer
 
             co_await TimerType::SleepFor_us(2500);
 
@@ -142,8 +142,6 @@ SensorTask BNO055_I2C::ReadData() {
             data.LinearAcceleration[X] = filters_[LinearAccelerationX](data.LinearAcceleration[X]);
             data.LinearAcceleration[Y] = filters_[LinearAccelerationY](data.LinearAcceleration[Y]);
             data.LinearAcceleration[Z] = filters_[LinearAccelerationZ](data.LinearAcceleration[Z]);
-
-            std::cout << data.EulerAngle[X] << '\n';
 
             SetData(data);
         }

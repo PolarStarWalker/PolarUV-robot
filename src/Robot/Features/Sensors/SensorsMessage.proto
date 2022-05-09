@@ -20,10 +20,3 @@ message SensorMessage{
   required string name = 2;
 
 };
-
-
-message SensorsMessage{
-
-
-
-}

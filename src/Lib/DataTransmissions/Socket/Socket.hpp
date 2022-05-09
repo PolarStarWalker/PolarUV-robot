@@ -47,7 +47,7 @@ private:
     mutable std::atomic<bool> _isOnline = false;
 
 	//Simple function, for transfer data
-	ssize_t recvall(int s, char* buf, size_t len, int flags) const;
-	ssize_t sendall(int s, char* buf, size_t len, int flags) const;
+	ssize_t recvall(int socketDescriptor, char* buf, ssize_t len, int flags) const;
+	ssize_t sendall(int socketDescriptor, char* buf, ssize_t len, int flags) const;
 };
 

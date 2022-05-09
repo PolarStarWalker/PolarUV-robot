@@ -3,16 +3,11 @@
 
 #include "./Math/Math.hpp"
 #include "./Peripheral/Peripheral.hpp"
-#include "./Coroutine/All.hpp"
 #include "./DataTransmissions/DataTransmissions.hpp"
 #include "./TcpSession/TcpSession.hpp"
+#include "./Videostream/Gstreamer.hpp"
 
 namespace lib {
-
-    void LoggerInitialize();
-
-    static void Initialize() {
-        LoggerInitialize();
-    }
+    void Initialize();
 }
 #endif

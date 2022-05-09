@@ -1,7 +1,8 @@
 #include <cstdint>
 #include <iostream>
 #include "I2C/I2C.hpp"
-#ifdef DEBUG
+
+#ifdef DEBUGG
 #define DEBUG_OUT(str) (std::cout << str << std::endl)
 #else
 #define DEBUG_OUT(str)
@@ -69,7 +70,7 @@ std::pair<uint8_t, bool> I2C::ReadByteFromRegister(__u16 slaveAddress, __u8 slav
 
 
 bool I2C::ReadFromRegister(__u16 slaveAddress, __u8 slaveRegister, __u8 *data, size_t size) {
-    __u8 outbuf[1], inbuf[1];
+    __u8 outbuf[1];
     struct i2c_msg msgs[2];
     struct i2c_rdwr_ioctl_data msgset[1];
 
@@ -92,7 +93,6 @@ bool I2C::ReadFromRegister(__u16 slaveAddress, __u8 slaveRegister, __u8 *data, s
         DEBUG_OUT("Ошибка при чтении данных");
         return false;
     }
-
 
     return true;
 }

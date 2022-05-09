@@ -96,16 +96,16 @@ namespace app {
 
         PIDArray<3> pids_;
         CommandsQueue commandsQueue_;
-        std::thread thread_;
-        MotorsSender::IMotorsSender *motorsSender_;
+        MotorsSender::IMotorsSender &motorsSender_;
         std::shared_ptr<Sensors> sensors_;
         std::shared_ptr<RobotSettings> settings_;
+        std::thread thread_;
         std::atomic<bool> isNotDone_;
         Timer timer_;
         Stabilization stabilization_;
     public:
 
-        CommandsCycle(MotorsSender::IMotorsSender *motorsSender,
+        CommandsCycle(MotorsSender::IMotorsSender &motorsSender,
                       std::shared_ptr<Sensors> sensors,
                       std::shared_ptr<RobotSettings> settings);
 
