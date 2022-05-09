@@ -17,7 +17,7 @@ namespace DataTransmissions {
 
     class SPI {
     private:
-        const int _spiDescriptor = -1;
+        const int spifd_ = -1;
 
         const u_int32_t _speed;
         const u_int8_t _bits = 8;

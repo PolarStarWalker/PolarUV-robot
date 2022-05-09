@@ -5,6 +5,6 @@
 using namespace lib::exceptions;
 using Response = lib::network::Response;
 
-Response Handler(std::function<Response(std::string_view)>){
-    
+Response Handler(const std::function<Response(std::string_view)>& f, std::string_view data){
+    return f(data);
 }

@@ -12,7 +12,7 @@ namespace app {
                         std::shared_ptr<Sensors> sensors,
                         std::shared_ptr<RobotSettings> settings);
 
-        Response Write(const std::string_view &data) final;
+        void Write(const std::string_view &data) final;
 
         CommandsService(const CommandsService &) = delete;
 

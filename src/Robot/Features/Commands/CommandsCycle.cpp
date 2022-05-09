@@ -23,9 +23,9 @@ CommandsCycle::CommandsCycle(MotorsSender::IMotorsSender &motorsSender,
                              std::shared_ptr<Sensors> sensors,
                              std::shared_ptr<RobotSettings> settings) :
         motorsSender_(motorsSender),
-        thread_(&CommandsCycle::StartCommands, this),
         sensors_(std::move(sensors)),
         settings_(std::move(settings)),
+        thread_(&CommandsCycle::StartCommands, this),
         isNotDone_(true) {};
 
 CommandsCycle::~CommandsCycle() {
@@ -41,6 +41,7 @@ void CommandsCycle::StartCommands() {
 
         if (commands.Stabilization != CommandsStruct::None) {
             //ToDo: стабилизацию в студию
+            [[maybe_unused]]
             auto sensorsStruct = sensors_->GetSensorsStruct();
         }
 

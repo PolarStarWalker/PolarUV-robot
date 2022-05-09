@@ -93,10 +93,10 @@ namespace app {
         };
 
         CommandsQueue commandsQueue_;
-        std::thread thread_;
         MotorsSender::IMotorsSender &motorsSender_;
         std::shared_ptr<Sensors> sensors_;
         std::shared_ptr<RobotSettings> settings_;
+        std::thread thread_;
         std::atomic<bool> isNotDone_;
 
 

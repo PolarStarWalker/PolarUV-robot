@@ -6,13 +6,14 @@
     zstd/1.5.2
     zlib/1.2.12
 
-    gstreamer/1.19.1
-    gst-plugins-base/1.19.1
+    gstreamer/1.19.2
+    gst-plugins-base/1.19.2
     gst-plugins-good/1.19.1
     gst-plugins-bad/1.19.1
-    glib/2.70.1
+    glib/2.72.0
     freetype/2.11.0
     libalsa/1.1.9
+    expat/2.4.8
 
 #   opencv/4.5.2
 #   eigen/3.4.0
@@ -28,6 +29,7 @@
     gstreamer:shared=False
     gst-plugins-base:shared=False
     gst-plugins-good:shared=False
+    gst-plugins-bad:shared=False
     glib:shared = False
     opencv:shared = False
 

@@ -47,9 +47,9 @@ namespace app {
 
         bool WriteValidate(const std::string_view &robotSettings) final;
 
-        Response Write(const std::string_view &robotSettings) final;
+        void Write(const std::string_view &robotSettings) final;
 
-        Response Read(const std::string_view &request) final;
+        ResponseBufferType Read() final;
 
         RobotSettingsData GetSettings() const;
 
