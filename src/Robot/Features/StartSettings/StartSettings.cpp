@@ -25,9 +25,31 @@ boost::json::value parseFile(const std::string_view &path) {
     return parser.release();
 }
 
+ssize_t ParseFreq(boost::json::string& str){
+
+    ssize_t factor;
+
+    auto& lastSymbol = str[str.size() - 1];
+
+    if( lastSymbol == 'M'){
+        factor = Mega(1);
+        lastSymbol = '\0';
+    }else if( lastSymbol == 'K'){
+        factor = Kilo(1);
+        lastSymbol = '\0';
+    }else if( lastSymbol <='9' && lastSymbol >= '0'){
+        factor = 1;
+    }else{
+        //ToDo
+        throw "exception";
+    }
+
+    return std::atof(str.c_str()) * factor;
+
+}
+
 StartSettings::StartSettings(const std::string_view &path) :
         mode_(ROV),
-        motorsSenderId_(MotorsSender::Id::SPI),
         motorsSender_(nullptr) {
 
     auto json = parseFile(path);
@@ -46,8 +68,9 @@ StartSettings::StartSettings(const std::string_view &path) :
     auto motorSender = json.at("motorSender").as_object();
 
     if(motorSender.at("mode") == "SPI"){
-        motorsSenderId_ = MotorsSender::Id::SPI;
-        motorsSenderPath_ = motorSender.at("path").as_string();
+        auto pathStr = motorSender.at("path").as_string();
+        auto freq = ParseFreq(motorSender.at("freq").as_string());
+        motorsSender_ = new MotorsSender::SPI(pathStr.c_str(), freq);
     }
 
     sensorsPath_ = json.at("sensors").as_object().at("path").as_string();
@@ -59,12 +82,7 @@ StartSettings::~StartSettings() {
 }
 
 MotorsSender::IMotorsSender &StartSettings::GetMotorsSender() {
-    switch (motorsSenderId_) {
-        case MotorsSender::Id::SPI:
-            motorsSender_ = new MotorsSender::SPI(motorsSenderPath_.c_str(), Mega(6));
-            return *motorsSender_;
-    }
-    std::terminate();
+    return *motorsSender_;
 }
 
 StartSettings::Mode StartSettings::GetMode() {

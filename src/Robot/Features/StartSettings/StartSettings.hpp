@@ -26,8 +26,6 @@ public:
 
 private:
     Mode mode_;
-    MotorsSender::Id motorsSenderId_;
-    std::string motorsSenderPath_;
     std::string sensorsPath_;
     MotorsSender::IMotorsSender *motorsSender_;
 };
