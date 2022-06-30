@@ -43,7 +43,6 @@ namespace lib::network {
         virtual bool WriteReadValidate(const std::string_view &data);
 
         /*request function*/
-
         virtual ResponseBufferType Read();
 
         virtual void Write(const std::string_view &data);
@@ -51,7 +50,6 @@ namespace lib::network {
         virtual ResponseBufferType WriteRead(const std::string_view &data);
 
         /*callbacks*/
-
         virtual void ConnectionLost();
 
     public:

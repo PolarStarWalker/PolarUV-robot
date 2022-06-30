@@ -19,11 +19,8 @@ namespace app {
 
         lib::network::TcpSession network_;
         StartSettings startSettings_;
-        MotorsSender::IMotorsSender &motorsSender_;
-        std::shared_ptr<Sensors> sensors_;
-        std::shared_ptr<RobotSettings> robotSettings_;
-        std::shared_ptr<Video> video_;
-        std::shared_ptr<CommandsService> commandsService_;
+
+        std::vector<std::shared_ptr<lib::network::IService>> services_;
     };
 }
 

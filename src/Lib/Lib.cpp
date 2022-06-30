@@ -13,9 +13,17 @@ void LoggerInitialize() {
 #endif
 }
 
+///set max sched priority
+void SetProcessMaxPriority() {
+    struct sched_param process{};
+    process.sched_priority = 99;
+    sched_setscheduler(0, SCHED_RR, &process);
+}
+
 
 
 void lib::Initialize() {
+    SetProcessMaxPriority();
     LoggerInitialize();
     InitGstreamer();
 }

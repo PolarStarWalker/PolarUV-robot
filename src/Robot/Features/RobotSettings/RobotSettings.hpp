@@ -8,7 +8,7 @@
 
 namespace app {
 
-    struct RobotSettingsData {
+    struct RobotSettingsStruct {
 
         using Matrix_t = stc::Matrix<float, 12, 6>;
         using Vecotr_t = stc::Vector<stc::Horizontal, float, 6>;
@@ -18,7 +18,7 @@ namespace app {
         size_t ThrustersNumber = 0;
         size_t HandFreedom = 0;
 
-        friend std::ostream &operator<<(std::ostream &out, const RobotSettingsData &settings) {
+        friend std::ostream &operator<<(std::ostream &out, const RobotSettingsStruct &settings) {
 
             out << "[MOTORS SETTINGS]\n"
                 << "ThrustersNumber: " << settings.ThrustersNumber << '\n'
@@ -51,14 +51,14 @@ namespace app {
 
         ResponseBufferType Read() final;
 
-        RobotSettingsData GetSettings() const;
+        RobotSettingsStruct GetSettings() const;
 
     private:
-        void SetSettings(const RobotSettingsData& settingsData);
+        void SetSettings(const RobotSettingsStruct& settingsData);
 
         mutable std::mutex settingsMutex_;
         std::string_view filename_;
-        RobotSettingsData settings_;
+        RobotSettingsStruct settings_;
     };
 
 }

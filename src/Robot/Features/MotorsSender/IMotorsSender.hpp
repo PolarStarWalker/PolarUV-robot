@@ -51,7 +51,7 @@ namespace MotorsSender {
     constexpr std::size_t MotorsStructLen = sizeof(MotorsStruct);
     constexpr std::size_t MotorsStructLenMessage = MotorsStructLen + 4;
 
-    enum Id : std::size_t {
+    enum class Id : uint8_t {
         SPI = 0
     };
 

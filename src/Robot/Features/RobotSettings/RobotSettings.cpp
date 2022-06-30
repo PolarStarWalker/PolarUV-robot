@@ -8,9 +8,9 @@ using namespace app;
 using Response = lib::network::Response;
 using ResponseBufferType = lib::network::IService::ResponseBufferType;
 
-inline RobotSettingsData ParseSettings(const RobotSettingsMessage &message) {
+inline RobotSettingsStruct ParseSettings(const RobotSettingsMessage &message) {
 
-    RobotSettingsData settings{};
+    RobotSettingsStruct settings{};
 
     settings.HandFreedom = message.hand_coefficient_size();
     const auto &hand_coefficient = message.hand_coefficient();
@@ -27,14 +27,14 @@ inline RobotSettingsData ParseSettings(const RobotSettingsMessage &message) {
     return settings;
 }
 
-RobotSettingsData GetSettingsFromDisk(std::string_view filename) {
+RobotSettingsStruct GetSettingsFromDisk(std::string_view filename) {
 
     RobotSettingsMessage message;
-    RobotSettingsData settings;
+    RobotSettingsStruct settings;
 
     std::fstream file(filename.data(), std::ios::in | std::ios::binary);
     file.seekg(0, std::ios::end);
-    size_t size = file.tellg();
+    auto size = file.tellg();
     file.seekg(0, std::ios::beg);
 
     if (size > 0) {
@@ -99,23 +99,38 @@ ResponseBufferType RobotSettings::Read() {
     std::fstream file(filename_.data(), std::ios::in | std::ios::binary);
 
     file.seekg(0, std::fstream::end);
-    ssize_t length = file.tellg();
+    auto length = file.tellg();
     file.seekg(0, std::fstream::beg);
 
-    std::string out(length, 0);
+    std::string out;
 
-    file.read(out.data(), length);
+    if(length > 0){
+        out.resize(length);
+        file.read(out.data(), length);
+    } else {
+        RobotSettingsMessage message;
+
+        for(size_t i = 0; i < 6 * 8; ++i)
+            message.add_thrusters_coefficient(0);
+
+        message.add_hand_coefficient(0);
+
+        message.set_motors_protocol(RobotSettingsMessage::DSHOT150);
+        message.set_maximum_motor_speed(4000);
+
+        out = message.SerializeAsString();
+    }
 
     return out;
 }
 
-inline void RobotSettings::SetSettings(const RobotSettingsData& settingsData) {
+inline void RobotSettings::SetSettings(const RobotSettingsStruct& settingsData) {
     std::lock_guard lock(settingsMutex_);
     settings_ = settingsData;
 }
 
 
-RobotSettingsData RobotSettings::GetSettings() const {
+RobotSettingsStruct RobotSettings::GetSettings() const {
     std::unique_lock lock(settingsMutex_);
     return settings_;
 }

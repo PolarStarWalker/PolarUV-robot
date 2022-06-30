@@ -16,6 +16,7 @@ public:
 
     explicit operator int() const { return timerfd_; }
 
+    //ToDo constexpr/consteval
     static itimerspec SleepFor_us(ssize_t us);
     static itimerspec SleepFor_ms(ssize_t ms);
 

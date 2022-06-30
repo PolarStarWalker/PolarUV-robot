@@ -1,40 +1,33 @@
 #ifndef ROBOT_STARTSETTINGS_HPP
 #define ROBOT_STARTSETTINGS_HPP
 
-#include <fstream>
 #include "../MotorsSender/IMotorsSender.hpp"
 #include "../MotorsSender/SPI.hpp"
 
-#include "Math/SIPrefix.hpp"
 
+//ToDo: потом отрефакторить шоб всё было по красоте
 class StartSettings {
 public:
 
-    StartSettings() :
-            motorsSender_(nullptr),
-            motorsSenderId_(MotorsSender::SPI){
-        std::fstream file("StartSettings", std::ios_base::in | std::ios_base::binary);
-        file.read((char *) this, sizeof(StartSettings));
-    }
-
-    ~StartSettings(){
-        delete motorsSender_;
+    enum Mode : uint8_t {
+        AUV,
+        ROV
     };
 
-    MotorsSender::IMotorsSender &GetMotorsSender() {
-        switch (motorsSenderId_) {
-            case MotorsSender::SPI:
-                motorsSender_ = new class MotorsSender::SPI("/dev/spidev0.0", Mega(6));
-                return *motorsSender_;
-        }
-        std::terminate();
-    }
+    explicit StartSettings(const std::string_view &path);
 
+    ~StartSettings();
+
+    MotorsSender::IMotorsSender &GetMotorsSender();
+
+    [[nodiscard]] Mode GetMode();
+
+    [[nodiscard]] std::string_view GetSensorsPath();
 
 private:
+    Mode mode_;
+    std::string sensorsPath_;
     MotorsSender::IMotorsSender *motorsSender_;
-    MotorsSender::Id motorsSenderId_;
-
 };
 
 

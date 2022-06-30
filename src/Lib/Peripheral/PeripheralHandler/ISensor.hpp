@@ -8,7 +8,7 @@
 
 class SensorHandler;
 
-class SensorContext;
+struct SensorContext;
 
 class ISensor {
     friend SensorHandler;
