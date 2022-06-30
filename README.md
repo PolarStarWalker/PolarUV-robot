@@ -12,7 +12,7 @@ Software dependencies:
  - cmake >= 3.16
  - linux-drivers for i2c bus
  - linux-drivers for spi bus
- - conan 1.47
+ - conan 1.48
  - all needed libraries automatically installing by conan
 
 
