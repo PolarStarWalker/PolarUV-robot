@@ -14,6 +14,11 @@ namespace lib::exceptions {
 
         const std::string_view Message;
         const lib::network::Response::CodeEnum Code;
+
+        friend std::ostream & operator<<(std::ostream& out, const BaseException& e){
+            out << e.Message;
+            return out;
+        }
     };
 
 }

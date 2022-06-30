@@ -1,24 +1,22 @@
 ﻿cmake_minimum_required(VERSION 3.16)
+project(polar-uv)
+
+# build options
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "-fcoroutines -flto")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra ")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -mtune=native")
 
 set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
 set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CMAKE_COMMAND} -E time")
 
-set(CMAKE_CXX_FLAGS "-fcoroutines -flto -Wall -Wextra -static-libstdc++")
-
-# build options
-set(CMAKE_CXX_STANDARD 20)
-
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
-    set(CMAKE_CXX_FLAGS_DEBUG "-g")
     add_definitions(-DDEBUG)
-else ()
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -mtune=native")
 endif ()
-
-project("robot")
 
 file(COPY ./Conan/conanfile.txt DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ./Conan/conan.cmake DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ./Settings.json DESTINATION ${CMAKE_BINARY_DIR}/bin)
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
@@ -34,3 +32,10 @@ conan_basic_setup()
 
 # Включите подпроекты.
 add_subdirectory("src")
+
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+    set_target_properties(polar-uv PROPERTIES OUTPUT_NAME polar-uvd)
+endif ()
+
+install(TARGETS polar-uv DESTINATION /home/pi/polar-uv)
+install(FILES Settings.json  DESTINATION /home/pi/polar-uv)

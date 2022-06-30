@@ -8,9 +8,9 @@ using namespace app;
 using Response = lib::network::Response;
 using ResponseBufferType = lib::network::IService::ResponseBufferType;
 
-inline RobotSettingsData ParseSettings(const RobotSettingsMessage &message) {
+inline RobotSettingsStruct ParseSettings(const RobotSettingsMessage &message) {
 
-    RobotSettingsData settings{};
+    RobotSettingsStruct settings{};
 
     settings.HandFreedom = message.hand_coefficient_size();
     const auto &hand_coefficient = message.hand_coefficient();
@@ -27,10 +27,10 @@ inline RobotSettingsData ParseSettings(const RobotSettingsMessage &message) {
     return settings;
 }
 
-RobotSettingsData GetSettingsFromDisk(std::string_view filename) {
+RobotSettingsStruct GetSettingsFromDisk(std::string_view filename) {
 
     RobotSettingsMessage message;
-    RobotSettingsData settings;
+    RobotSettingsStruct settings;
 
     std::fstream file(filename.data(), std::ios::in | std::ios::binary);
     file.seekg(0, std::ios::end);
@@ -109,13 +109,13 @@ ResponseBufferType RobotSettings::Read() {
     return out;
 }
 
-inline void RobotSettings::SetSettings(const RobotSettingsData& settingsData) {
+inline void RobotSettings::SetSettings(const RobotSettingsStruct& settingsData) {
     std::lock_guard lock(settingsMutex_);
     settings_ = settingsData;
 }
 
 
-RobotSettingsData RobotSettings::GetSettings() const {
+RobotSettingsStruct RobotSettings::GetSettings() const {
     std::unique_lock lock(settingsMutex_);
     return settings_;
 }

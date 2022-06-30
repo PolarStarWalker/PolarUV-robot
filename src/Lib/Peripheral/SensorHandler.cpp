@@ -100,8 +100,6 @@ void SensorHandler::Start() {
         if (events <= 0)
             continue;
 
-//        auto begin = std::chrono::system_clock::now();
-
         for (int i = 0; i < events; ++i) {
 
             int fd = epollEvents[i].data.fd;

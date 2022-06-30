@@ -1,15 +1,15 @@
-﻿cmake_minimum_required (VERSION 3.16)
+﻿cmake_minimum_required(VERSION 3.16)
 
 include_directories(Lib)
 
-add_subdirectory (Lib)
-add_subdirectory (Robot)
+add_subdirectory(Lib)
+add_subdirectory(Robot)
 
-add_executable (robot "Startup.cpp" "Startup.hpp")
+add_executable(polar-uv "Startup.cpp" "Startup.hpp")
 
-target_precompile_headers(robot REUSE_FROM Robot)
+target_precompile_headers(polar-uv REUSE_FROM Robot)
 
-target_link_libraries(robot Robot)
-target_link_libraries(robot Lib)
-target_link_libraries(robot ${CONAN_LIBS})
+target_link_libraries(polar-uv Robot)
+target_link_libraries(polar-uv Lib)
+target_link_libraries(polar-uv ${CONAN_LIBS})
 

@@ -50,8 +50,10 @@ void CommandsCycle::StartCommands() {
         auto hiPWM = settings.ThrustersCoefficientArray * commands.Move;
         hiPWM.Normalize(100.0f);
 
-        std::transform(commands.Hand.cbegin(),
-                       commands.Hand.cbegin() + settings.HandFreedom,
+        auto handBegin = commands.Hand.cbegin();
+        auto handEnd = commands.Hand.cbegin() + settings.HandFreedom;
+
+        std::transform(handBegin, handEnd,
                        settings.HandCoefficientArray.cbegin(),
                        hiPWM.rbegin(),
                        [](float hand, float coefficient) { return hand * coefficient; });

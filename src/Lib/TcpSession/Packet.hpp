@@ -68,7 +68,7 @@ namespace lib::network {
 
         using BufferType = std::string;
 
-        enum CodeEnum : size_t {
+        enum CodeEnum : int64_t {
             Ok,
             NoContent,
             BadRequest,
@@ -80,8 +80,8 @@ namespace lib::network {
 
         struct HeaderType {
             CodeEnum Code{};
-            ssize_t EndpointId{};
-            size_t Length{};
+            int64_t EndpointId{};
+            uint64_t Length{};
 
             HeaderType(CodeEnum code, ssize_t endpoint, size_t length) :
                     Code(code),
