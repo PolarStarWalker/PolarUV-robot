@@ -94,15 +94,17 @@ namespace app {
             }
         };
 
-        PIDArray<3> pids_;
         CommandsQueue commandsQueue_;
         MotorsSender::IMotorsSender &motorsSender_;
         std::shared_ptr<Sensors> sensors_;
         std::shared_ptr<RobotSettings> settings_;
-        std::thread thread_;
-        std::atomic<bool> isNotDone_;
+
         Timer timer_;
         Stabilization stabilization_;
+
+        std::atomic<bool> isNotDone_;
+        std::thread thread_;
+
     public:
 
         CommandsCycle(MotorsSender::IMotorsSender &motorsSender,

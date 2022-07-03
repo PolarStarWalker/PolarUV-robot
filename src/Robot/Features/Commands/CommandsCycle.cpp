@@ -9,7 +9,7 @@ constexpr auto Y = SensorsStruct::Position::Y;
 constexpr auto Z = SensorsStruct::Position::Z;
 
 inline MotorsSender::MotorsStruct FormMotorsStruct(const std::array<float, 12> &hiPwm,
-                                            const std::array<float, 4> &lowPwm) {
+                                                   const std::array<float, 4> &lowPwm) {
 
     auto func = [](float x) -> uint16_t { return std::ceil(x); };
 
@@ -28,8 +28,8 @@ CommandsCycle::CommandsCycle(MotorsSender::IMotorsSender &motorsSender,
         motorsSender_(motorsSender),
         sensors_(std::move(sensors)),
         settings_(std::move(settings)),
-        thread_(&CommandsCycle::StartCommands, this),
-        isNotDone_(true) {};
+        isNotDone_(true),
+        thread_(&CommandsCycle::StartCommands, this){};
 
 CommandsCycle::~CommandsCycle() {
     isNotDone_.store(false);
@@ -44,8 +44,9 @@ void CommandsCycle::StartCommands() {
 
         auto commands = GetCommands();
 
+        auto settings = settings_->GetSettings();
+
         auto sensorsStruct = sensors_->GetSensorsStruct();
-        std::array<double, 3> position{sensorsStruct.Rotation[X], sensorsStruct.Rotation[Y], sensorsStruct.Rotation[Z]};
 
         if (commands.Stabilization != CommandsStruct::None) {
 
@@ -53,22 +54,19 @@ void CommandsCycle::StartCommands() {
             constexpr auto My = CommandsStruct::MoveDimensionsEnum::My;
             constexpr auto Mz = CommandsStruct::MoveDimensionsEnum::Mz;
 
-            const std::array<double, 3> inputV{commands.Move[Mx], commands.Move[My], commands.Move[Mz]};
-            const auto inputAngles = stabilization_.IntegrateVelocity(dt, inputV);
+            constexpr auto Ax = SensorsStruct::Position::X;
+            constexpr auto Ay = SensorsStruct::Position::Y;
+            constexpr auto Az = SensorsStruct::Position::Z;
 
-            const auto errors = Stabilization::GetErrors(inputAngles, position);
+            stabilization_.UpdateAngle(dt, commands.Move[Mx], commands.Move[My], commands.Move[Mz]);
 
-            position = pids_.GetValues(dt, errors);
+            auto values = stabilization_.Calculate(dt,
+                                     sensorsStruct.Rotation[Ax],
+                                     sensorsStruct.Rotation[Ay],
+                                     sensorsStruct.Rotation[Az],
+                                     sensorsStruct.Depth);
 
-            ///ToDo: нужно дифференцировать?
-            commands.Move[Mx] = position[0];
-            commands.Move[My] = position[1];
-            commands.Move[Mz] = position[2];
         }
-
-        stabilization_.SetAngles(position);
-
-        auto settings = settings_->GetSettings();
 
         auto hiPWM = settings.ThrustersCoefficientArray * commands.Move;
         hiPWM.Normalize(100.0f);
@@ -80,9 +78,6 @@ void CommandsCycle::StartCommands() {
                        settings.HandCoefficientArray.cbegin(),
                        hiPWM.rbegin(),
                        [](float hand, float coefficient) { return hand * coefficient; });
-
-//        for (size_t i = 0; i < settings.HandFreedom; ++i)
-//            hiPWM.end()[-(i + 1)] = settings.HandCoefficientArray[i] * commands.Hand[i];
 
         hiPWM += 100.0f;
         hiPWM *= 10.0f;
