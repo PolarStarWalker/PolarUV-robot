@@ -70,15 +70,15 @@ public:
     }
 
     void SetPCoefficients(const std::array<float, Size> &pArray) {
-        pArray_.SetArray(pArray);
+        pids_.SetPCoefficients(pArray);
     }
 
     void SetICoefficients(const std::array<float, Size> &iArray) {
-        iArray_.SetArray(iArray);
+        pids_.SetICoefficients(iArray);
     }
 
     void SetDCoefficients(const std::array<float, Size> &dArray) {
-        dArray_.SetArray(dArray);
+        pids_.SetDCoefficients(dArray);
     }
 
 };

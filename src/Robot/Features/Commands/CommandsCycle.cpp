@@ -39,14 +39,14 @@ CommandsCycle::~CommandsCycle() {
 
 void CommandsCycle::StartCommands() {
 
-    TimerType timer;
-    timer.SetTimer(TimerType::SleepFor_ms(1));
-    EventTracker eventTracker(10);
-    eventTracker.TrackEvent(timer, 0);
+//    TimerType timer;
+//    timer.SetTimer(TimerType::SleepFor_ms(1));
+//    EventTracker eventTracker(10);
+//    eventTracker.TrackEvent(timer, 0);
 
     while (isNotDone_.load()) {
 
-        auto events = eventTracker.Listen<10>(20);
+        //auto events = eventTracker.Listen<10>(20);
 
         auto dt = timer_.Update();
 
