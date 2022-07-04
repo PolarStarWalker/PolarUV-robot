@@ -69,6 +69,17 @@ public:
         return pids_.GetValues(dt, errors);
     }
 
+    void SetPCoefficients(const std::array<float, Size> &pArray) {
+        pArray_.SetArray(pArray);
+    }
+
+    void SetICoefficients(const std::array<float, Size> &iArray) {
+        iArray_.SetArray(iArray);
+    }
+
+    void SetDCoefficients(const std::array<float, Size> &dArray) {
+        dArray_.SetArray(dArray);
+    }
 
 };
 

@@ -8,15 +8,23 @@
 
 namespace app {
 
+    template<size_t Size>
+    struct PIDCoefficientsArray {
+        std::array<float, Size> PArray{};
+        std::array<float, Size> IArray{};
+        std::array<float, Size> DArray{};
+    };
+
     struct RobotSettingsStruct {
 
         using Matrix_t = stc::Matrix<float, 12, 6>;
         using Vecotr_t = stc::Vector<stc::Horizontal, float, 6>;
 
-        Matrix_t ThrustersCoefficientArray;
-        Vecotr_t HandCoefficientArray;
+        Matrix_t ThrustersCoefficientArray{};
+        Vecotr_t HandCoefficientArray{};
         size_t ThrustersNumber = 0;
         size_t HandFreedom = 0;
+        PIDCoefficientsArray<4> PIDCoefficients{};
 
         friend std::ostream &operator<<(std::ostream &out, const RobotSettingsStruct &settings) {
 
@@ -24,8 +32,12 @@ namespace app {
                 << "ThrustersNumber: " << settings.ThrustersNumber << '\n'
                 << "ThrustersCoefficients:\n"
                 << settings.ThrustersCoefficientArray << '\n'
-                << "HandFreedom: " << settings.HandFreedom <<'\n'
-                << "HandCoefficients: " << settings.HandCoefficientArray;
+                << "HandFreedom: " << settings.HandFreedom << '\n'
+                << "HandCoefficients: " << settings.HandCoefficientArray /*<< '\n'
+                << "X - PID " << settings.PIDCoefficients[0] << '\n'
+                << "Y - PID " << settings.PIDCoefficients[1] << '\n'
+                << "Z - PID " << settings.PIDCoefficients[2] << '\n'
+                << "Depth - PID " << settings.PIDCoefficients[3]*/;
 
             return out;
         }
@@ -54,7 +66,7 @@ namespace app {
         RobotSettingsStruct GetSettings() const;
 
     private:
-        void SetSettings(const RobotSettingsStruct& settingsData);
+        void SetSettings(const RobotSettingsStruct &settingsData);
 
         mutable std::mutex settingsMutex_;
         std::string_view filename_;

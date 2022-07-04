@@ -66,6 +66,10 @@ void CommandsCycle::StartCommands() {
             constexpr auto Ay = SensorsStruct::Position::Y;
             constexpr auto Az = SensorsStruct::Position::Z;
 
+            stabilization_.SetPCoefficients(settings.PIDCoefficients.PArray);
+            stabilization_.SetICoefficients(settings.PIDCoefficients.IArray);
+            stabilization_.SetDCoefficients(settings.PIDCoefficients.DArray);
+
             stabilization_.UpdateAngle(dt, commands.Move[Mx], commands.Move[My], commands.Move[Mz]);
 
             auto values = stabilization_.PID(dt,

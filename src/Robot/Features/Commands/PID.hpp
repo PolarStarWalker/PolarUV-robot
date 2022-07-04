@@ -96,27 +96,27 @@ public:
 
 template<size_t Size>
 class PArray {
-    std::array<float, Size> coefficients_;
+    const std::array<float, Size> *coefficients_;
 public:
 
-    float &operator[](size_t index) {
-        return coefficients_[index];
+    void SetArray(const std::array<float, Size> &coefficients) {
+        coefficients_ = &coefficients;
     }
 
     inline void Add(const std::array<float, Size> &errors, std::array<float, Size> &out) const noexcept {
 
-        auto coefficients_v = (const float32x4_t *) &coefficients_[0];
+        auto coefficients_v = (const float32x4_t *) coefficients_->begin();
         auto errors_v = (const float32x4_t *) &errors[0];
-        auto out_v = (float32x4_t*) &out[0];
+        auto out_v = (float32x4_t *) &out[0];
 
-        for (auto i: std::ranges::iota_view((size_t)0, Size / 4))
+        for (auto i: std::ranges::iota_view((size_t) 0, Size / 4))
             out_v[i] = vmulq_f32(coefficients_v[i], errors_v[i]);
 
         if constexpr(Size % 4 == 0)
             return;
 
         for (auto i: std::ranges::iota_view(Size - Size % 4, Size))
-            out[i] = coefficients_[i] * errors[i];
+            out[i] = coefficients_->begin()[i] * errors[i];
 
     }
 
@@ -124,20 +124,20 @@ public:
 
 template<size_t Size>
 class IArray {
-    std::array<float, Size> coefficients_;
+    const std::array<float, Size> *coefficients_;
     std::array<float, Size> is_{};
 public:
 
-    float &operator[](size_t index) {
-        return coefficients_[index];
+    void SetArray(const std::array<float, Size> &coefficients) {
+        coefficients_ = &coefficients;
     }
 
     inline void Add(float dt, const std::array<float, Size> &errors, std::array<float, Size> &out) noexcept {
 
-        const std::array<float, Size> dts {dt, dt, dt, dt};
-        const auto& dt_v = *(float32x4_t *) dts.begin();
+        const std::array<float, Size> dts{dt, dt, dt, dt};
+        const auto &dt_v = *(float32x4_t *) dts.begin();
 
-        auto coefficients_v = (const float32x4_t *) &coefficients_[0];
+        auto coefficients_v = (const float32x4_t *) coefficients_->begin();
         auto errors_v = (const float32x4_t *) &errors[0];
         auto is_v = (float32x4_t *) &is_[0];
 
@@ -155,7 +155,7 @@ public:
 
         for (auto i: std::ranges::iota_view(Size - Size % 4, Size)) {
             auto tmp = dt * errors[i];
-            tmp = coefficients_[i] * tmp;
+            tmp = coefficients_->begin()[i] * tmp;
             is_[i] = is_[i] + tmp;
             out_v[i] = out_v[i] + is_[i];
         }
@@ -165,21 +165,21 @@ public:
 
 template<size_t Size>
 class DArray {
-    std::array<float, Size> coefficients_;
+    const std::array<float, Size> *coefficients_;
     std::array<float, Size> prevErrors_{};
 public:
 
-    float &operator[](size_t index) {
-        return coefficients_[index];
+    void SetArray(const std::array<float, Size> &coefficients) {
+        coefficients_ = &coefficients;
     }
 
     inline void Add(float dt, const std::array<float, Size> &errors, std::array<float, Size> &out) noexcept {
 
-        const std::array<float, Size> dts {dt, dt, dt, dt};
-        const auto& dt_v = *(float32x4_t *) dts.begin();
+        const std::array<float, Size> dts{dt, dt, dt, dt};
+        const auto &dt_v = *(float32x4_t *) dts.begin();
 
-        auto coefficients_v = (const float32x4_t *) &coefficients_[0];
-        auto errors_v =(const float32x4_t *) &errors[0];
+        auto coefficients_v = (const float32x4_t *) coefficients_->begin();
+        auto errors_v = (const float32x4_t *) &errors[0];
         auto prevError_v = (float32x4_t *) &prevErrors_[0];
 
         auto out_v = (float32x4_t *) &out[0];
@@ -197,7 +197,7 @@ public:
         for (auto i: std::ranges::iota_view(Size - Size % 4, Size)) {
             auto tmp = errors[i] - prevErrors_[i];
             tmp = tmp / dt;
-            out[i] =  coefficients_[i] * tmp;
+            out[i] = coefficients_->begin()[i] * tmp;
             prevErrors_[i] = errors[i];
         }
     }
@@ -224,6 +224,18 @@ public:
         dArray_.Add(dt, errors, output);
 
         return output;
+    }
+
+    void SetPCoefficients(const std::array<float, Size> &pArray) {
+        pArray_.SetArray(pArray);
+    }
+
+    void SetICoefficients(const std::array<float, Size> &iArray) {
+        iArray_.SetArray(iArray);
+    }
+
+    void SetDCoefficients(const std::array<float, Size> &dArray) {
+        dArray_.SetArray(dArray);
     }
 };
 

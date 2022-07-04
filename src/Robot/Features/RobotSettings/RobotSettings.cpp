@@ -24,6 +24,12 @@ inline RobotSettingsStruct ParseSettings(const RobotSettingsMessage &message) {
         settings.ThrustersCoefficientArray.begin()->begin()[i] = value;
     }
 
+    for(auto i : std::ranges::iota_view(0,4)) {
+        settings.PIDCoefficients.PArray[i] = message.pid()[i].p();
+        settings.PIDCoefficients.IArray[i] = message.pid()[i].i();
+        settings.PIDCoefficients.DArray[i] = message.pid()[i].d();
+    }
+
     return settings;
 }
 
@@ -51,7 +57,7 @@ RobotSettings::RobotSettings(ssize_t id, std::string_view filename) :
         filename_(filename),
         settings_() {
     SetSettings(GetSettingsFromDisk(filename_));
-    //std::cout << settings_ << std::endl;
+    std::cout << settings_ << std::endl;
 }
 
 bool RobotSettings::WriteValidate(const std::string_view &robotSettings) {
