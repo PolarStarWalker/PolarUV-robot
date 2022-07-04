@@ -5,10 +5,6 @@
 
 using namespace app;
 
-constexpr auto X = SensorsStruct::Position::X;
-constexpr auto Y = SensorsStruct::Position::Y;
-constexpr auto Z = SensorsStruct::Position::Z;
-
 inline MotorsSender::MotorsStruct FormMotorsStruct(const std::array<float, 12> &hiPwm,
                                                    const std::array<float, 4> &lowPwm) {
 
