@@ -46,7 +46,7 @@ private:
 
     ArrayType<Size> axis_;
     PIDArray<Size> pids_;
-    double kv_;
+    float kv_;
 
 public:
 
@@ -61,7 +61,7 @@ public:
             axis_[i] += velocity[i] * dt * kv_;
     }
 
-    ArrayType<Size> Calculate(float dt, float ax, float ay, float az, float depth) {
+    ArrayType<Size> PID(float dt, float ax, float ay, float az, float depth) {
         ArrayType<Size> measurements{ax, ay, az, depth};
 
         auto errors = GetErrors(axis_, measurements);

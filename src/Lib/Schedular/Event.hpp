@@ -25,6 +25,12 @@ public:
 
 
 class EventTracker {
+public:
+//    struct Events{
+//        std::array<>
+//    };
+
+private:
     int epollfd_;
 public:
 

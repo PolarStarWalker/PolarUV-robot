@@ -1,6 +1,7 @@
 #include "CommandsCycle.hpp"
 #include <algorithm>
 #include <ranges>
+#include "Schedular/Event.hpp"
 
 using namespace app;
 
@@ -38,7 +39,14 @@ CommandsCycle::~CommandsCycle() {
 
 void CommandsCycle::StartCommands() {
 
+    TimerType timer;
+    timer.SetTimer(TimerType::SleepFor_ms(1));
+    EventTracker eventTracker(10);
+    eventTracker.TrackEvent(timer, 0);
+
     while (isNotDone_.load()) {
+
+        auto events = eventTracker.Listen<10>(20);
 
         auto dt = timer_.Update();
 
@@ -60,11 +68,11 @@ void CommandsCycle::StartCommands() {
 
             stabilization_.UpdateAngle(dt, commands.Move[Mx], commands.Move[My], commands.Move[Mz]);
 
-            auto values = stabilization_.Calculate(dt,
-                                     sensorsStruct.Rotation[Ax],
-                                     sensorsStruct.Rotation[Ay],
-                                     sensorsStruct.Rotation[Az],
-                                     sensorsStruct.Depth);
+            auto values = stabilization_.PID(dt,
+                                             sensorsStruct.Rotation[Ax],
+                                             sensorsStruct.Rotation[Ay],
+                                             sensorsStruct.Rotation[Az],
+                                             sensorsStruct.Depth);
 
         }
 
@@ -83,10 +91,6 @@ void CommandsCycle::StartCommands() {
         hiPWM *= 10.0f;
 
         auto motorsStruct = FormMotorsStruct((std::array<float, 12>) hiPWM, commands.LowPWM);
-
-        //std::cout << commands << std::endl;
-        //std::cout << settings << std::endl;
-        //std::cout << motorsStruct << std::endl;
 
         motorsSender_.SendMotorsStruct(motorsStruct);
 

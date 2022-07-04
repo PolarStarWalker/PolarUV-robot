@@ -8,7 +8,7 @@
 #include <sys/timerfd.h>
 #include <sys/epoll.h>
 #include <unistd.h>
-#include <Peripheral/PeripheralHandler/Event.hpp>
+#include <Schedular/Event.hpp>
 
 TimerType::TimerType() : timerfd_(timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK)) {}
 
