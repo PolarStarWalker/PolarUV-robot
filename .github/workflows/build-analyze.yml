@@ -19,7 +19,7 @@ jobs:
           sudo pip install conan
       - name: Build
         run: |
-          cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=On -B build .
+          cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=On -DCMAKE_BUILD_TYPE=Release -B build .
           cmake --build build -j
       - name: Analyze
         run: |
