@@ -108,7 +108,7 @@ namespace lib::network {
             services_.insert({service->serviceId_, service});
 
             return service;
-        };
+        }
     };
 }
 #endif

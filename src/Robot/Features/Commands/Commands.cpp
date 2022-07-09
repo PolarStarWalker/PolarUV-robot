@@ -12,7 +12,10 @@ CommandsService::CommandsService(ssize_t id,
 
 void CommandsService::Write(const std::string_view &data) {
 
-    const auto &commands = *((CommandsStruct *) data.data());
+    if(data.size() != sizeof(CommandsStruct))
+        throw lib::exceptions::TransferError("data.size() and sizeof(CommandsStruct) mismatch");
+
+    auto &commands = *((const CommandsStruct *) data.data());
 
     //std::cout << commands << std::endl;
 

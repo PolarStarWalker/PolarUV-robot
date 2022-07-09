@@ -26,7 +26,7 @@ CommandsCycle::CommandsCycle(MotorsSender::IMotorsSender &motorsSender,
         sensors_(std::move(sensors)),
         settings_(std::move(settings)),
         isNotDone_(true),
-        thread_(&CommandsCycle::StartCommands, this){};
+        thread_(&CommandsCycle::StartCommands, this) {}
 
 CommandsCycle::~CommandsCycle() {
     isNotDone_.store(false);
@@ -52,28 +52,17 @@ void CommandsCycle::StartCommands() {
 
         auto sensorsStruct = sensors_->GetSensorsStruct();
 
-        if (commands.Stabilization != CommandsStruct::None) {
-
-            constexpr auto Mx = CommandsStruct::MoveDimensionsEnum::Mx;
-            constexpr auto My = CommandsStruct::MoveDimensionsEnum::My;
-            constexpr auto Mz = CommandsStruct::MoveDimensionsEnum::Mz;
-
-            constexpr auto Ax = SensorsStruct::Position::X;
-            constexpr auto Ay = SensorsStruct::Position::Y;
-            constexpr auto Az = SensorsStruct::Position::Z;
+        if (commands.Stabilize) {
 
             stabilization_.SetPCoefficients(settings.PIDCoefficients.PArray);
             stabilization_.SetICoefficients(settings.PIDCoefficients.IArray);
             stabilization_.SetDCoefficients(settings.PIDCoefficients.DArray);
 
-            stabilization_.UpdateAngle(dt, commands.Move[Mx], commands.Move[My], commands.Move[Mz]);
+            ///ToDo DanSho смотри отсюда
+            commands.Move = stabilization_.Calculate(dt, commands.Move, sensorsStruct);
 
-            auto values = stabilization_.PID(dt,
-                                             sensorsStruct.Rotation[Ax],
-                                             sensorsStruct.Rotation[Ay],
-                                             sensorsStruct.Rotation[Az],
-                                             sensorsStruct.Depth);
-
+        } else {
+            stabilization_.Reset(sensorsStruct);
         }
 
         auto hiPWM = settings.ThrustersCoefficientArray * commands.Move;
@@ -90,11 +79,12 @@ void CommandsCycle::StartCommands() {
         hiPWM += 100.0f;
         hiPWM *= 10.0f;
 
-        auto motorsStruct = FormMotorsStruct((std::array<float, 12>) hiPWM, commands.LowPWM);
+        auto motorsStruct = FormMotorsStruct((const std::array<float, 12> &) hiPWM, commands.LowPWM);
 
         motorsSender_.SendMotorsStruct(motorsStruct);
 
         usleep(PERIOD_US);
     }
+
 }
 

@@ -86,6 +86,6 @@ namespace ADS1115 {
         A3 = 3,
     };
 
-};
+}
 
 #endif

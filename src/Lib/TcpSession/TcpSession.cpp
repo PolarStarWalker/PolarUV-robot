@@ -180,7 +180,7 @@ inline Response IService::WriteReadData(const std::string_view &data) {
 }
 
 
-void IService::Write(const std::string_view &data) {
+void IService::Write([[maybe_unused]] const std::string_view &data) {
     throw exceptions::NotFount("Данный метод не существует");
 }
 
@@ -188,7 +188,7 @@ Response::BufferType IService::Read() {
     throw exceptions::NotFount("Данный метод не существует");
 }
 
-Response::BufferType IService::WriteRead(const std::string_view &data) {
+Response::BufferType IService::WriteRead([[maybe_unused]] const std::string_view &data) {
     throw exceptions::NotFount("Данный метод не существует");
 }
 

@@ -10,6 +10,7 @@
 
 #include <arm_neon.h>
 #include <array>
+#include <ranges>
 
 namespace stc {
     enum VectorTypeEnum {
@@ -66,13 +67,13 @@ namespace stc {
 
         Vector_t &operator+=(Type value) requires IsFloat32<Type>;
 
-        [[nodiscard]] Type *begin() noexcept { return elements_.begin(); }
+        [[nodiscard]] auto begin() noexcept { return elements_.begin(); }
 
-        [[nodiscard]] Type *end() noexcept { return elements_.end(); }
+        [[nodiscard]] auto end() noexcept { return elements_.end(); }
 
-        [[nodiscard]] const Type *cbegin() const noexcept  { return elements_.cbegin(); }
+        [[nodiscard]] auto cbegin() const noexcept  { return elements_.cbegin(); }
 
-        [[nodiscard]] const Type *cend() const noexcept { return elements_.cend(); }
+        [[nodiscard]] auto cend() const noexcept { return elements_.cend(); }
 
         [[nodiscard]] auto rbegin() noexcept{ return elements_.rbegin(); }
 
@@ -86,7 +87,7 @@ namespace stc {
 
         void Normalize(Type amplitude) requires IsFloat32<Type>;
 
-        explicit operator std::array<Type, VectorSize>(){
+        operator std::array<Type, VectorSize>&(){
             return elements_;
         }
     };
@@ -175,12 +176,12 @@ Vector<VectorType, Type, VectorSize>::Vector(const std::initializer_list<Type> l
         constexpr size_t alignment = GetAlignment<T>(VS);
 
         const T valueArray[4] = {value, value, value, value};
-        auto &values = (float32x4_t &) valueArray;
+        auto &values = (const float32x4_t &) valueArray;
 
         auto *array = (float32x4_t *) &elements_[0];
-        for (size_t i = 0; i < iterationCount; ++i) {
+        for (auto i : std::ranges::iota_view((size_t) 0, iterationCount))
             array[i] = vaddq_f32(array[i], values);
-        }
+
 
         ///If size is 16 byte aligned
         if constexpr (alignment == 0)

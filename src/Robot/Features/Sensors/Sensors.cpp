@@ -16,7 +16,7 @@ ResponseBufferType Sensors::Read() {
 
     std::string outputData(sizeof(SensorsStruct), 0);
 
-    SensorsStruct& bufferBegin = *((SensorsStruct*) outputData.c_str());
+    SensorsStruct& bufferBegin = *((SensorsStruct*) &outputData[0]);
 
     bufferBegin = GetSensorsStruct();
 

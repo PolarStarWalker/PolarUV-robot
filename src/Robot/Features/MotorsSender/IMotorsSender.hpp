@@ -63,5 +63,5 @@ namespace MotorsSender {
         virtual ~IMotorsSender() = default;
     };
 
-};
+}
 #endif

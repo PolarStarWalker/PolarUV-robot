@@ -4,7 +4,7 @@ project(polar-uv)
 # build options
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "-fcoroutines -flto")
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra ")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra -Wpedantic -Wnon-virtual-dtor -Wduplicated-branches -Wduplicated-cond -Wfloat-equal -Wshadow=compatible-local -Wcast-qual")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -mtune=native")
 
 set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")

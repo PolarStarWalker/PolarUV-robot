@@ -16,9 +16,18 @@ Gstreamer::Gstreamer() :
 
 void Gstreamer::Start(const Settings &settings) {
 
+    auto caps = gst_caps_new_simple("application/x-rtp",
+                                    "media", G_TYPE_STRING, "video",
+                                    "payload", G_TYPE_INT, 96,
+                                    "clock-rate", G_TYPE_INT, 90000,
+                                    "encoding-name", G_TYPE_STRING,"H264",
+                                    nullptr);
+
     g_object_set(sink, "port", 8000, "host", settings.Ip.cbegin(), nullptr);
 
-    g_object_set(src, "device", settings.DeviceName.cbegin(), nullptr);
+    g_object_set(src, "device", settings.DeviceName.cbegin(), "do-timestamp", FALSE, nullptr);
+
+    gst_element_link_filtered(h264parse, rtp, caps);
 
     gst_element_link_many(src, h264parse, rtp, gdp, sink, nullptr);
 

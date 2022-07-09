@@ -135,7 +135,7 @@ public:
     inline void Add(float dt, const std::array<float, Size> &errors, std::array<float, Size> &out) noexcept {
 
         const std::array<float, Size> dts{dt, dt, dt, dt};
-        const auto &dt_v = *(float32x4_t *) dts.begin();
+        auto &dt_v = *(const float32x4_t *) dts.begin();
 
         auto coefficients_v = (const float32x4_t *) coefficients_->begin();
         auto errors_v = (const float32x4_t *) &errors[0];
@@ -161,6 +161,10 @@ public:
         }
     }
 
+    void Reset(){
+        is_ = {};
+    }
+
 };
 
 template<size_t Size>
@@ -176,7 +180,7 @@ public:
     inline void Add(float dt, const std::array<float, Size> &errors, std::array<float, Size> &out) noexcept {
 
         const std::array<float, Size> dts{dt, dt, dt, dt};
-        const auto &dt_v = *(float32x4_t *) dts.begin();
+        auto &dt_v = *(const float32x4_t *) dts.begin();
 
         auto coefficients_v = (const float32x4_t *) coefficients_->begin();
         auto errors_v = (const float32x4_t *) &errors[0];
@@ -202,18 +206,20 @@ public:
         }
     }
 
+    void Reset(){
+        prevErrors_ = {};
+    }
+
 };
 
 template<size_t Size>
 class PIDArray {
-
     PArray<Size> pArray_{};
     IArray<Size> iArray_{};
     DArray<Size> dArray_{};
-
 public:
 
-    [[nodiscard]] inline ArrayType<Size> GetValues(DtType dt, const ArrayType<Size> &errors) {
+    [[nodiscard]] inline ArrayType<Size> Calculate(DtType dt, const ArrayType<Size> &errors) {
 
         ArrayType<Size> output{};
 
@@ -226,16 +232,40 @@ public:
         return output;
     }
 
-    void SetPCoefficients(const std::array<float, Size> &pArray) {
+    static ArrayType<Size> GetErrors(const ArrayType<Size> &setting, const ArrayType<Size> &measurements) {
+        ArrayType<Size> errors{};
+
+        auto errors_v = (float32x4_t *) &(errors[0]);
+        auto setting_v = (const float32x4_t *) &(setting[0]);
+        auto measurements_v = (const float32x4_t *) &(measurements[0]);
+
+        for (auto i: std::ranges::iota_view((size_t) 0, Size / 4))
+            errors_v[i] = vsubq_f32(setting_v[i], measurements_v[i]);
+
+        if constexpr(Size % 4 == 0)
+            return errors;
+
+        for (auto i: std::ranges::iota_view(Size - Size % 4, Size))
+            errors[i] = setting[i] - measurements[i];
+
+        return errors;
+    }
+
+    void SetPCoefficients(const ArrayType<Size> &pArray) {
         pArray_.SetArray(pArray);
     }
 
-    void SetICoefficients(const std::array<float, Size> &iArray) {
+    void SetICoefficients(const ArrayType<Size> &iArray) {
         iArray_.SetArray(iArray);
     }
 
-    void SetDCoefficients(const std::array<float, Size> &dArray) {
+    void SetDCoefficients(const ArrayType<Size> &dArray) {
         dArray_.SetArray(dArray);
+    }
+
+    void Reset() {
+        iArray_.Reset();
+        dArray_.Reset();
     }
 };
 

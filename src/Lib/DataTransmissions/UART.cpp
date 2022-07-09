@@ -29,7 +29,7 @@ UART::UART(const char *address, SpeedEnum speed) {
         std::cout << "Failed to set attributes\n";
 #endif
     }
-};
+}
 
 ssize_t UART::recv(void *ptr, size_t length) const {
     return read(this->_uartDescriptor, ptr, length);

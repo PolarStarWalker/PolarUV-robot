@@ -2,83 +2,136 @@
 #define ROBOT_STABILIZATION_HPP
 
 #include "PID.hpp"
+#include "CommandsStruct.hpp"
+#include "../RobotSettings/RobotSettings.hpp"
 #include <ranges>
+#include <algorithm>
 
-template<size_t Size>
-static ArrayType<Size> GetErrors(const ArrayType<Size> &setting, const ArrayType<Size> &measurements) {
-    ArrayType<Size> errors{};
+class AngleStabilization {
+    ArrayType<3> setting_{};
+    ArrayType<3> oldAngle_{};
+    const float kv_{1.0};
 
-    auto errors_v = (float32x4_t *) &(errors[0]);
-    auto setting_v = (const float32x4_t *) &(setting[0]);
-    auto measurements_v = (const float32x4_t *) &(measurements[0]);
+public:
 
-    for (auto i: std::ranges::iota_view((size_t) 0, Size / 4))
-        errors_v[i] = vsubq_f32(setting_v[i], measurements_v[i]);
+    ArrayType<3> UpdateAngle(float dt, float Wx, float Wy, float Wz) {
 
-    if constexpr(Size % 4 == 0)
-        return errors;
+        ArrayType<3> newAngle{};
+        ArrayType<3> velocity{Wx, Wy, Wz};
 
-    for (auto i: std::ranges::iota_view(Size - Size % 4, Size))
-        errors[i] = setting[i] - measurements[i];
+        for (auto i: std::ranges::iota_view(0, 3)) {
+            oldAngle_[i] = setting_[i];
+            setting_[i] += velocity[i] * dt * kv_;
+            newAngle[i] = setting_[i];
+        }
 
-    return errors;
-}
+        return newAngle;
+    }
+
+    void Reset(const app::SensorsStruct &sensors) {
+
+        static_assert(app::SensorsStruct::X < app::SensorsStruct::Y
+                      &&
+                      app::SensorsStruct::Y < app::SensorsStruct::Z
+                      &&
+                      app::SensorsStruct::Z < app::SensorsStruct::W);
+
+        const auto tmp = sensors.Rotation | std::views::take(3);
+
+        std::ranges::copy(tmp, setting_.begin());
+    }
+};
+
+//ToDo тут реализация стабилизации по глубине
+class DepthStabilization {
+    float depth_ = 0.0;
+    bool isStopped_ = false;
+public:
+
+    float UpdateDepth(const stc::VerticalVector<float, 6> &move, app::SensorsStruct &sensors) {
+
+        auto isStop = std::ranges::all_of((const std::array<float, 6> &) move,
+                                          [](float x) {
+                                              auto tmp = std::abs(std::roundf(x * 100));
+                                              auto converted = static_cast<size_t>(tmp);
+                                              return converted == 0;
+                                          });
+
+        auto updateDepth = false;
+
+        if (isStop && !std::exchange(isStopped_, isStop))
+            updateDepth = true;
+
+        if (updateDepth)
+            depth_ = sensors.Depth;
+
+        return depth_;
+    }
+
+    void Reset(const app::SensorsStruct &sensors) {
+        isStopped_ = false;
+        depth_ = sensors.Depth;
+    }
+};
 
 class Stabilization {
-public:
-    enum Position : size_t {
-        Ax = 0,
-        Ay = 1,
-        Az = 3,
-        Depth = 4
-    };
 
-    struct StabilizationData {
-        float Ax;
-        float Ay;
-        float Az;
-        float Depth;
-    };
+    constexpr static size_t Size = 4;
 
-private:
-
-    static constexpr size_t Size = 4;
-
-    ArrayType<Size> axis_;
-    PIDArray<Size> pids_;
-    float kv_;
+    AngleStabilization angleStabilization_{};
+    DepthStabilization depthStabilization_{};
+    PIDArray<Size> pids_{};
 
 public:
 
-    Stabilization() :
-            axis_({}),
-            kv_(1.0) {}
+    stc::VerticalVector<float, 6>
+    Calculate(float dt, const stc::VerticalVector<float, 6> &move, app::SensorsStruct &sensors) {
 
-    void UpdateAngle(DtType dt, float wx, float wy, float wz) {
-        const std::array<float, 3> velocity{wx, wy, wz};
+        constexpr auto ax = app::SensorsStruct::X;
+        constexpr auto ay = app::SensorsStruct::Y;
+        constexpr auto az = app::SensorsStruct::Z;
 
-        for (auto i: std::ranges::iota_view(0, 3))
-            axis_[i] += velocity[i] * dt * kv_;
+        constexpr auto Wx = CommandsStruct::MoveDimensionsEnum::Wx;
+        constexpr auto Wy = CommandsStruct::MoveDimensionsEnum::Wy;
+        constexpr auto Wz = CommandsStruct::MoveDimensionsEnum::Wz;
+
+        auto angles = angleStabilization_.UpdateAngle(dt, move[Wx], move[Wy], move[Wz]);
+        //auto depth = depthStabilization_.UpdateDepth(move, sensors);
+
+        ArrayType<Size> setting{angles[0], angles[1], angles[2], sensors.Depth};
+        ArrayType<Size> measure{sensors.Rotation[ax], sensors.Rotation[ay], sensors.Rotation[az], sensors.Depth};
+
+        auto errors = PIDArray<Size>::GetErrors(setting, measure);
+        auto pids = pids_.Calculate(dt, errors);
+
+        //ToDo DanShoo табилизация по глубине
+
+        stc::Vector<stc::Vertical, float, 6> newMove{move[0],
+                                                     move[1],
+                                                     move[2],
+                                                     pids[0],
+                                                     pids[1],
+                                                     pids[2]};
+
+        return newMove;
     }
 
-    ArrayType<Size> PID(float dt, float ax, float ay, float az, float depth) {
-        ArrayType<Size> measurements{ax, ay, az, depth};
-
-        auto errors = GetErrors(axis_, measurements);
-
-        return pids_.GetValues(dt, errors);
-    }
-
-    void SetPCoefficients(const std::array<float, Size> &pArray) {
+    void SetPCoefficients(const ArrayType<Size> &pArray) {
         pids_.SetPCoefficients(pArray);
     }
 
-    void SetICoefficients(const std::array<float, Size> &iArray) {
+    void SetICoefficients(const ArrayType<Size> &iArray) {
         pids_.SetICoefficients(iArray);
     }
 
-    void SetDCoefficients(const std::array<float, Size> &dArray) {
+    void SetDCoefficients(const ArrayType<Size> &dArray) {
         pids_.SetDCoefficients(dArray);
+    }
+
+    void Reset(const app::SensorsStruct &sensors) {
+        pids_.Reset();
+        angleStabilization_.Reset(sensors);
+        depthStabilization_.Reset(sensors);
     }
 
 };
