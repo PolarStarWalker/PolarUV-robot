@@ -43,6 +43,8 @@ namespace lib::processing {
             return out;
         }
 
+        static std::string ScanCameras();
+
     };
 
 }

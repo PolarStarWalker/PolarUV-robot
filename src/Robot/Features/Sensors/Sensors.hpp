@@ -31,7 +31,6 @@ namespace app {
         bool Euler = true;
     };
 
-    //TODO: сделать сервис для датчиков
     class Sensors final : public lib::network::IService {
     public:
         Sensors(ssize_t id, std::string_view i2c);

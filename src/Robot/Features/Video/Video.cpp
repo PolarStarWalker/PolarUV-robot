@@ -27,18 +27,18 @@ void Video::Write(const std::string_view &action) {
     VideoMessage message;
     message.ParseFromArray(action.begin(), action.size());
     switch (message.action()) {
-        case VideoMessage::START:{
+        case VideoMessage::START: {
 
-            if(!message.has_video_settings())
+            if (!message.has_video_settings())
                 throw lib::exceptions::InvalidOperation("no settings");
 
-            auto& settingsMessage = message.video_settings();
+            auto &settingsMessage = message.video_settings();
 
             //ToDo: add other options
             lib::processing::Settings settings{
                     settingsMessage.ip(),
                     settingsMessage.device_name(),
-                    0,0,0,0
+                    0, 0, 0, 0
             };
 
 
@@ -60,4 +60,9 @@ Video::~Video() {
 
 void Video::ConnectionLost() {
     gstreamer_.Stop();
+}
+
+lib::network::IService::ResponseBufferType Video::Read() {
+
+    return lib::processing::Gstreamer::ScanCameras();;
 }

@@ -17,6 +17,7 @@ namespace app {
         explicit Video(ssize_t id);
         ~Video() final;
         void Write(const std::string_view &action) final;
+        ResponseBufferType Read() final;
 
     private:
         void ConnectionLost() final;
