@@ -5,7 +5,7 @@ option optimize_for = LITE_RUNTIME;
 message VideoSettings{
   required string ip = 1;
   required string device_name = 2;
-  required int32 device_id = 3;
+  reserved 3;
   required int32 framerate_numerator = 4;
   required int32 framerate_denumenator = 5;
   required int32 brightness = 6;

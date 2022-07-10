@@ -104,7 +104,7 @@ public:
         auto errors = PIDArray<Size>::GetErrors(setting, measure);
         auto pids = pids_.Calculate(dt, errors);
 
-        //ToDo DanShoo табилизация по глубине
+        //ToDo DanShoo стабилизация по глубине
 
         stc::Vector<stc::Vertical, float, 6> newMove{move[0],
                                                      move[1],

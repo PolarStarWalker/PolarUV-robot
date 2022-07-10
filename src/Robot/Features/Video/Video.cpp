@@ -38,7 +38,10 @@ void Video::Write(const std::string_view &action) {
             lib::processing::Settings settings{
                     settingsMessage.ip(),
                     settingsMessage.device_name(),
-                    0, 0, 0, 0
+                    settingsMessage.framerate_numerator(),
+                    settingsMessage.framerate_denumenator(),
+                    settingsMessage.brightness(),
+                    settingsMessage.contrast()
             };
 
 
