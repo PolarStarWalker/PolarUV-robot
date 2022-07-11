@@ -74,12 +74,11 @@ void FindDevices(gpointer data, gpointer user_data) {
 
     auto path = gst_structure_get_string(prop, "device.path");
 
+    std::cout << path << std::endl;
+
     message.add_device_names(path);
 
 }
-
-const boost::regex filter("(/dev/video)([0-9]{2})");
-boost::match_results <std::string::const_iterator> results;
 
 std::string Gstreamer::ScanCameras() {
 
@@ -90,16 +89,6 @@ std::string Gstreamer::ScanCameras() {
     auto devices = gst_device_provider_get_devices(deviceProvider);
 
     g_list_foreach(devices, (GFunc) FindDevices, &message);
-
-    for (const auto &entry: std::filesystem::directory_iterator("/dev/")) {
-
-        auto deviceName = entry.path().string();
-
-        if (!boost::regex_match(deviceName, results, filter))
-            continue;
-
-        message.add_device_names(deviceName);
-    }
 
     return message.SerializeAsString();
 }
