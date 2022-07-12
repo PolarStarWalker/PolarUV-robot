@@ -13,6 +13,8 @@ namespace lib::processing {
         int FrameDenumerator;
         int Brightness;
         int Contrast;
+        int Hue;
+        int Saturation;
     };
 
     class Gstreamer {

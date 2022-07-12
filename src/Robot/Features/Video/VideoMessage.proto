@@ -10,6 +10,8 @@ message VideoSettings{
   required int32 framerate_denumenator = 5;
   required int32 brightness = 6;
   required int32 contrast = 7;
+  required int32 hue  = 8;
+  required int32 saturation  = 9;
 }
 
 message VideoMessage{

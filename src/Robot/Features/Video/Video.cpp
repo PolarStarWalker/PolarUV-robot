@@ -41,7 +41,9 @@ void Video::Write(const std::string_view &action) {
                     settingsMessage.framerate_numerator(),
                     settingsMessage.framerate_denumenator(),
                     settingsMessage.brightness(),
-                    settingsMessage.contrast()
+                    settingsMessage.contrast(),
+                    settingsMessage.hue(),
+                    settingsMessage.saturation()
             };
 
 

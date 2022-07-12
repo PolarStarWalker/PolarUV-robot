@@ -2,9 +2,7 @@
 #include "VideoDeviceMessage.pb.h"
 #include <gst/gst.h>
 #include <gst/gstdeviceprovider.h>
-#include <filesystem>
 #include <iostream>
-#include <boost/regex.hpp>
 
 using namespace lib::processing;
 
@@ -34,6 +32,10 @@ void Gstreamer::Start(const Settings &settings) {
     g_object_set(src,
                  "device", settings.DeviceName.cbegin(),
                  "do-timestamp", FALSE,
+                 "brightness", settings.Brightness,
+                 "contrast", settings.Contrast,
+                 "contrast", settings.Hue,
+                 "contrast", settings.Saturation,
                  nullptr);
 
     gst_element_link_filtered(h264parse, rtp, caps);
