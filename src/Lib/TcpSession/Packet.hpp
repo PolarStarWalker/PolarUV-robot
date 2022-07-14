@@ -30,7 +30,7 @@ namespace lib::network {
     enum class RequestTypeEnum : size_t {
         R,
         W,
-        RW
+        WR
     };
 
     struct RequestHeaderType {
@@ -52,8 +52,8 @@ namespace lib::network {
             case RequestTypeEnum::W:
                 out << 'W';
                 break;
-            case RequestTypeEnum::RW:
-                out << "RW";
+            case RequestTypeEnum::WR:
+                out << "WR";
                 break;
             default:
                 out << "UNDEFINED";
@@ -83,7 +83,7 @@ namespace lib::network {
             int64_t EndpointId{};
             uint64_t Length{};
 
-            HeaderType(CodeEnum code, ssize_t endpoint, size_t length) :
+            HeaderType(CodeEnum code, int64_t endpoint, uint64_t length) :
                     Code(code),
                     EndpointId(endpoint),
                     Length(length) {}
@@ -96,7 +96,7 @@ namespace lib::network {
         const HeaderType Header;
         std::string Data;
 
-        Response(std::string &&data, enum CodeEnum code, ssize_t endpointId) :
+        Response(std::string &&data, enum CodeEnum code, uint64_t endpointId) :
                 Header(code, endpointId, data.size()),
                 Data(std::move(data)){};
 
@@ -110,7 +110,7 @@ namespace lib::network {
 
             std::string data(sizeof(Returned), 0);
 
-            auto &typedData = (Returned &) *data.c_str();
+            auto &typedData = (const Returned &) *data.c_str();
 
             typedData = (obj->*func)(std::forward(args)...);
 

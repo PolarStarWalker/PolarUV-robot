@@ -23,7 +23,7 @@ constexpr size_t RESPONSE_HEADER_SIZE = sizeof(Response::HeaderType);
 constexpr uint16_t PORT = TcpSession::PORT;
 
 inline BoostSocket GetConnection(IOContext &ioContext) {
-    boost::asio::ip::tcp (*V4)() = boost::asio::ip::tcp::v4;
+    boost::asio::ip::tcp(*V4)() = boost::asio::ip::tcp::v4;
 
     BoostSocket socket(ioContext);
 
@@ -95,14 +95,29 @@ void TcpSession::Start() {
 
                 TimePoint end = std::chrono::steady_clock::now();
 
-                if (requestHeader.Type == RequestTypeEnum::W)
+                if (requestHeader.Type == RequestTypeEnum::W
+                    ||
+                    requestHeader.Type == RequestTypeEnum::WR)
                     data = buffer.Decompress(requestHeader.Length);
 
                 auto &service = FindService(requestHeader.EndpointId);
 
                 auto response = service.DoAction(requestHeader.Type, (std::string_view) data);
 
-                SendResponse(socket, response);
+                if (requestHeader.Type == RequestTypeEnum::R
+                    ||
+                    requestHeader.Type == RequestTypeEnum::WR) {
+
+                    auto compressedData = buffer.Compress(response.Data.c_str(), response.Data.size());
+                    response.Data.resize(compressedData.size());
+                    std::copy(compressedData.begin(),
+                              compressedData.begin() + compressedData.size(),
+                              response.Data.begin());
+
+                    SendResponse(socket, {std::move(response.Data), response.Header.Code, response.Header.Length});
+                }else {
+                    SendResponse(socket, response);
+                }
 
                 std::cout << requestHeader << '\n'
                           << "Execution time = "
@@ -123,13 +138,13 @@ void TcpSession::Start() {
                 std::clog << "[UNKNOWN EXCEPTION ERROR]\n"
                           << e.what() << std::endl;
 
-                std::ranges::for_each(services_, [](Map::value_type& pair){pair.second->ConnectionLost();});
+                std::ranges::for_each(services_, [](Map::value_type &pair) { pair.second->ConnectionLost(); });
             }
             catch (...) {
                 socket.close();
                 std::clog << "[UNKNOWN ERROR]" << std::endl;
 
-                std::ranges::for_each(services_, [](Map::value_type& pair){pair.second->ConnectionLost();});
+                std::ranges::for_each(services_, [](Map::value_type &pair) { pair.second->ConnectionLost(); });
             }
         }
     }
@@ -211,15 +226,15 @@ void IService::ConnectionLost() {}
 Response IService::DoAction(RequestTypeEnum type, const std::string_view &data) {
 
     switch (type) {
-        case RequestTypeEnum::R:
+        case RequestTypeEnum::R: {
             return ReadData();
-
-        case RequestTypeEnum::W:
+        }
+        case RequestTypeEnum::W: {
             return WriteData(data);
-
-        case RequestTypeEnum::RW:
+        }
+        case RequestTypeEnum::WR: {
             return WriteReadData(data);
-
+        }
         default:
             throw exceptions::NotFount("[REQUEST NOT FOUND]");
     }

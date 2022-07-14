@@ -66,7 +66,7 @@ public:
         if(maxSize > Capacity())
             throw lib::exceptions::BufferOverflow("Compress size more then capacity of buffer");
 
-        auto dstSize = ZSTD_compress(&data_[0], Capacity(), src, srcSize, 0);
+        auto dstSize = ZSTD_compress(&data_[0], Capacity(), src, srcSize, 22);
 
         return {data_.data(), dstSize};
     }
@@ -77,8 +77,8 @@ public:
         return *((std::array<char, Size>*) data_.begin());
     }
 
-    [[nodiscard]] char* data() & noexcept{ return data_.begin();}
-    [[nodiscard]] const char* data() const & noexcept{ return data_.cbegin();}
+    [[nodiscard]] auto data() & noexcept{ return data_.begin();}
+    [[nodiscard]] auto data() const & noexcept{ return data_.cbegin();}
 };
 
 

@@ -54,7 +54,7 @@ namespace lib::network {
 
     public:
         ///ToDo: когда-нибудь переехать на строки
-        const ssize_t serviceId_;
+        const uint64_t serviceId_;
 
     private:
         Response DoAction(RequestTypeEnum type, const std::string_view &data);
