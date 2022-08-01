@@ -5,7 +5,7 @@ using IService = lib::network::IService;
 
 Robot::Robot() :
         network_(),
-        startSettings_("Settings.json") {}
+        startSettings_("/etc/polar-uv/start-settings.json") {}
 
 
 [[nodiscard]]
@@ -15,7 +15,7 @@ inline std::vector<std::shared_ptr<lib::network::IService>> MakeROV(lib::network
     std::vector<std::shared_ptr<lib::network::IService>> services;
     services.reserve(10);
 
-    auto settings = network.CreateService<RobotSettings>(0, "move-settings");
+    auto settings = network.CreateService<RobotSettings>(0, "/etc/polar-uv/move-settings");
     auto sensors = network.CreateService<Sensors>(1, startSettings.GetSensorsPath());
 
     services.push_back(settings);

@@ -294,7 +294,7 @@ Vector<VectorType, Type, VectorSize>::Vector(const std::initializer_list<Type> l
     std::ostream &operator<<(std::ostream &out, const VerticalVector<Type, VectorSize> &vector) {
 
         out << '[';
-        for (ssize_t i = 0; i < VectorSize - 1; i++) {
+        for (size_t i = 0; i < VectorSize - 1; i++) {
             out << vector[i] << ", ";
         }
         out << vector[VectorSize - 1];
