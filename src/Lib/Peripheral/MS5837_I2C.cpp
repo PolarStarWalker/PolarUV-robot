@@ -104,7 +104,7 @@ void MS5837_I2C::SetFluidDensity(double density) {
     fluidDensity_ = density;
 }
 
-MS5837::Data MS5837_I2C::Calculate(const MS5837::Measure &measure, const std::array<uint8_t, 8> &Calibration) {
+MS5837::Data MS5837_I2C::Calculate(const MS5837::Measure &measure, const std::array<uint16_t, 8> &Calibration) {
 
     int64_t SENS = 0;
     int64_t OFF = 0;
@@ -151,7 +151,7 @@ MS5837::Data MS5837_I2C::Calculate(const MS5837::Measure &measure, const std::ar
     return data;
 }
 
-uint8_t MS5837_I2C::CRC4(std::array<uint8_t, 8> &n_prom) {
+uint8_t MS5837_I2C::CRC4(std::array<uint16_t, 8> &n_prom) {
     uint16_t n_rem = 0;
 
     n_prom[0] = ((n_prom[0]) & 0x0FFF);

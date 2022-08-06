@@ -5,7 +5,7 @@ using IService = lib::network::IService;
 
 Robot::Robot() :
         network_(),
-        startSettings_("/etc/polar-uv/start-settings.json") {}
+        startSettings_("Settings.json") {}
 
 
 [[nodiscard]]

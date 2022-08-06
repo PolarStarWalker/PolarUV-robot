@@ -20,7 +20,7 @@ private:
 
     double fluidDensity_ = 997.0; //
 
-    std::array<uint8_t, 8> sensorCalibration_;
+    std::array<uint16_t, 8> sensorCalibration_;
 
     mutable std::mutex dataMutex_;
 
@@ -32,9 +32,9 @@ private:
 
 private:
 
-    static uint8_t CRC4(std::array<uint8_t, 8> &n_prom);
+    static uint8_t CRC4(std::array<uint16_t, 8> &n_prom);
 
-    static Data Calculate(const Measure &measure, const std::array<uint8_t, 8> &Calibration);
+    static Data Calculate(const Measure &measure, const std::array<uint16_t, 8> &Calibration);
 
     inline void SetData(const Data &data) {
         std::lock_guard guard(dataMutex_);
