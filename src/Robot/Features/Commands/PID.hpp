@@ -3,6 +3,8 @@
 
 #include <arm_neon.h>
 
+#include <iostream>
+
 template<size_t Size>
 using ArrayType = std::array<float, Size>;
 using DtType = float;
@@ -94,6 +96,10 @@ public:
 };
 #endif
 
+/// ####################################################################################################################
+/// #                                            Массив коэффициентов P                                                #
+/// ####################################################################################################################
+
 template<size_t Size>
 class PArray {
     const std::array<float, Size> *coefficients_;
@@ -106,11 +112,14 @@ public:
     inline void Add(const std::array<float, Size> &errors, std::array<float, Size> &out) const noexcept {
 
         auto coefficients_v = (const float32x4_t *) coefficients_->begin();
+
         auto errors_v = (const float32x4_t *) &errors[0];
         auto out_v = (float32x4_t *) &out[0];
 
-        for (auto i: std::ranges::iota_view((size_t) 0, Size / 4))
-            out_v[i] = vmulq_f32(coefficients_v[i], errors_v[i]);
+        for (auto i: std::ranges::iota_view((size_t) 0, Size / 4)) {
+            auto tmp = vmulq_f32(coefficients_v[i], errors_v[i]);
+            out_v[i] = vaddq_f32(out_v[i], tmp);
+        }
 
         if constexpr(Size % 4 == 0)
             return;
@@ -122,10 +131,17 @@ public:
 
 };
 
+/// ####################################################################################################################
+/// #                                            Массив коэффициентов I                                                #
+/// ####################################################################################################################
+
 template<size_t Size>
+
 class IArray {
+
     const std::array<float, Size> *coefficients_;
     std::array<float, Size> is_{};
+
 public:
 
     void SetArray(const std::array<float, Size> &coefficients) {
@@ -138,6 +154,7 @@ public:
         auto &dt_v = *(const float32x4_t *) dts.begin();
 
         auto coefficients_v = (const float32x4_t *) coefficients_->begin();
+
         auto errors_v = (const float32x4_t *) &errors[0];
         auto is_v = (float32x4_t *) &is_[0];
 
@@ -161,16 +178,23 @@ public:
         }
     }
 
-    void Reset(){
+    void Reset() {
         is_ = {};
     }
 
 };
 
+/// ####################################################################################################################
+/// #                                            Массив коэффициентов D                                                #
+/// ####################################################################################################################
+
 template<size_t Size>
 class DArray {
+
     const std::array<float, Size> *coefficients_;
     std::array<float, Size> prevErrors_{};
+    float32x4_t values_{};
+
 public:
 
     void SetArray(const std::array<float, Size> &coefficients) {
@@ -183,15 +207,19 @@ public:
         auto &dt_v = *(const float32x4_t *) dts.begin();
 
         auto coefficients_v = (const float32x4_t *) coefficients_->begin();
+
         auto errors_v = (const float32x4_t *) &errors[0];
         auto prevError_v = (float32x4_t *) &prevErrors_[0];
 
         auto out_v = (float32x4_t *) &out[0];
 
         for (auto i: std::ranges::iota_view((size_t) 0, Size / 4)) {
-            auto tmp = vsubq_f32(errors_v[i], prevError_v[i]);
-            tmp = vdivq_f32(tmp, dt_v);
-            out_v[i] = vmulq_f32(coefficients_v[i], tmp);
+            if (prevErrors_[2] - errors[2] < 0.000'001f) {
+                values_ = vsubq_f32(errors_v[i], prevError_v[i]);
+                values_ = vdivq_f32(values_, dt_v);
+                values_ = vmulq_f32(coefficients_v[i], values_);
+            }
+            out_v[i] = vaddq_f32(out_v[i], values_);
             prevError_v[i] = errors_v[i];
         }
 
@@ -206,7 +234,7 @@ public:
         }
     }
 
-    void Reset(){
+    void Reset() {
         prevErrors_ = {};
     }
 

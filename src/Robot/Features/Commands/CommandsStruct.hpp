@@ -14,7 +14,9 @@ struct CommandsStruct {
     std::array<float, 6> Hand{};
     std::array<float, 4> LowPWM{};
 
-    bool Stabilize = false;
+    /// Стабилизация
+    bool Stabilization = false;
+    std::array<float, 4> StabilizationTarget{};
 
     friend std::ostream &operator<<(std::ostream &output, const CommandsStruct &commands) {
         output << "[COMMANDS STRUCT]\n"

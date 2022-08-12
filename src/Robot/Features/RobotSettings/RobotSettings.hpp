@@ -18,13 +18,14 @@ namespace app {
     struct RobotSettingsStruct {
 
         using Matrix_t = stc::Matrix<float, 12, 6>;
-        using Vecotr_t = stc::Vector<stc::Horizontal, float, 6>;
+        using Vector_t = stc::Vector<stc::Horizontal, float, 6>;
 
         Matrix_t ThrustersCoefficientArray{};
-        Vecotr_t HandCoefficientArray{};
+        Vector_t HandCoefficientArray{};
         size_t ThrustersNumber = 0;
         size_t HandFreedom = 0;
         PIDCoefficientsArray<4> PIDCoefficients{};
+        std::array<bool, 4> PIDEnabled{};
 
         friend std::ostream &operator<<(std::ostream &out, const RobotSettingsStruct &settings) {
 

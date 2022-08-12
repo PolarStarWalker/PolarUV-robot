@@ -4,8 +4,12 @@
 #include "PID.hpp"
 #include "CommandsStruct.hpp"
 #include "../RobotSettings/RobotSettings.hpp"
+#include <cmath>
 #include <ranges>
 #include <algorithm>
+#include <iostream>
+
+#define rad(x) ((x) * M_PI / 180)
 
 class AngleStabilization {
     ArrayType<3> setting_{};
@@ -78,40 +82,49 @@ class Stabilization {
 
     constexpr static size_t Size = 4;
 
-    AngleStabilization angleStabilization_{};
-    DepthStabilization depthStabilization_{};
     PIDArray<Size> pids_{};
 
 public:
 
     stc::VerticalVector<float, 6>
-    Calculate(float dt, const stc::VerticalVector<float, 6> &move, app::SensorsStruct &sensors) {
+    Calculate(float dt, CommandsStruct &commands, app::RobotSettingsStruct settings, app::SensorsStruct &sensors) {
 
-        constexpr auto ax = app::SensorsStruct::X;
-        constexpr auto ay = app::SensorsStruct::Y;
-        constexpr auto az = app::SensorsStruct::Z;
+        ArrayType<Size> measuredValues{sensors.Rotation[app::SensorsStruct::X],
+                                       sensors.Rotation[app::SensorsStruct::Y],
+                                       sensors.Rotation[app::SensorsStruct::Z],
+                                       sensors.Depth};
 
-        constexpr auto Wx = CommandsStruct::MoveDimensionsEnum::Wx;
-        constexpr auto Wy = CommandsStruct::MoveDimensionsEnum::Wy;
-        constexpr auto Wz = CommandsStruct::MoveDimensionsEnum::Wz;
+        /// ToDo: Унифицировать диапазоны углов
+        /// Перевод значений из диапазона [270; 90] в диапазон [-90; 90]
+        if (measuredValues[1] >= 270.0f) measuredValues[1] -= 360.0f;
 
-        auto angles = angleStabilization_.UpdateAngle(dt, move[Wx], move[Wy], move[Wz]);
-        //auto depth = depthStabilization_.UpdateDepth(move, sensors);
+        /// Расчет значений ошибок
+        auto errors = PIDArray<Size>::GetErrors(commands.StabilizationTarget, measuredValues);
 
-        ArrayType<Size> setting{angles[0], angles[1], angles[2], sensors.Depth};
-        ArrayType<Size> measure{sensors.Rotation[ax], sensors.Rotation[ay], sensors.Rotation[az], sensors.Depth};
+        /// Проверка значений ошибок
+        if (errors[0] > 180.0f) errors[0] = 360.0f - errors[0];
+        else if (errors[0] < -180.0f) errors[0] = 360.0f + errors[0];
+        if (errors[2] > 180.0f) errors[2] = 360.0f - errors[2];
+        else if (errors[2] < -180.0f) errors[2] = 360.0f + errors[2];
 
-        auto errors = PIDArray<Size>::GetErrors(setting, measure);
+        /// Расчет значений ПИД-регуляторов
         auto pids = pids_.Calculate(dt, errors);
 
-        //ToDo DanShoo стабилизация по глубине
+        /// Расчет новых значений векторов движения
+        float Fx = 0.0f, Fy = 0.0f, Fz = 0.0f;
+        if (settings.PIDEnabled[3]) {
+            Fx = (float) (-pids[3] * std::sin(rad(measuredValues[1])));
+            Fy = (float) (pids[3] * std::sin(rad(measuredValues[0])) * std::cos(rad(measuredValues[0])));
+            Fz = (float) (pids[3] * std::cos(rad(measuredValues[0])) * std::cos(rad(measuredValues[1])));
+        }
+        float Mx = (settings.PIDEnabled[0]) ? -pids[0] : 0.0f;
+        float My = (settings.PIDEnabled[1]) ? -pids[1] : 0.0f;
+        float Mz = (settings.PIDEnabled[2]) ? -pids[2] : 0.0f;
 
-        stc::Vector<stc::Vertical, float, 6> newMove{move[0],
-                                                     move[1],
-                                                     move[2],
-                                                     pids[0],
-                                                     pids[1],
-                                                     pids[2]};
+        stc::Vector<stc::Vertical, float, 6> newMove{Fx, Fy, Fz, Mx, My, Mz};
+
+        /// Нормализация новых значений векторов движения
+        newMove.Normalize(1.0f);
 
         return newMove;
     }
@@ -130,8 +143,6 @@ public:
 
     void Reset(const app::SensorsStruct &sensors) {
         pids_.Reset();
-        angleStabilization_.Reset(sensors);
-        depthStabilization_.Reset(sensors);
     }
 
 };

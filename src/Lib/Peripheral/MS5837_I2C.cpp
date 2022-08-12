@@ -8,7 +8,7 @@ using namespace MS5837;
 MS5837_I2C::MS5837_I2C(I2C& i2c,uint16_t sensorAddress) :
         ISensor(i2c),
         sensorCalibration_({}),
-        filters_({new MovingAverage<5>(), new MovingAverage<5>(), new MovingAverage<5>()}),
+        filters_({new MovingAverage<2>(), new MovingAverage<2>(), new MovingAverage<2>()}),
         sensorAddress_(sensorAddress){}
 
 SensorTask MS5837_I2C::Init() {

@@ -119,10 +119,10 @@ void TcpSession::Start() {
                     SendResponse(socket, response);
                 }
 
-                std::cout << requestHeader << '\n'
-                          << "Execution time = "
-                          << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()
-                          << "[ns]" << std::endl;
+//                std::cout << requestHeader << '\n'
+//                          << "Execution time = "
+//                          << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count()
+//                          << "[ns]" << std::endl;
 
             } catch (const lib::exceptions::BufferOverflow &e) {
                 Response response(std::string(e.Message), e.Code, -1);

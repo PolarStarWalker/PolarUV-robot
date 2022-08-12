@@ -8,7 +8,7 @@
 template<typename Type>
 requires(std::is_arithmetic_v<Type>)
 constexpr inline Type Nano(Type value) {
-    return value / 1000;
+    return value / 1000000000;
 }
 
 template<typename Type>

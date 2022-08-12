@@ -1,6 +1,7 @@
 #include "CommandsCycle.hpp"
 #include <algorithm>
 #include <ranges>
+#include <iostream>
 #include "Schedular/Event.hpp"
 
 using namespace app;
@@ -25,6 +26,7 @@ CommandsCycle::CommandsCycle(MotorsSender::IMotorsSender &motorsSender,
         motorsSender_(motorsSender),
         sensors_(std::move(sensors)),
         settings_(std::move(settings)),
+        stabilizationEnabled_(false),
         isNotDone_(true),
         thread_(&CommandsCycle::StartCommands, this) {}
 
@@ -44,47 +46,67 @@ void CommandsCycle::StartCommands() {
 
         //auto events = eventTracker.Listen<10>(20);
 
+        /// Расчет dt
         auto dt = timer_.Update();
 
+        /// Получение команд
         auto commands = GetCommands();
 
+        /// Получение настроек
         auto settings = settings_->GetSettings();
 
-        auto sensorsStruct = sensors_->GetSensorsStruct();
+        /// Получение данных с датчиков
+        auto sensors = sensors_->GetSensorsStruct();
 
-        if (commands.Stabilize) {
+        if (commands.Stabilization) {
 
+            /// Установка коэффициентов
             stabilization_.SetPCoefficients(settings.PIDCoefficients.PArray);
             stabilization_.SetICoefficients(settings.PIDCoefficients.IArray);
             stabilization_.SetDCoefficients(settings.PIDCoefficients.DArray);
 
-            ///ToDo DanSho смотри отсюда
-            commands.Move = stabilization_.Calculate(dt, commands.Move, sensorsStruct);
+            /// Расчет значений векторов движения
+            auto stabilizationMove = stabilization_.Calculate(dt, commands, settings, sensors);
+
+            commands.Move[CommandsStruct::MoveDimensionsEnum::Vx] += stabilizationMove[0];
+            commands.Move[CommandsStruct::MoveDimensionsEnum::Vy] += stabilizationMove[1];
+            commands.Move[CommandsStruct::MoveDimensionsEnum::Vz] = stabilizationMove[2];
+            commands.Move[CommandsStruct::MoveDimensionsEnum::Wx] += stabilizationMove[3];
+            commands.Move[CommandsStruct::MoveDimensionsEnum::Wy] = stabilizationMove[4];
+            commands.Move[CommandsStruct::MoveDimensionsEnum::Wz] += stabilizationMove[5];
 
         } else {
-            stabilization_.Reset(sensorsStruct);
+            /// Сброс параметров стабилизации
+            stabilization_.Reset(sensors);
         }
 
+        /// Применение глобальных коэффициентов
         auto hiPWM = settings.ThrustersCoefficientArray * commands.Move;
         hiPWM.Normalize(100.0f);
 
+        /// Расчет команд манипулятора
         auto handBegin = commands.Hand.cbegin();
         auto handEnd = commands.Hand.cbegin() + settings.HandFreedom;
-
         std::transform(handBegin, handEnd,
                        settings.HandCoefficientArray.cbegin(),
                        hiPWM.rbegin(),
                        [](float hand, float coefficient) { return hand * coefficient; });
 
+        /// Приведение команд от диапазона [-100; 100] к диапазону [0; 2000]
         hiPWM += 100.0f;
         hiPWM *= 10.0f;
 
+        /// Формирование структуры команд
         auto motorsStruct = FormMotorsStruct((const std::array<float, 12> &) hiPWM, commands.LowPWM);
 
+        /// Отправка команд на двигатели
         motorsSender_.SendMotorsStruct(motorsStruct);
+
+        for (size_t i = 0; i < 8; i++) {
+            std::cout << motorsStruct.HiPWM[i] << " ";
+        }
+        std::cout << std::endl;
 
         usleep(PERIOD_US);
     }
-
 }
-

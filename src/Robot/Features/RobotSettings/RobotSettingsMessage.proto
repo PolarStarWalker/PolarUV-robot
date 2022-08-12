@@ -10,6 +10,13 @@ message PID{
 
 };
 
+message PIDEnabled {
+  required bool x = 1;
+  required bool y = 2;
+  required bool z = 3;
+  required bool h = 4;
+}
+
 message RobotSettingsMessage{
 
   enum DShotMode {
@@ -24,5 +31,6 @@ message RobotSettingsMessage{
   required int32 maximum_motor_speed = 3;
   required DShotMode motors_protocol = 4;
   repeated PID pid = 5;
+  required PIDEnabled pid_enabled = 6;
 
 }

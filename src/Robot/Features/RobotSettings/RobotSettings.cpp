@@ -30,6 +30,11 @@ inline RobotSettingsStruct ParseSettings(const RobotSettingsMessage &message) {
         settings.PIDCoefficients.DArray[i] = message.pid()[i].d();
     }
 
+    settings.PIDEnabled = {message.pid_enabled().x(),
+                           message.pid_enabled().y(),
+                           message.pid_enabled().z(),
+                           message.pid_enabled().h()};
+
     return settings;
 }
 

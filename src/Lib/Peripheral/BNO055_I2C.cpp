@@ -10,8 +10,8 @@ constexpr double ToDegrees = 180 / std::numbers::pi_v<double>;
 
 BNO055_I2C::BNO055_I2C(I2C &i2c, uint16_t sensorAddress, BNO055::OperationMode mode) :
         ISensor(i2c),
-        filters_({new CircleMovingAverage<20>(),
-                  new CircleMovingAverage<20>(),
+        filters_({new CircleMovingAverage<10>(),
+                  new CircleMovingAverage<10>(),
                   new CircleMovingAverage<20>(),
                   new MovingAverage<10>(),
                   new MovingAverage<10>(),
