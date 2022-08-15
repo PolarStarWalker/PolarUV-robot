@@ -174,7 +174,7 @@ public:
             auto tmp = dt * errors[i];
             tmp = coefficients_->begin()[i] * tmp;
             is_[i] = is_[i] + tmp;
-            out_v[i] = out_v[i] + is_[i];
+            out_v[i] += is_[i];
         }
     }
 
@@ -229,7 +229,7 @@ public:
         for (auto i: std::ranges::iota_view(Size - Size % 4, Size)) {
             auto tmp = errors[i] - prevErrors_[i];
             tmp = tmp / dt;
-            out[i] = coefficients_->begin()[i] * tmp;
+            out[i] += coefficients_->begin()[i] * tmp;
             prevErrors_[i] = errors[i];
         }
     }

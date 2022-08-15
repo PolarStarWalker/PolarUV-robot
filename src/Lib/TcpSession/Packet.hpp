@@ -41,25 +41,25 @@ namespace lib::network {
 
     inline std::ostream &operator<<(std::ostream &out, const RequestHeaderType &header) {
 
-//        out << "[REQUEST HEADER]\n"
-//            << "Endpoint: " << header.EndpointId << ", Type: ";
-//
-//        switch (header.Type) {
-//
-//            case RequestTypeEnum::R:
-//                out << 'R';
-//                break;
-//            case RequestTypeEnum::W:
-//                out << 'W';
-//                break;
-//            case RequestTypeEnum::WR:
-//                out << "WR";
-//                break;
-//            default:
-//                out << "UNDEFINED";
-//        }
-//
-//        out << ", Data length: " << header.Length;
+        out << "[REQUEST HEADER]\n"
+            << "Endpoint: " << header.EndpointId << ", Type: ";
+
+        switch (header.Type) {
+
+            case RequestTypeEnum::R:
+                out << 'R';
+                break;
+            case RequestTypeEnum::W:
+                out << 'W';
+                break;
+            case RequestTypeEnum::WR:
+                out << "WR";
+                break;
+            default:
+                out << "UNDEFINED";
+        }
+
+        out << ", Data length: " << header.Length;
 
         return out;
     }

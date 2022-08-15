@@ -52,7 +52,6 @@ namespace app {
         Timer timer_;
         Stabilization stabilization_;
         PIDArray<4> pids_;
-        bool stabilizationEnabled_;
 
         std::atomic<bool> isNotDone_;
         std::thread thread_;

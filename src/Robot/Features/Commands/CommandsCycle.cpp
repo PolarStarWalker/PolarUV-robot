@@ -26,7 +26,6 @@ CommandsCycle::CommandsCycle(MotorsSender::IMotorsSender &motorsSender,
         motorsSender_(motorsSender),
         sensors_(std::move(sensors)),
         settings_(std::move(settings)),
-        stabilizationEnabled_(false),
         isNotDone_(true),
         thread_(&CommandsCycle::StartCommands, this) {}
 
